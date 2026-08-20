@@ -11,6 +11,8 @@ Superpowers is the only DevSwitchboard v0.1 methodology adapter. The adapter map
 | Dispatch independent units | `dispatching-parallel-agents` | Requires stable interfaces; strategy changes require Re-route Required. |
 | Diagnose a defect | `systematic-debugging` | Applies when a real failure or unexpected behavior appears. |
 | Build production executable behavior | `test-driven-development` | Begins when production executable code exists; it is not fabricated for documentation-only bootstrap work. |
+| Acquire one local-only repository fact | Focused read-only Codex inspection | Produces a Micro Consultation response under the active phase; it creates no new phase gate or ownership transfer. |
+| Communicate relevant local divergence | Active execution practice plus Local Delta | Pause at an approved checkpoint and return minimum evidence to Chat; do not treat the artifact as authorization. |
 | Obtain fresh review | `requesting-code-review` | Prefer a non-authoring context for architectural or contract-heavy changes. |
 | Support a completion claim | `verification-before-completion` | Always fresh after the last change; never deduplicated. |
 
@@ -21,6 +23,7 @@ Superpowers is the only DevSwitchboard v0.1 methodology adapter. The adapter map
 3. If reusable, record the gate as `reused` with its source and do not invoke an equivalent practice again.
 4. If not reusable, invoke the mapped practice without expanding the approved scope.
 5. Preserve developer approvals and stop conditions from the active route.
-6. Record material events in Work State; use Re-route Required before changing strategy.
+6. Classify missing context by source. Use focused Codex inspection only for `LOCAL` facts; leave `REMOTE` acquisition with Chat and `INTENT` with the developer.
+7. Record material events in Work State; use Re-route Required before changing strategy.
 
 For DevSwitchboard Dogfood #001, approved Design Revision 2 satisfies brainstorming. Codex Preflight, repository implementation planning, fresh review, and final verification remain distinct required gates.

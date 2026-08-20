@@ -1,0 +1,43 @@
+{
+  "$schema_file": "../schemas/local-delta.schema.json",
+  "schema": "local_delta",
+  "schema_version": "0.1",
+  "task_id": "invoice-status-filter",
+  "revision": 1,
+  "status": "ready_for_handoff",
+  "repository": {
+    "remote": "https://github.com/example/invoices.git",
+    "branch": "main",
+    "baseline_sha": "0123456789abcdef0123456789abcdef01234567"
+  },
+  "local": {
+    "head": "0123456789abcdef0123456789abcdef01234567",
+    "working_tree": "dirty",
+    "baseline_state": "diverged"
+  },
+  "relevance": {
+    "relevant_to_task": true,
+    "confidence": "high",
+    "evidence": [
+      "The local invoice query change alters the approved filter integration point."
+    ]
+  },
+  "changed_files": [
+    {
+      "path": "src/invoices/query.ts",
+      "change_type": "modified",
+      "relevant_to_task": true,
+      "evidence": [
+        "The file now exposes the status parameter required by the active task."
+      ]
+    }
+  ],
+  "summary": "The local branch already changes the invoice query surface that the status-filter task must extend.",
+  "implications": [
+    "Chat should use the local query signature instead of the remote baseline when checking the approved design.",
+    "The approved bounded route remains valid; no intent decision is requested."
+  ],
+  "evidence": [
+    "git diff --name-status against the recorded baseline reports src/invoices/query.ts as modified."
+  ]
+}

@@ -18,13 +18,13 @@ Rules are deterministic and evaluated in ascending identifier order. The first m
 - **Approval:** Developer approval required before intent is final.
 - **Invalidated by:** A fresh, approved specification resolving the evidence.
 
-## R003 — Missing or stale repository context
+## R003 — Missing, stale, or divergent context
 
-- **Match:** Repository context is absent, stale, or expected to differ from the handoff.
-- **Recommend:** Route `codex_preflight` to Codex before implementation planning.
-- **Rationale:** Local compatibility needs live evidence.
-- **Approval:** No approval for read-only inspection; adaptations remain bounded by intent.
-- **Invalidated by:** A fresh Codex Preflight for the current revision and workspace.
+- **Match:** Required context is absent or stale, the source is unresolved, or local truth may differ materially from the shared baseline.
+- **Recommend:** Classify the missing source before routing. `REMOTE` facts stay with Chat for GitHub/shared-baseline acquisition. `LOCAL` facts route to focused Codex evidence through Micro Consultation and, when divergence is task-relevant, Local Delta. `INTENT` routes to the developer. Before implementation planning, route `codex_preflight` to Codex for the current local workspace.
+- **Rationale:** Context source determines the authority and acquisition surface. Context depth alone does not justify Codex consultation, and local dirtiness alone does not justify Local Delta.
+- **Approval:** Read-only fact acquisition requires no new approval. Intent decisions and material route changes require developer approval; consultation never transfers phase ownership.
+- **Invalidated by:** Fresh evidence from the authoritative source, a validated relevant Local Delta accepted by Chat, or a fresh Codex Preflight for the current revision and workspace.
 
 ## R004 — Intent-versus-feasibility conflict
 

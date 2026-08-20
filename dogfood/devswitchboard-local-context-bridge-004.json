@@ -1,0 +1,128 @@
+{
+  "$schema_file": "../schemas/dogfood-record.schema.json",
+  "schema": "dogfood_record",
+  "schema_version": "0.1",
+  "record_type": "run",
+  "task_id": "devswitchboard-local-context-bridge-004",
+  "revision": 1,
+  "authority": [
+    "DevSwitchboard Dogfood #004 Approved Handoff revision 1",
+    "Synced baseline Sonos18/devswitchboard main at 55f7ba2fe6b31499532b82632697d439e95e78ef",
+    "Validated Local Delta checkpoint dogfood/devswitchboard-local-context-bridge-004-local-delta.json",
+    "Chat checkpoint decision CONTINUE_CURRENT_ROUTE returned through the developer"
+  ],
+  "approved_route": [
+    "Run Codex Preflight against the declared synced baseline",
+    "Persist restorative intent and create an authoritative Superpowers implementation plan",
+    "Implement sequentially without implementation subagents in an isolated worktree",
+    "Stop at the mandatory real Local Delta checkpoint and return ownership to Chat",
+    "Resume the same route after Chat accepts the delta without re-routing",
+    "Use a fresh review subagent and fresh final repository verification"
+  ],
+  "execution_strategy": {
+    "implementation_subagents": false,
+    "review_subagent": true,
+    "workspace_isolation": true,
+    "methodology_adapter": "superpowers"
+  },
+  "gates": {
+    "reused": [
+      "Approved requirement discovery, design, specification, and developer execution strategy",
+      "Chat checkpoint context-freshness and routing evaluation after the real Local Delta"
+    ],
+    "repeated": [
+      "Codex Preflight against local main and origin/main",
+      "Focused regression verification after each workflow-integrity change",
+      "Full repository verification before the Local Delta checkpoint and after continuation",
+      "Fresh-context architectural review",
+      "Fresh final repository verification"
+    ]
+  },
+  "measurements": {
+    "phase_timings": [],
+    "clarification_loops": 0,
+    "re_routes": [],
+    "verification_failures": [],
+    "developer_overrides": []
+  },
+  "preflight": {
+    "outcome": "compatible_with_adaptation",
+    "adaptations": [
+      "Use the repository's closed Draft 2020-12 JSON schemas and canonical-schema binding map",
+      "Place the isolated worktree outside the repository because the project-local worktree directory was not ignored",
+      "Extend existing R003 instead of adding a competing routing rule"
+    ],
+    "conflicts": []
+  },
+  "review": {
+    "status": "findings_remediated",
+    "findings": [
+      "Important: canonical artifacts were not fully path-pinned and the mandatory checkpoint was not required; remediated and regression-covered.",
+      "Important: Local Delta allowed contradictory baseline, aggregate relevance, and ready-for-handoff states; remediated and regression-covered.",
+      "Important: duplicate Micro Consultation request identities made response linkage ambiguous; remediated and regression-covered."
+    ]
+  },
+  "verification": {
+    "status": "pass",
+    "checks": [
+      "Workflow-integrity regressions including red-green coverage for all new and remediated invariants",
+      "Full repository structure, scope, JSON syntax, schema conformance, semantic invariants, Markdown links, terminology, routing rules, unresolved markers, and decision value gate verification",
+      "Independent JSON parsing of every schema and canonical JSON record",
+      "Unstaged and staged Git whitespace checks plus untracked-file trailing-whitespace and final-newline checks",
+      "Exact changed-file inventory and confirmation that main and origin/main remain at the approved baseline",
+      "Fresh review confirmation that all Important findings are remediated with no new Critical or Important issue"
+    ]
+  },
+  "findings": [
+    {
+      "type": "WORKFLOW_INTEGRITY",
+      "area": "micro_consultation_parties",
+      "description": "Initial Micro Consultation schemas enumerated Chat and Codex independently, allowing the same surface to be both requester and responder despite the Chat-to-Codex bridge invariant.",
+      "correction": "Added a regression that first demonstrated acceptance of the invalid pair, then constrained both request and response schemas to exactly Chat-to-Codex or Codex-to-Chat.",
+      "status": "remediated"
+    },
+    {
+      "type": "REVIEW_FINDING",
+      "area": "canonical_artifact_binding",
+      "description": "The first fresh review found that new canonical example paths could masquerade as another approved record kind and that the mandatory Local Delta checkpoint was not structurally required.",
+      "correction": "Pinned all new canonical examples and both Dogfood #004 records to their expected schemas, required the checkpoint path, and added deletion and cross-kind substitution regressions.",
+      "status": "remediated"
+    },
+    {
+      "type": "REVIEW_FINDING",
+      "area": "local_delta_cross_field_invariants",
+      "description": "The first fresh review found that individually valid Local Delta fields could form contradictory baseline states or aggregate relevance claims.",
+      "correction": "Added baseline-state, ready-for-handoff eligibility, and aggregate/per-file relevance invariants with focused regressions for uninitialized, synced, unknown, irrelevant-ready, false-aggregate, empty-inventory, and all-irrelevant contradictions.",
+      "status": "remediated"
+    },
+    {
+      "type": "REVIEW_FINDING",
+      "area": "micro_consultation_duplicate_identity",
+      "description": "The first fresh review found that duplicate request identities silently overwrote one another during response-link validation.",
+      "correction": "Reject duplicate task, consultation ID, and request revision keys before insertion and cover the behavior with a focused regression.",
+      "status": "remediated"
+    }
+  ],
+  "developer_controls": [
+    "Developer remains final authority for intent, material strategy changes, external effects, and acceptance",
+    "Approved Handoff remains the implementation-boundary artifact",
+    "Micro Consultation and Local Delta carry facts without changing intent or phase ownership",
+    "No implementation subagents were used",
+    "No merge, push, release, tag, package, Pages, marketplace listing, or other publication surface is authorized"
+  ],
+  "result": "pass",
+  "observations": [
+    "The architectural route was accepted at preflight and remained valid after the mandatory Local Delta checkpoint.",
+    "The isolated worktree became DIVERGED through task-relevant changes while local HEAD stayed at the shared remote baseline.",
+    "The real Local Delta was validated and transferred at the required interruption; Chat returned CONTINUE_CURRENT_ROUTE with adequate freshness and no conflict or re-route.",
+    "No Micro Consultation was needed to execute Dogfood #004; the canonical linked request and response demonstrate the restored fact-only exchange.",
+    "Regression-first cycles covered Local Delta relevance, schema-selection bypass, consultation authority, response linkage, and cross-surface parties.",
+    "Observed friction: the missing bridge semantics affected the approved design, onboarding, both workflows, routing, recovery, adapter, contracts, examples, and verifier, so consistency required a deliberately sequential update.",
+    "Observed friction: Git safe-directory checks in the linked worktree require both the common repository and worktree paths as command-scoped trusted directories.",
+    "Baseline-scope calibration lesson: baseline states remain broadly representable for context and recovery, while status-specific semantic gates restrict a ready Local Delta to task-relevant DIVERGED or materially UNINITIALIZED local truth; SYNCED and UNKNOWN remain valid context states but are not handoff-ready Local Delta states.",
+    "The first fresh review reported three important integrity findings; each was remediated through an independent regression-first cycle.",
+    "The remediation review confirmed every finding resolved with no new Critical or Important issue.",
+    "Fresh final verification passed after the last repository change."
+  ],
+  "next_action": "developer_review"
+}

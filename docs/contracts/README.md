@@ -18,6 +18,8 @@ DevSwitchboard contracts make decisions portable across surfaces. Human semantic
 | [Task Profile](task-profile.md) | any | Evidence-backed routing assessment. |
 | [Routing Recommendation](routing-recommendation.md) | any → developer | Proposed phase route. |
 | [Approved Handoff](approved-handoff.md) | Chat → Codex | Approved intent and execution constraints. |
+| [Local Delta](local-delta.md) | Codex → Chat | Minimum task-relevant local divergence from the shared baseline. |
+| [Micro Consultation](micro-consultation.md) | Chat ↔ Codex | One focused fact exchange without phase-ownership transfer. |
 | [Codex Preflight](codex-preflight.md) | Codex → workflow | Live-environment compatibility result. |
 | [Conflict Report](conflict-report.md) | any → developer | Intent-versus-feasibility stop. |
 | [Re-route Required](re-route-required.md) | any → developer | Approval request after route invalidation. |
