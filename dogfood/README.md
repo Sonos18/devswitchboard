@@ -28,3 +28,4 @@ Records validate against [`dogfood-record.schema.json`](../schemas/dogfood-recor
 - [`devswitchboard-shared-baseline-002.json`](devswitchboard-shared-baseline-002.json) records the pre-publication review, remediation, environment gate, and eventual shared-baseline transition.
 - [`devswitchboard-first-run-guide-003.json`](devswitchboard-first-run-guide-003.json) records the bounded first-run onboarding addition.
 - [`devswitchboard-local-context-bridge-004.json`](devswitchboard-local-context-bridge-004.json) records the restorative local-context bridge implementation and mandatory Local Delta checkpoint.
+- [`devswitchboard-bridge-artifact-guide-005.json`](devswitchboard-bridge-artifact-guide-005.json) records the bridge-artifact selection guide and the local-state Micro Consultation used to choose its execution strategy.

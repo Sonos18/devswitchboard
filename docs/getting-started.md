@@ -23,6 +23,22 @@ you state the requirement in ChatGPT Chat
 
 Chat owns intent. Codex owns local repository compatibility. You remain the final authority at both surfaces.
 
+## Which bridge artifact should I use?
+
+Choose the artifact based on what needs to cross the Chat/Codex boundary:
+
+| Situation | Artifact | Direction | What crosses the boundary |
+| --- | --- | --- | --- |
+| Chat has approved the intent and implementation may begin after a local compatibility check. | [Approved Handoff](contracts/approved-handoff.md) | Chat → Codex | Developer-approved intent, authorization, scope, and execution constraints. |
+| Task-relevant local implementation truth differs from the shared baseline and Chat must refresh its assumptions. | [Local Delta](contracts/local-delta.md) | Codex → Chat | The minimum relevant local facts, evidence, and implications. It does not authorize intent changes. |
+| One focused local fact is missing and the current phase owner should remain unchanged. | [Micro Consultation](contracts/micro-consultation.md) | Chat ↔ Codex | A focused question and evidence-based response. Consultation is not a handoff; for a fact-only consultation, `decision: none`. |
+
+In short: use an Approved Handoff to cross from approved intent into implementation, a Local Delta to refresh Chat when task-relevant local work has diverged, and a Micro Consultation to answer one focused local question without transferring phase ownership.
+
+For example, Dogfood #004 used a Local Delta after its local implementation had materially diverged from the shared baseline. Dogfood #005 used a Micro Consultation because Chat needed only one fact: whether local `main` was clean and synchronized. The examples differ, but the general rule is the same: divergence calls for a relevant delta; a focused information gap calls for a consultation.
+
+Remote-retrievable facts remain with Chat and GitHub, while intent and business decisions remain with the developer. Codex supplies local implementation truth; it is not a generic fallback for missing context. The normative [Chat workflow](workflows/chat.md) and [Codex workflow](workflows/codex.md) define how these artifacts fit into phase ownership.
+
 ## 1. Start in regular ChatGPT Chat
 
 Open a normal ChatGPT conversation and provide the raw requirement plus the GitHub repository that represents the shared baseline. For example:

@@ -1,0 +1,86 @@
+{
+  "$schema_file": "../schemas/dogfood-record.schema.json",
+  "schema": "dogfood_record",
+  "schema_version": "0.1",
+  "record_type": "run",
+  "task_id": "devswitchboard-bridge-artifact-guide-005",
+  "revision": 1,
+  "authority": [
+    "DevSwitchboard Dogfood #005 Approved Handoff revision 1",
+    "Micro Consultation CONS-005-001",
+    "Synced baseline Sonos18/devswitchboard main at 70d2266b989c071a15be203c13bb2f2106d0191b"
+  ],
+  "approved_route": [
+    "Refresh remote refs and fast-forward clean local main to the approved shared baseline",
+    "Reuse approved requirement discovery, design, Micro Consultation, and routing decisions",
+    "Implement one bounded documentation aid in place without subagents or workspace isolation",
+    "Run proportionate inline review and fresh repository verification",
+    "Return verified local changes without commit or publication"
+  ],
+  "execution_strategy": {
+    "implementation_subagents": false,
+    "review_subagent": false,
+    "workspace_isolation": false,
+    "methodology_adapter": "superpowers"
+  },
+  "gates": {
+    "reused": [
+      "Approved requirement discovery and design",
+      "Micro Consultation CONS-005-001",
+      "Approved bounded in-place execution route"
+    ],
+    "repeated": [
+      "Baseline freshness and fast-forward safety check",
+      "Codex Preflight against synchronized main",
+      "Fresh final repository verification"
+    ]
+  },
+  "measurements": {
+    "phase_timings": [],
+    "clarification_loops": 1,
+    "re_routes": [],
+    "verification_failures": [],
+    "developer_overrides": []
+  },
+  "preflight": {
+    "outcome": "compatible",
+    "adaptations": [],
+    "conflicts": []
+  },
+  "review": {
+    "status": "pass",
+    "findings": []
+  },
+  "verification": {
+    "status": "pass",
+    "checks": [
+      "Bridge selection aid covers Approved Handoff, Local Delta, and Micro Consultation",
+      "Artifact directions and authority boundaries remain distinct",
+      "Consultation is distinguished from handoff and Local Delta from one-fact consultation",
+      "Codex is not presented as a generic fallback for missing context",
+      "Canonical contract and workflow links resolve",
+      "No normative contract, schema, routing rule, or v0.1 scope change",
+      "Workflow-integrity regressions and full repository verification",
+      "Unstaged and staged Git whitespace checks"
+    ]
+  },
+  "findings": [],
+  "developer_controls": [
+    "Chat retained routing ownership before and after the Micro Consultation",
+    "Codex supplied local facts with decision: none and did not exercise decision authority",
+    "No implementation subagents or workspace isolation",
+    "No normative contract, schema, routing rule, or Task Profile change",
+    "No commit, push, pull request, merge, tag, release, package, Pages, or other publication"
+  ],
+  "result": "pass",
+  "observations": [
+    "REMOTE context was available to Chat; the only missing context class was LOCAL.",
+    "Micro Consultation CONS-005-001 acquired the focused local workspace-safety fact in one consultation loop.",
+    "The initial local-state observation remained fresh when execution began: main was clean, still at 55f7ba2fe6b31499532b82632697d439e95e78ef, and exactly two commits behind origin/main.",
+    "The authorized fast-forward moved local main to 70d2266b989c071a15be203c13bb2f2106d0191b with no second consultation required.",
+    "Phase ownership did not transfer, and Codex used no decision authority.",
+    "The route remained bounded and in place, with no workspace isolation or implementation subagents.",
+    "The artifact-selection aid could be added without changing any normative bridge semantics."
+  ],
+  "next_action": "developer_review"
+}
