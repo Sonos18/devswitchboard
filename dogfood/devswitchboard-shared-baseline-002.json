@@ -4,7 +4,7 @@
   "schema_version": "0.1",
   "record_type": "run",
   "task_id": "devswitchboard-shared-baseline-002",
-  "revision": 2,
+  "revision": 3,
   "authority": [
     "Developer-approved ESTABLISH_SHARED_BASELINE workflow",
     "Public GitHub repository devswitchboard authorized",
@@ -49,7 +49,8 @@
     "outcome": "compatible_with_adaptation",
     "adaptations": [
       "Used the documented terminal security-scan fallback after the managed helper could not start; validation completed, but the finalizer rejected the aliased temporary path as noncanonical",
-      "Stopped before commit and remote creation when the publication gate found concerns"
+      "Stopped before commit and remote creation when the publication gate found concerns",
+      "Used command-scoped Git schannel certificate validation after the system OpenSSL CA bundle could not validate GitHub; TLS verification remained enabled and global Git configuration was unchanged"
     ],
     "conflicts": []
   },
@@ -77,6 +78,9 @@
       "Absence of unresolved markers",
       "Apache-2.0 license and developer-owned decision-value gate",
       "Workflow-integrity regression cases for schema selection and Work State completion",
+      "Public GitHub repository identity and visibility",
+      "Local HEAD equality with origin/main and exact remote file-tree parity",
+      "Clean local working tree after evidence publication",
       "Unstaged and staged Git diff formatting"
     ]
   },
@@ -123,7 +127,7 @@
     "Governance and private vulnerability reporting remain deferred until real channels are separately approved",
     "No release, tag, package, Pages site, marketplace listing, or additional publication surface is authorized"
   ],
-  "result": "fail",
+  "result": "pass",
   "observations": [
     "The local repository verification suite passed before the publication gate stopped the workflow.",
     "The reviewed first-commit set contained 50 files before this evidence record was added.",
@@ -133,8 +137,10 @@
     "Focused regressions and the full repository verifier pass after remediation.",
     "Fresh remediation review found no findings and no unintended publication artifacts or v0.1 scope expansion.",
     "GitHub CLI authentication was restored and the active identity was verified as Sonos18 before publication.",
-    "No commit, remote, or push was created.",
-    "The project baseline remains UNINITIALIZED."
+    "The first blocked attempt created no commit, remote, or push and left the baseline UNINITIALIZED.",
+    "Initial commit 94aa056d1074777896a3c9ee9e0fb4ac2e8b76cd was pushed to public repository Sonos18/devswitchboard on main.",
+    "The initial local HEAD equaled origin/main, all 50 expected files were present remotely, and the working tree was clean.",
+    "After verified publication, the project baseline transitioned from UNINITIALIZED to SYNCED."
   ],
-  "next_action": "create_initial_commit_and_public_repository"
+  "next_action": "developer_review"
 }
