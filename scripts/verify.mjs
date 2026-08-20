@@ -10,6 +10,9 @@ const canonicalSchemaFiles = new Map([
   ["codex_preflight", "codex-preflight.schema.json"],
   ["conflict_report", "conflict-report.schema.json"],
   ["dogfood_record", "dogfood-record.schema.json"],
+  ["local_delta", "local-delta.schema.json"],
+  ["micro_consultation_request", "micro-consultation-request.schema.json"],
+  ["micro_consultation_response", "micro-consultation-response.schema.json"],
   ["re_route_required", "re-route-required.schema.json"],
   ["routing_case", "routing-case.schema.json"],
   ["routing_recommendation", "routing-recommendation.schema.json"],
@@ -18,7 +21,12 @@ const canonicalSchemaFiles = new Map([
   ["work_state", "work-state.schema.json"]
 ]);
 const pinnedSchemaFiles = new Map([
-  ["examples/devswitchboard-approved-handoff.json", "approved-handoff.schema.json"]
+  ["examples/devswitchboard-approved-handoff.json", "approved-handoff.schema.json"],
+  ["examples/local-delta.json", "local-delta.schema.json"],
+  ["examples/micro-consultation-request.json", "micro-consultation-request.schema.json"],
+  ["examples/micro-consultation-response.json", "micro-consultation-response.schema.json"],
+  ["dogfood/devswitchboard-local-context-bridge-004-local-delta.json", "local-delta.schema.json"],
+  ["dogfood/devswitchboard-local-context-bridge-004.json", "dogfood-record.schema.json"]
 ]);
 
 function fail(group, message) {
@@ -160,15 +168,23 @@ function checkRequiredStructure() {
   const required = [
     "README.md", "LICENSE", "CONTRIBUTING.md",
     "docs/superpowers/specs/2026-08-20-devswitchboard-v0.1-design.md",
+    "docs/superpowers/specs/2026-08-20-local-context-bridge-restoration.md",
     "docs/superpowers/plans/2026-08-20-devswitchboard-bootstrap.md",
+    "docs/superpowers/plans/2026-08-20-local-context-bridge-restoration.md",
     "docs/contracts/README.md", "docs/workflows/chat.md", "docs/workflows/codex.md",
+    "docs/contracts/local-delta.md", "schemas/local-delta.schema.json", "examples/local-delta.json",
+    "docs/contracts/micro-consultation.md",
+    "schemas/micro-consultation-request.schema.json", "schemas/micro-consultation-response.schema.json",
+    "examples/micro-consultation-request.json", "examples/micro-consultation-response.json",
     "docs/routing/rules.md", "docs/adapters/superpowers.md", "docs/state-and-recovery.md",
     "examples/low-risk-doc-fix.json", "examples/architectural-feature.json",
     "examples/security-sensitive-change.json", "dogfood/measurement-template.json",
     "examples/devswitchboard-approved-handoff.json", "examples/codex-preflight.json",
     "examples/conflict-report.json", "examples/re-route-required.json",
     "examples/work-state.json", "examples/verification-report.json",
-    "dogfood/devswitchboard-bootstrap-001.json"
+    "dogfood/devswitchboard-bootstrap-001.json",
+    "dogfood/devswitchboard-local-context-bridge-004-local-delta.json",
+    "dogfood/devswitchboard-local-context-bridge-004.json"
   ];
   for (const relative of required) {
     if (!fs.existsSync(path.join(root, relative))) fail("structure", `missing ${relative}`);
@@ -205,6 +221,47 @@ function checkJsonAndSchemas() {
       for (const error of validate(record, schema, schemaFile, schema)) {
         fail("schema conformance", `${path.relative(root, recordFile)} ${error}`);
       }
+    }
+  }
+
+  const consultationRequests = new Map();
+  const consultationResponses = [];
+  for (const directory of ["examples", "dogfood"]) {
+    for (const file of walk(path.join(root, directory), (candidate) => candidate.endsWith(".json"))) {
+      const record = loadJson(file);
+      if (record?.schema === "micro_consultation_request") {
+        const key = `${record.task_id}:${record.consultation_id}:${record.revision}`;
+        if (consultationRequests.has(key)) {
+          const firstFile = consultationRequests.get(key).file;
+          fail("semantic invariants", `${path.relative(root, file)}: duplicate Micro Consultation request identity also used by ${path.relative(root, firstFile)}`);
+        } else {
+          consultationRequests.set(key, { file, record });
+        }
+        if (record.consultation_type === "repository_fact" && record.authority?.may_change_intent !== false) {
+          fail("semantic invariants", `${path.relative(root, file)}: repository-fact consultation cannot authorize intent changes`);
+        }
+        if (record.authority?.may_transfer_phase_ownership !== false) {
+          fail("semantic invariants", `${path.relative(root, file)}: Micro Consultation cannot transfer phase ownership`);
+        }
+      }
+      if (record?.schema === "micro_consultation_response") consultationResponses.push({ file, record });
+    }
+  }
+  for (const { file, record } of consultationResponses) {
+    const link = record.in_response_to;
+    const key = `${record.task_id}:${link?.consultation_id}:${link?.request_revision}`;
+    const request = consultationRequests.get(key)?.record;
+    const linked = request
+      && record.consultation_id === request.consultation_id
+      && record.requester === request.requester
+      && record.responder === request.responder
+      && record.phase_owner === request.phase_owner
+      && record.consultation_type === request.consultation_type;
+    if (!linked) {
+      fail("semantic invariants", `${path.relative(root, file)}: Micro Consultation response does not link to a canonical request`);
+    }
+    if (record.decision !== "none") {
+      fail("semantic invariants", `${path.relative(root, file)}: fact-only Micro Consultation response decision must be none`);
     }
   }
 }
@@ -267,6 +324,44 @@ function checkSemanticInvariants() {
       if (record?.schema === "work_state" && record.lifecycle_state === "complete" && record.verification_state !== "passed") {
         fail("semantic invariants", `${path.relative(root, file)}: complete Work State requires passed verification`);
       }
+      if (record?.schema === "local_delta") {
+        const baselineState = record.local?.baseline_state;
+        const remote = record.repository?.remote;
+        const baselineSha = record.repository?.baseline_sha;
+        const localHead = record.local?.head;
+        const workingTree = record.local?.working_tree;
+        const relevantFiles = (record.changed_files ?? []).filter((changedFile) => changedFile.relevant_to_task);
+
+        if (baselineState === "uninitialized" && (remote !== null || baselineSha !== null)) {
+          fail("semantic invariants", `${path.relative(root, file)}: uninitialized Local Delta cannot identify a remote baseline`);
+        }
+        if (baselineState === "synced" && (remote === null || baselineSha === null || localHead !== baselineSha || workingTree !== "clean")) {
+          fail("semantic invariants", `${path.relative(root, file)}: synced Local Delta requires a clean working tree at the baseline SHA`);
+        }
+        if (baselineState === "diverged" && (remote === null || baselineSha === null || (localHead === baselineSha && workingTree === "clean"))) {
+          fail("semantic invariants", `${path.relative(root, file)}: diverged Local Delta requires a remote baseline and an actual local difference`);
+        }
+        if (record.status === "ready_for_handoff" && !record.relevance?.relevant_to_task) {
+          fail("semantic invariants", `${path.relative(root, file)}: ready Local Delta requires task-relevant local truth`);
+        }
+        if (record.status === "ready_for_handoff" && !["diverged", "uninitialized"].includes(baselineState)) {
+          fail("semantic invariants", `${path.relative(root, file)}: ready Local Delta requires diverged or uninitialized local truth`);
+        }
+        if (record.relevance?.relevant_to_task && !record.relevance.evidence?.length) {
+          fail("semantic invariants", `${path.relative(root, file)}: task-relevant Local Delta requires relevance evidence`);
+        }
+        if (!record.relevance?.relevant_to_task && relevantFiles.length) {
+          fail("semantic invariants", `${path.relative(root, file)}: Local Delta aggregate relevance contradicts a relevant changed file`);
+        }
+        if (record.relevance?.relevant_to_task && !relevantFiles.length) {
+          fail("semantic invariants", `${path.relative(root, file)}: task-relevant Local Delta requires at least one relevant changed file`);
+        }
+        for (const changedFile of record.changed_files ?? []) {
+          if (changedFile.relevant_to_task && !changedFile.evidence?.length) {
+            fail("semantic invariants", `${path.relative(root, file)}: task-relevant changed file requires evidence`);
+          }
+        }
+      }
     }
   }
 
@@ -297,7 +392,7 @@ function checkMarkdownLinks() {
 
 function checkTerminologyAndRules() {
   const docs = walk(root, (file) => file.endsWith(".md")).map((file) => fs.readFileSync(file, "utf8")).join("\n");
-  const terms = ["Task Profile", "Routing Recommendation", "Approved Handoff", "Codex Preflight", "Conflict Report", "Re-route Required", "Work State", "Verification Report"];
+  const terms = ["Task Profile", "Routing Recommendation", "Approved Handoff", "Local Delta", "Micro Consultation", "Codex Preflight", "Conflict Report", "Re-route Required", "Work State", "Verification Report"];
   for (const term of terms) if (!docs.includes(term)) fail("terminology", `missing canonical term ${term}`);
 
   const dimensions = ["requirement_ambiguity", "scope_complexity", "repository_dependency", "regression_risk", "parallelizability", "security_sensitivity", "context_uncertainty"];

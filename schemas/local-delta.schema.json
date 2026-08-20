@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://devswitchboard.dev/schemas/local-delta.schema.json",
+  "title": "Local Delta",
+  "type": "object",
+  "required": [
+    "$schema_file",
+    "schema",
+    "schema_version",
+    "task_id",
+    "revision",
+    "status",
+    "repository",
+    "local",
+    "relevance",
+    "changed_files",
+    "summary",
+    "implications",
+    "evidence"
+  ],
+  "properties": {
+    "$schema_file": { "const": "../schemas/local-delta.schema.json" },
+    "schema": { "const": "local_delta" },
+    "schema_version": { "const": "0.1" },
+    "task_id": { "type": "string", "minLength": 1 },
+    "revision": { "type": "integer", "minimum": 1 },
+    "status": { "enum": ["draft", "ready_for_handoff", "superseded"] },
+    "repository": {
+      "type": "object",
+      "required": ["remote", "branch", "baseline_sha"],
+      "properties": {
+        "remote": {
+          "oneOf": [
+            { "type": "string", "minLength": 1 },
+            { "type": "null" }
+          ]
+        },
+        "branch": { "type": "string", "minLength": 1 },
+        "baseline_sha": {
+          "oneOf": [
+            { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+            { "type": "null" }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "local": {
+      "type": "object",
+      "required": ["head", "working_tree", "baseline_state"],
+      "properties": {
+        "head": {
+          "oneOf": [
+            { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+            { "type": "null" }
+          ]
+        },
+        "working_tree": { "enum": ["clean", "dirty", "unknown"] },
+        "baseline_state": { "enum": ["uninitialized", "synced", "diverged", "unknown"] }
+      },
+      "additionalProperties": false
+    },
+    "relevance": {
+      "type": "object",
+      "required": ["relevant_to_task", "confidence", "evidence"],
+      "properties": {
+        "relevant_to_task": { "type": "boolean" },
+        "confidence": { "enum": ["low", "medium", "high"] },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      },
+      "additionalProperties": false
+    },
+    "changed_files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "change_type", "relevant_to_task", "evidence"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "change_type": { "enum": ["added", "modified", "deleted", "renamed", "untracked"] },
+          "relevant_to_task": { "type": "boolean" },
+          "evidence": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "summary": { "type": "string", "minLength": 1 },
+    "implications": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  },
+  "additionalProperties": false
+}

@@ -10,4 +10,6 @@ Only three outcomes are valid:
 
 An absent repository is valid when the handoff declares an uninitialized baseline. Filename, serialization, and repository-convention choices MAY be adaptations. Product thesis, scope, authority, routing model, Task Profile dimensions, and adapter support are not adaptable implementation details.
 
+`material_delta` means the local difference is relevant enough to affect the active task, route, or approved assumptions. A dirty working tree alone does not make it true. When local state is task-relevant and diverged, Codex emits a [Local Delta](local-delta.md) for Chat to evaluate. When the relationship is unknown and could be material, use a focused [Micro Consultation](micro-consultation.md) to establish the missing local fact.
+
 Schema: [`codex-preflight.schema.json`](../../schemas/codex-preflight.schema.json).

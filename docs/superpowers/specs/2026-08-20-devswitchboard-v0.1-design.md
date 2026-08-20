@@ -54,6 +54,10 @@ The v0.1 release is a public, documentation-first methodology. It is not a produ
 - **Route:** A recommendation assigning a phase to a surface and workflow resources.
 - **Semantic gate:** A decision or validation checkpoint defined by meaning, not by a tool-specific label.
 - **Bridge contract:** A structured artifact that carries intent or results across surfaces.
+- **Local Delta:** Minimum task-relevant Codex-to-Chat evidence about local truth that differs from the shared baseline.
+- **Micro Consultation:** One focused Chat/Codex fact exchange that does not transfer phase ownership.
+- **Context Depth:** How much information is required for sound reasoning.
+- **Context Source:** The authority or surface from which missing information must be acquired: `REMOTE`, `LOCAL`, or `INTENT`.
 - **Material event:** New evidence that can change intent, scope, risk, route, or execution strategy.
 - **Re-route:** A new routing decision prompted by a material event; it requires developer approval when it changes approved strategy.
 - **Adapter:** A mapping from DevSwitchboard phases and gates to a methodology's practices. v0.1 supports only Superpowers.
@@ -94,6 +98,18 @@ Routing is evaluated for the next incomplete phase, not once for the entire task
 
 The rule catalog may override a default using profile evidence. Every recommendation records the selected phase, surface, workflow, resources, rationale, approval requirement, and conditions that would invalidate the route.
 
+### Context depth and source
+
+Context Depth and Context Source are independent. High depth does not imply Codex consultation; low depth may still require Codex when the only material fact is local-only.
+
+Missing context is classified before it is routed:
+
+| Source | Acquisition owner | Rule |
+| --- | --- | --- |
+| `REMOTE` | Chat through GitHub/shared baseline | Acquire additional shared context without using Codex as a general fallback. |
+| `LOCAL` | Codex | Use focused Micro Consultation and, when task-relevant divergence exists, Local Delta. |
+| `INTENT` | Developer | Obtain an explicit developer decision; repository inference cannot decide intent. |
+
 ## 7. Semantic Gate Deduplication
 
 Before invoking a gate, the active surface MUST ask whether an equivalent semantic gate was already satisfied upstream.
@@ -113,6 +129,8 @@ When reusable, the downstream workflow records `reused` and the evidence source 
 The canonical contracts are:
 
 - `APPROVED_HANDOFF`: Chat-to-Codex transfer of approved intent, profile, strategy, and readiness evidence.
+- `LOCAL_DELTA`: Codex-to-Chat transfer of minimum task-relevant local divergence from the shared baseline. It carries facts and implications, not authority, and dirty state alone does not require it.
+- `MICRO_CONSULTATION`: Linked Chat/Codex request and response for one focused fact. Consultation is not a handoff, phase ownership remains unchanged, and fact-only responses record `decision: none`.
 - `CODEX_PREFLIGHT`: Codex comparison of that intent with the live workspace. Its only outcomes are `compatible`, `compatible_with_adaptation`, and `blocked_by_conflict`.
 - `CONFLICT_REPORT`: A stop artifact for a real intent-versus-feasibility conflict. It states evidence, impact, attempted safe adaptations, and decisions required from the developer.
 - `RE_ROUTE_REQUIRED`: A pause artifact emitted after a material event invalidates the approved route. It includes the trigger, affected assumptions, updated profile evidence, recommendation, and required approval.
@@ -126,11 +144,13 @@ Unknown required fields, contradictory authority, stale critical evidence, or fa
 Chat owns intent-facing phases:
 
 1. Discover requirements until material ambiguity is resolved.
-2. Create the seven-dimension Task Profile with evidence.
-3. Design within explicit scope and compare meaningful alternatives.
-4. Obtain developer approval for intent and execution strategy.
-5. Apply semantic gate deduplication.
-6. Emit `APPROVED_HANDOFF` only when intent is clear, scope is bounded, acceptance is testable, context is fresh enough, and unresolved conflicts are absent.
+2. Classify missing context as `REMOTE`, `LOCAL`, or `INTENT` and acquire it from the correct authority; Codex consultation is last-mile acquisition for local-only facts.
+3. Create the seven-dimension Task Profile with evidence.
+4. Design within explicit scope and compare meaningful alternatives.
+5. Obtain developer approval for intent and execution strategy.
+6. Apply semantic gate deduplication.
+7. Evaluate a returned Local Delta for freshness and material events without treating it as a handoff or authorization.
+8. Emit `APPROVED_HANDOFF` only when intent is clear, scope is bounded, acceptance is testable, context is fresh enough, and unresolved conflicts are absent.
 
 Chat does not claim repository compatibility without Codex preflight.
 
@@ -140,14 +160,17 @@ Codex owns repository-facing phases:
 
 1. Treat the approved handoff as intent truth.
 2. Inspect the local baseline and run `CODEX_PREFLIGHT`.
-3. Persist the approved specification before implementation.
-4. Create a repository-grounded implementation plan.
-5. Execute the approved strategy without reopening satisfied semantic gates.
-6. Emit `CONFLICT_REPORT` for an actual intent-versus-feasibility conflict.
-7. Emit `RE_ROUTE_REQUIRED` and wait for developer approval before a material strategy change.
-8. Review implemented artifacts against intent and contracts.
-9. Run fresh verification; final verification cannot be deduplicated.
-10. Update `WORK_STATE` and hand control back to the developer.
+3. Answer focused `LOCAL` Micro Consultations with repository facts, evidence, implications, and no intent decision.
+4. Emit Local Delta when task-relevant local truth differs from the shared baseline; do not emit it for dirtiness alone.
+5. Persist the approved specification before implementation.
+6. Create a repository-grounded implementation plan.
+7. Execute the approved strategy without reopening satisfied semantic gates.
+8. Pause at an approved Local Delta checkpoint until Chat evaluates freshness and material events through the developer.
+9. Emit `CONFLICT_REPORT` for an actual intent-versus-feasibility conflict.
+10. Emit `RE_ROUTE_REQUIRED` and wait for developer approval before a material strategy change.
+11. Review implemented artifacts against intent and contracts.
+12. Run fresh verification; final verification cannot be deduplicated.
+13. Update `WORK_STATE` and hand control back to the developer.
 
 ## 11. Rule-Based Routing
 
@@ -191,9 +214,11 @@ At every handoff or pause, `WORK_STATE` records enough information for a fresh o
 
 1. Identify authoritative specification and approved handoff.
 2. Confirm current phase and last completed semantic gate.
-3. Check workspace delta and evidence freshness.
-4. Resume the recorded next safe action if the route remains valid.
-5. Otherwise emit `RE_ROUTE_REQUIRED` or `CONFLICT_REPORT` as appropriate.
+3. Classify the repository baseline as `UNINITIALIZED`, `SYNCED`, `DIVERGED`, or `UNKNOWN` and evaluate task relevance separately from dirty state.
+4. Classify missing context by source and acquire focused evidence from its authority.
+5. Check workspace delta and evidence freshness.
+6. Resume the recorded next safe action if the route remains valid.
+7. Otherwise emit `RE_ROUTE_REQUIRED` or `CONFLICT_REPORT` as appropriate.
 
 ## 14. Measurement
 

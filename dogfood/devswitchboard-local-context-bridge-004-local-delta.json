@@ -1,0 +1,123 @@
+{
+  "$schema_file": "../schemas/local-delta.schema.json",
+  "schema": "local_delta",
+  "schema_version": "0.1",
+  "task_id": "devswitchboard-local-context-bridge-004",
+  "revision": 1,
+  "status": "ready_for_handoff",
+  "repository": {
+    "remote": "https://github.com/Sonos18/devswitchboard.git",
+    "branch": "main",
+    "baseline_sha": "55f7ba2fe6b31499532b82632697d439e95e78ef"
+  },
+  "local": {
+    "head": "55f7ba2fe6b31499532b82632697d439e95e78ef",
+    "working_tree": "dirty",
+    "baseline_state": "diverged"
+  },
+  "relevance": {
+    "relevant_to_task": true,
+    "confidence": "high",
+    "evidence": [
+      "Every listed path was created or modified in the isolated Dogfood #004 worktree after its branch was created from the approved remote baseline.",
+      "The changes persist the restorative intent and plan or implement and verify the required canonical Local Delta slice."
+    ]
+  },
+  "changed_files": [
+    {
+      "path": "docs/contracts/README.md",
+      "change_type": "modified",
+      "relevant_to_task": true,
+      "evidence": [
+        "The human contract index now identifies Local Delta as a Codex-to-Chat bridge."
+      ]
+    },
+    {
+      "path": "docs/contracts/local-delta.md",
+      "change_type": "added",
+      "relevant_to_task": true,
+      "evidence": [
+        "The new human contract defines minimum disclosure, task relevance, baseline behavior, and the authority boundary."
+      ]
+    },
+    {
+      "path": "docs/superpowers/plans/2026-08-20-local-context-bridge-restoration.md",
+      "change_type": "added",
+      "relevant_to_task": true,
+      "evidence": [
+        "The approved architectural workflow requires a persisted repository implementation plan with a hard checkpoint stop."
+      ]
+    },
+    {
+      "path": "docs/superpowers/specs/2026-08-20-local-context-bridge-restoration.md",
+      "change_type": "added",
+      "relevant_to_task": true,
+      "evidence": [
+        "The approved restorative intent is persisted before implementation as required by the handoff."
+      ]
+    },
+    {
+      "path": "examples/README.md",
+      "change_type": "modified",
+      "relevant_to_task": true,
+      "evidence": [
+        "The canonical example index now accounts for the Local Delta fixture."
+      ]
+    },
+    {
+      "path": "examples/local-delta.json",
+      "change_type": "added",
+      "relevant_to_task": true,
+      "evidence": [
+        "The canonical example proves the new schema can represent a focused task-relevant divergence without transferring a full diff."
+      ]
+    },
+    {
+      "path": "schemas/local-delta.schema.json",
+      "change_type": "added",
+      "relevant_to_task": true,
+      "evidence": [
+        "The closed Draft 2020-12 schema makes task, baseline, local state, relevance, changed-file, implication, and evidence semantics machine-validatable."
+      ]
+    },
+    {
+      "path": "scripts/verify.mjs",
+      "change_type": "modified",
+      "relevant_to_task": true,
+      "evidence": [
+        "The verifier now canonically binds local_delta to its schema, requires its artifacts, checks terminology, and enforces relevance invariants."
+      ]
+    },
+    {
+      "path": "tests/verify-regressions.mjs",
+      "change_type": "modified",
+      "relevant_to_task": true,
+      "evidence": [
+        "Regression cases reject missing record relevance evidence, unsupported per-file relevance claims, and permissive-schema selection."
+      ]
+    },
+    {
+      "path": "dogfood/devswitchboard-local-context-bridge-004-local-delta.json",
+      "change_type": "added",
+      "relevant_to_task": true,
+      "evidence": [
+        "This is the mandatory real cross-surface checkpoint artifact required by Dogfood #004."
+      ]
+    }
+  ],
+  "summary": "The isolated Dogfood #004 workspace has restored and validated the canonical Local Delta contract, schema, example, verifier binding, and workflow-integrity regressions against the approved remote baseline.",
+  "implications": [
+    "Local Delta is now a valid canonical contract and its repository validation path works.",
+    "The local work is materially relevant to Dogfood #004 and therefore requires this cross-surface checkpoint before implementation continues.",
+    "Micro Consultation contracts, the full missing-context classifier integration, context-depth/source clarification, wider baseline guidance, final dogfood record, fresh review, and final verification remain unfinished under plan Tasks 4 through 7.",
+    "No local finding changes developer authority, v0.1 scope, schema-version compatibility, or the approved single-agent architectural route; the current route remains feasible.",
+    "Implementation must remain paused until Chat evaluates freshness and material events and returns CONTINUE_CURRENT_ROUTE, RE_ROUTE_REQUIRED, or CONFLICT_REPORT through the developer."
+  ],
+  "evidence": [
+    "Preflight fetched origin/main and confirmed local main, origin/main, and the approved baseline all equal 55f7ba2fe6b31499532b82632697d439e95e78ef before isolation.",
+    "The isolated branch codex/dogfood-004-local-context-bridge was created directly from the approved baseline; no task commit has changed local HEAD.",
+    "The regression-first run failed before implementation because Local Delta had no canonical schema binding, then node tests/verify-regressions.mjs passed after the contract slice was implemented.",
+    "node scripts/verify.mjs passed structure, scope, JSON syntax, schema conformance, semantic invariants, Markdown links, terminology, routing rules, unresolved markers, and decision value gate checks.",
+    "git diff --check reported no whitespace errors before creation of this checkpoint artifact."
+  ]
+}

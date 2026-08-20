@@ -1,0 +1,25 @@
+{
+  "$schema_file": "../schemas/micro-consultation-response.schema.json",
+  "schema": "micro_consultation_response",
+  "schema_version": "0.1",
+  "task_id": "invoice-status-filter",
+  "revision": 1,
+  "consultation_id": "MC-invoice-status-001",
+  "status": "answered",
+  "requester": "chat",
+  "responder": "codex",
+  "phase_owner": "chat",
+  "consultation_type": "repository_fact",
+  "in_response_to": {
+    "consultation_id": "MC-invoice-status-001",
+    "request_revision": 1
+  },
+  "finding": "The local invoice-list query parameters are assembled in src/invoices/query.ts.",
+  "evidence": [
+    "src/invoices/query.ts exports buildInvoiceQuery and maps current list filters to query parameters."
+  ],
+  "implication": [
+    "Use that module as repository context when evaluating the already-approved status-filter design; no product decision follows from this fact alone."
+  ],
+  "decision": "none"
+}

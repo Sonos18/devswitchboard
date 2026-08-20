@@ -30,6 +30,8 @@ New to the workflow? Follow [Your First DevSwitchboard Run](docs/getting-started
 - [Task Profile](docs/contracts/task-profile.md) — assesses the seven canonical routing dimensions.
 - [Routing Recommendation](docs/contracts/routing-recommendation.md) — makes the selected phase route and its evidence explicit.
 - [Approved Handoff](docs/contracts/approved-handoff.md) — carries approved intent from Chat to Codex.
+- [Local Delta](docs/contracts/local-delta.md) — carries minimum task-relevant local divergence from Codex to Chat.
+- [Micro Consultation](docs/contracts/micro-consultation.md) — exchanges one focused fact without transferring phase ownership.
 - [Codex Preflight](docs/contracts/codex-preflight.md) — compares approved intent with the live workspace.
 - [Conflict Report](docs/contracts/conflict-report.md) — stops work for an actual intent-versus-feasibility conflict.
 - [Re-route Required](docs/contracts/re-route-required.md) — requests approval when a material event invalidates strategy.

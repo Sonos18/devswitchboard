@@ -1,0 +1,23 @@
+{
+  "$schema_file": "../schemas/micro-consultation-request.schema.json",
+  "schema": "micro_consultation_request",
+  "schema_version": "0.1",
+  "task_id": "invoice-status-filter",
+  "revision": 1,
+  "consultation_id": "MC-invoice-status-001",
+  "status": "answered",
+  "requester": "chat",
+  "responder": "codex",
+  "phase_owner": "chat",
+  "consultation_type": "repository_fact",
+  "focused_question": "Which local module currently assembles invoice-list query parameters?",
+  "why_it_matters": "The approved status-filter behavior needs the actual local integration point before Chat confirms that repository context is fresh.",
+  "requested_evidence": [
+    "Relevant file paths and a concise description of the existing responsibility."
+  ],
+  "authority": {
+    "may_change_intent": false,
+    "may_transfer_phase_ownership": false,
+    "boundary": "Codex may identify the repository integration point but may not select or change user-facing filter behavior."
+  }
+}

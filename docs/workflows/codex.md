@@ -12,6 +12,17 @@ Inspect the actual workspace, repository status, available toolchain, local inst
 
 An expected empty repository is compatible. A filename, standard serialization, or text convention is an adaptation; product thesis, scope, control model, phase routing, Task Profile dimensions, routing model, and adapter support are intent.
 
+### Local-context bridge
+
+Codex owns observed local repository facts, not general context acquisition or intent:
+
+- Respond to a `LOCAL` Micro Consultation with one focused finding, evidence, implication, and `decision: none`; the current phase owner remains unchanged.
+- Emit Local Delta when the workspace is `DIVERGED` and local changes are task-relevant. Dirty state alone is insufficient.
+- Do not emit Local Delta for irrelevant divergence. When state is `UNKNOWN` and could materially affect the task, perform or answer a focused local consultation first.
+- Leave `REMOTE` fact acquisition with Chat/GitHub and route `INTENT` questions to the developer.
+
+Context Depth is the amount of information required; Context Source is where it must be obtained. Neither substitutes for the other. Approved Handoff remains intent truth and the implementation-boundary artifact.
+
 ## 2. Persist and plan
 
 Persist the approved specification before implementation. Create a repository-grounded implementation plan with exact files, interfaces, checks, and scope constraints. Apply Semantic Gate Deduplication: an approved upstream design can satisfy design exploration, but it does not satisfy local preflight or final verification.
@@ -36,3 +47,4 @@ Run fresh verification after the last change. Final verification is never reused
 - Route invalidated: emit Re-route Required and pause strategy-dependent work.
 - Intent-versus-feasibility conflict: emit Conflict Report and pause mutating work.
 - Interrupted work with valid route: restore from Work State and continue its recorded next safe action.
+- Local Delta checkpoint: return the validated artifact, record Chat as next owner, and pause until the developer returns Chat’s continuation, re-route, or conflict decision.

@@ -45,7 +45,7 @@ Do not claim that the repository is locally compatible; Codex will perform
 that preflight after the handoff.
 ```
 
-Replace the example URL and branch with your project. For a private repository, provide Chat with authorized access or attach the relevant repository context. If Chat cannot establish sufficient context, keep the work in Chat and supply what it requests. Codex is not a fallback for general context acquisition.
+Replace the example URL and branch with your project. For a private repository, provide Chat with authorized access or attach the relevant repository context. When context is missing, classify its source: Chat acquires `REMOTE` facts from GitHub, a focused [Micro Consultation](contracts/micro-consultation.md) asks Codex for a `LOCAL` fact, and the developer answers `INTENT` questions. Codex is not a fallback for general context acquisition.
 
 The GitHub remote is the normal shared baseline for a synced project. It gives Chat and Codex a common revision to discuss; it does not replace developer intent or local preflight.
 
@@ -179,7 +179,7 @@ Only three outcomes are valid:
 | `compatible_with_adaptation` | Repository details such as filenames, component boundaries, or verification commands differ, but intent does not. | Codex records the bounded adaptations, then enters the selected path. |
 | `blocked_by_conflict` | Safe implementation would require a material change to approved intent. | Codex stops, emits a Conflict Report, and waits for a developer decision. |
 
-An unexpected filename is usually an adaptation. Discovering that the approved feature contradicts the product’s actual constraints may be a conflict. Missing general project context should have been resolved in Chat, not deferred to Codex.
+An unexpected filename is usually an adaptation. Discovering that the approved feature contradicts the product’s actual constraints may be a conflict. Missing general project context should have been resolved in Chat; only focused local-only facts belong in Codex consultation. If task-relevant local truth differs from the shared baseline, Codex returns a [Local Delta](contracts/local-delta.md) so Chat can refresh its assumptions without transferring implementation ownership.
 
 For either compatible outcome, Codex uses the [Superpowers adapter](adapters/superpowers.md) selected by the handoff. It reuses adequate approved intent work, performs only the execution steps appropriate to the route, and always runs fresh verification before claiming completion.
 
