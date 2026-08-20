@@ -1,0 +1,88 @@
+{
+  "$schema_file": "../schemas/dogfood-record.schema.json",
+  "schema": "dogfood_record",
+  "schema_version": "0.1",
+  "record_type": "run",
+  "task_id": "devswitchboard-first-run-guide-003",
+  "revision": 1,
+  "authority": [
+    "DevSwitchboard Dogfood #003 Approved Handoff revision 1",
+    "Synced baseline Sonos18/devswitchboard main at 542c9f9111f653d36265ae323cf33853e1297426",
+    "Separate developer authorization to commit and push Dogfood #003 to main"
+  ],
+  "approved_route": [
+    "Reuse approved requirement discovery, design, and brainstorming evidence",
+    "Run Codex Preflight against the synced local and remote baseline",
+    "Implement one bounded onboarding walkthrough inline without subagents or isolation",
+    "Run proportionate inline acceptance review and fresh repository verification",
+    "Return the uncommitted local delta for developer review"
+  ],
+  "execution_strategy": {
+    "implementation_subagents": false,
+    "review_subagent": false,
+    "workspace_isolation": false,
+    "methodology_adapter": "superpowers"
+  },
+  "gates": {
+    "reused": [
+      "Approved context acquisition",
+      "Approved requirement discovery",
+      "Approved bounded design",
+      "Approved brainstorming evidence and execution strategy"
+    ],
+    "repeated": [
+      "Codex Preflight against local main and origin/main",
+      "Fresh final repository verification"
+    ]
+  },
+  "measurements": {
+    "phase_timings": [],
+    "clarification_loops": 0,
+    "re_routes": [],
+    "verification_failures": [],
+    "developer_overrides": []
+  },
+  "preflight": {
+    "outcome": "compatible",
+    "adaptations": [
+      "Place the focused walkthrough at docs/getting-started.md",
+      "Add a concise README discovery link and Dogfood kit index entry"
+    ],
+    "conflicts": []
+  },
+  "review": {
+    "status": "pass",
+    "findings": []
+  },
+  "verification": {
+    "status": "pass",
+    "checks": [
+      "Developer-perspective journey from raw requirement through Codex Preflight",
+      "Clear Chat, developer, Approved Handoff, and Codex responsibility boundaries",
+      "All three allowed Codex Preflight outcomes",
+      "Links to authoritative contracts, workflows, routing rules, and Superpowers adapter",
+      "No normative contract, schema, routing, tooling, or v0.1 scope change",
+      "Workflow-integrity regressions and full repository verification",
+      "Unstaged and staged Git whitespace checks"
+    ]
+  },
+  "findings": [],
+  "developer_controls": [
+    "Approved Handoff remains the implementation-boundary artifact",
+    "Developer retains final authority for material decisions",
+    "No implementation subagents or isolated worktree",
+    "No CLI, plugin, Skill, automated transfer, methodology adapter, or publication surface",
+    "No commit or push without separate authorization"
+  ],
+  "result": "pass",
+  "observations": [
+    "The supplied bounded route was accepted without re-routing.",
+    "Separate developer authorization was obtained before committing and pushing to main.",
+    "Consultation was limited to the existing README, Chat and Codex workflows, canonical contracts, routing rules, Superpowers adapter, examples, and dogfood conventions.",
+    "No developer clarification loop or implementation interruption occurred.",
+    "One inline self-review correction aligned the illustrative baseline excerpt with the existing Approved Handoff schema; no normative artifact changed.",
+    "Observed friction: the normative documents described each phase accurately but required a new reader to assemble the cross-surface journey themselves.",
+    "The existing Markdown-link and dogfood-schema checks covered the onboarding addition without verifier changes."
+  ],
+  "next_action": "developer_review"
+}

@@ -26,3 +26,4 @@ Records validate against [`dogfood-record.schema.json`](../schemas/dogfood-recor
 
 - [`devswitchboard-bootstrap-001.json`](devswitchboard-bootstrap-001.json) records the documentation-first repository bootstrap.
 - [`devswitchboard-shared-baseline-002.json`](devswitchboard-shared-baseline-002.json) records the pre-publication review, remediation, environment gate, and eventual shared-baseline transition.
+- [`devswitchboard-first-run-guide-003.json`](devswitchboard-first-run-guide-003.json) records the bounded first-run onboarding addition.

@@ -23,6 +23,8 @@ task → profile current evidence → route the next phase → developer approva
 
 Routing happens by phase. Chat normally owns requirement discovery, design, and specification. Codex normally owns local preflight, implementation planning, implementation, review, and verification. The developer owns consequential approvals and final acceptance.
 
+New to the workflow? Follow [Your First DevSwitchboard Run](docs/getting-started.md) for a concrete journey from a raw requirement in ChatGPT Chat to Codex Preflight.
+
 ## Core contracts
 
 - [Task Profile](docs/contracts/task-profile.md) — assesses the seven canonical routing dimensions.
