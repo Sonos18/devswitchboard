@@ -1,0 +1,36 @@
+{
+  "$schema_file": "../schemas/routing-case.schema.json",
+  "schema": "routing_case",
+  "schema_version": "0.1",
+  "title": "Correct a broken documentation link",
+  "task_profile": {
+    "$schema_file": "../schemas/task-profile.schema.json",
+    "schema": "task_profile",
+    "schema_version": "0.1",
+    "profile_status": "final",
+    "dimensions": {
+      "requirement_ambiguity": { "level": "low", "evidence": ["The target link and correct destination are explicit."] },
+      "scope_complexity": { "level": "low", "evidence": ["One Markdown link changes."] },
+      "repository_dependency": { "level": "low", "evidence": ["Only the local destination must be confirmed."] },
+      "regression_risk": { "level": "low", "evidence": ["No runtime behavior exists."] },
+      "parallelizability": { "level": "low", "evidence": ["The change is a single indivisible edit."] },
+      "security_sensitivity": { "level": "low", "evidence": ["The link targets a repository document."] },
+      "context_uncertainty": { "level": "low", "evidence": ["The live file and destination are available."] }
+    }
+  },
+  "routing_recommendation": {
+    "$schema_file": "../schemas/routing-recommendation.schema.json",
+    "schema": "routing_recommendation",
+    "schema_version": "0.1",
+    "task_id": "example-low-risk-doc-fix",
+    "revision": 1,
+    "phase": "implementation",
+    "surface": "codex",
+    "workflow": "direct_edit",
+    "resources": ["fresh link check"],
+    "matched_rule": "R012",
+    "rationale": ["Intent, scope, risk, and local context are all low."],
+    "developer_approval_required": false,
+    "invalidation_conditions": ["The destination is ambiguous or the edit expands beyond the link."]
+  }
+}

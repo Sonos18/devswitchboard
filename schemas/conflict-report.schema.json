@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://devswitchboard.dev/schemas/conflict-report.schema.json",
+  "title": "Conflict Report",
+  "type": "object",
+  "required": ["$schema_file", "schema", "schema_version", "task_id", "revision", "status", "conflicting_intent", "feasibility_evidence", "impact", "safe_adaptations_attempted", "affected_artifacts", "developer_decisions_required"],
+  "properties": {
+    "$schema_file": { "const": "../schemas/conflict-report.schema.json" },
+    "schema": { "const": "conflict_report" },
+    "schema_version": { "const": "0.1" },
+    "task_id": { "type": "string", "minLength": 1 },
+    "revision": { "type": "integer", "minimum": 1 },
+    "status": { "const": "waiting_for_developer" },
+    "conflicting_intent": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "feasibility_evidence": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "impact": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "safe_adaptations_attempted": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "affected_artifacts": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "developer_decisions_required": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+  },
+  "additionalProperties": false
+}

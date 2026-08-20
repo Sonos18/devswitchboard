@@ -1,0 +1,15 @@
+{
+  "$schema_file": "../schemas/verification-report.schema.json",
+  "schema": "verification_report",
+  "schema_version": "0.1",
+  "task_id": "example-verified-bootstrap",
+  "revision": 1,
+  "status": "pass",
+  "fresh_after_last_change": true,
+  "checks": [
+    { "criterion": "Repository structure", "method": "node scripts/verify.mjs", "result": "pass", "evidence": "All required paths were present and forbidden product surfaces absent." },
+    { "criterion": "Clean Git formatting", "method": "git diff --check and git diff --cached --check", "result": "pass", "evidence": "Both commands produced no whitespace errors." }
+  ],
+  "failed_criteria": [],
+  "developer_acceptance_required": true
+}

@@ -1,0 +1,140 @@
+{
+  "$schema_file": "../schemas/dogfood-record.schema.json",
+  "schema": "dogfood_record",
+  "schema_version": "0.1",
+  "record_type": "run",
+  "task_id": "devswitchboard-shared-baseline-002",
+  "revision": 2,
+  "authority": [
+    "Developer-approved ESTABLISH_SHARED_BASELINE workflow",
+    "Public GitHub repository devswitchboard authorized",
+    "Initial commit, origin configuration, and main push authorized",
+    "Developer-approved pre-publication remediation decisions dated 2026-08-20"
+  ],
+  "approved_route": [
+    "Fresh pre-publication review",
+    "Full repository verification",
+    "Exact initial-commit manifest inspection",
+    "Stop before publication if a publication-sensitive concern is found",
+    "Initial commit and public GitHub repository creation only after the publication gate passes",
+    "Local and remote baseline verification"
+  ],
+  "execution_strategy": {
+    "implementation_subagents": false,
+    "review_subagent": true,
+    "workspace_isolation": false,
+    "methodology_adapter": "superpowers"
+  },
+  "gates": {
+    "reused": [
+      "Bootstrap Dogfood #001 completion",
+      "Developer approval of public repository identity and publication operations"
+    ],
+    "repeated": [
+      "Fresh publication-hygiene review",
+      "Fresh security diff review",
+      "Focused workflow-integrity regression verification",
+      "Full repository verification",
+      "Exact initial-commit manifest inspection"
+    ]
+  },
+  "measurements": {
+    "phase_timings": [],
+    "clarification_loops": 0,
+    "re_routes": [],
+    "verification_failures": [],
+    "developer_overrides": []
+  },
+  "preflight": {
+    "outcome": "compatible_with_adaptation",
+    "adaptations": [
+      "Used the documented terminal security-scan fallback after the managed helper could not start; validation completed, but the finalizer rejected the aliased temporary path as noncanonical",
+      "Stopped before commit and remote creation when the publication gate found concerns"
+    ],
+    "conflicts": []
+  },
+  "review": {
+    "status": "findings_remediated",
+    "findings": [
+      "No repository-file secrets, credentials, private data, temporary files, unresolved markers, symlinks, binaries, or unintended artifacts were found.",
+      "Invalid public reporting contacts were remediated by deferring CODE_OF_CONDUCT.md and SECURITY.md until real private channels exist.",
+      "Public commit identity was remediated with repository-local Git configuration using the developer-approved GitHub noreply address.",
+      "The record-selected schema bypass was remediated with canonical schema binding and executable regressions.",
+      "The contradictory complete Work State was remediated with schema and semantic invariants plus executable regression coverage.",
+      "A fresh non-authoring reviewer found no remaining remediation or publication-content issues.",
+      "The invalid GitHub CLI credential stopped publication as required and was later restored before commit creation."
+    ]
+  },
+  "verification": {
+    "status": "pass",
+    "checks": [
+      "Required repository structure and v0.1 scope boundaries",
+      "JSON syntax and Draft 2020-12 schema conformance",
+      "Cross-field semantic invariants",
+      "Local Markdown links",
+      "Canonical terminology and seven Task Profile dimensions",
+      "Ordered routing rules and example rule references",
+      "Absence of unresolved markers",
+      "Apache-2.0 license and developer-owned decision-value gate",
+      "Workflow-integrity regression cases for schema selection and Work State completion",
+      "Unstaged and staged Git diff formatting"
+    ]
+  },
+  "findings": [
+    {
+      "type": "PUBLICATION_BLOCKER",
+      "area": "public_contact_channels",
+      "description": "CODE_OF_CONDUCT.md and SECURITY.md published reporting addresses on devswitchboard.dev, but the domain did not resolve in DNS.",
+      "correction": "Removed the two policy files and their README links from the initial publication set; later policy publication requires real configured channels.",
+      "status": "remediated"
+    },
+    {
+      "type": "PUBLICATION_BLOCKER",
+      "area": "commit_identity",
+      "description": "The configured Git author email is a personal Gmail address that would be recorded permanently in the public initial commit.",
+      "correction": "Configured the developer-approved GitHub noreply address in repository-local Git configuration only.",
+      "status": "remediated"
+    },
+    {
+      "type": "PUBLICATION_BLOCKER",
+      "area": "verifier_security",
+      "description": "A contributor-controlled record can select a permissive in-repository schema and make an unapproved Approved Handoff produce verification: PASS.",
+      "correction": "Bound each recognized record kind to its canonical repository schema and added regressions for in-repository and absolute external schema-selection tricks.",
+      "status": "remediated"
+    },
+    {
+      "type": "PUBLICATION_BLOCKER",
+      "area": "work_state_integrity",
+      "description": "A Work State can retain lifecycle_state complete while verification_state is failed and still produce verification: PASS.",
+      "correction": "Required passed verification for complete lifecycle state in both the Work State schema and the semantic verifier, with an executable failed-verification regression.",
+      "status": "remediated"
+    },
+    {
+      "type": "EXECUTION_BLOCKER",
+      "area": "github_authentication",
+      "description": "The GitHub CLI reports an invalid credential for the intended Sonos18 account.",
+      "correction": "Re-authenticated GitHub CLI and verified the active account as Sonos18 with public account ID 135192485.",
+      "status": "remediated"
+    }
+  ],
+  "developer_controls": [
+    "Publication-sensitive findings stop the workflow before commit or remote creation",
+    "Repository-local commit identity uses the developer-approved GitHub noreply address",
+    "Governance and private vulnerability reporting remain deferred until real channels are separately approved",
+    "No release, tag, package, Pages site, marketplace listing, or additional publication surface is authorized"
+  ],
+  "result": "fail",
+  "observations": [
+    "The local repository verification suite passed before the publication gate stopped the workflow.",
+    "The reviewed first-commit set contained 50 files before this evidence record was added.",
+    "The security scan validated five candidates, retained two medium-severity findings, and suppressed three candidates without material impact.",
+    "The security artifact finalizer stopped with a noncanonical-directory error; unsealed validation evidence remains in the temporary scan directory.",
+    "Developer decisions remediated both medium workflow-integrity findings without risk acceptance.",
+    "Focused regressions and the full repository verifier pass after remediation.",
+    "Fresh remediation review found no findings and no unintended publication artifacts or v0.1 scope expansion.",
+    "GitHub CLI authentication was restored and the active identity was verified as Sonos18 before publication.",
+    "No commit, remote, or push was created.",
+    "The project baseline remains UNINITIALIZED."
+  ],
+  "next_action": "create_initial_commit_and_public_repository"
+}

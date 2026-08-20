@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://devswitchboard.dev/schemas/re-route-required.schema.json",
+  "title": "Re-route Required",
+  "type": "object",
+  "required": ["$schema_file", "schema", "schema_version", "task_id", "revision", "status", "trigger", "affected_assumptions", "updated_profile_evidence", "affected_phases", "recommended_route", "alternatives_considered", "developer_approval_required"],
+  "properties": {
+    "$schema_file": { "const": "../schemas/re-route-required.schema.json" },
+    "schema": { "const": "re_route_required" },
+    "schema_version": { "const": "0.1" },
+    "task_id": { "type": "string", "minLength": 1 },
+    "revision": { "type": "integer", "minimum": 1 },
+    "status": { "const": "waiting_for_developer" },
+    "trigger": { "type": "string", "minLength": 1 },
+    "affected_assumptions": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "updated_profile_evidence": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "affected_phases": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "recommended_route": { "$ref": "routing-recommendation.schema.json" },
+    "alternatives_considered": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "developer_approval_required": { "const": true }
+  },
+  "additionalProperties": false
+}

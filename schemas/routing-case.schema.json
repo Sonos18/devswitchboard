@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://devswitchboard.dev/schemas/routing-case.schema.json",
+  "title": "Canonical Routing Case",
+  "type": "object",
+  "required": ["$schema_file", "schema", "schema_version", "title", "task_profile", "routing_recommendation"],
+  "properties": {
+    "$schema_file": { "const": "../schemas/routing-case.schema.json" },
+    "schema": { "const": "routing_case" },
+    "schema_version": { "const": "0.1" },
+    "title": { "type": "string", "minLength": 1 },
+    "task_profile": { "$ref": "task-profile.schema.json" },
+    "routing_recommendation": { "$ref": "routing-recommendation.schema.json" }
+  },
+  "additionalProperties": false
+}

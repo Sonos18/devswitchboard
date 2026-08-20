@@ -1,0 +1,29 @@
+{
+  "$schema_file": "../schemas/re-route-required.schema.json",
+  "schema": "re_route_required",
+  "schema_version": "0.1",
+  "task_id": "example-parallel-units",
+  "revision": 2,
+  "status": "waiting_for_developer",
+  "trigger": "PARALLEL_UNITS_DISCOVERED",
+  "affected_assumptions": ["Single-agent execution was approved before independent example packages were identified."],
+  "updated_profile_evidence": ["Parallelizability is now high because interfaces and files are stable and non-overlapping."],
+  "affected_phases": ["implementation"],
+  "recommended_route": {
+    "$schema_file": "../schemas/routing-recommendation.schema.json",
+    "schema": "routing_recommendation",
+    "schema_version": "0.1",
+    "task_id": "example-parallel-units",
+    "revision": 2,
+    "phase": "implementation",
+    "surface": "codex",
+    "workflow": "parallel_bounded_workers",
+    "resources": ["two independent implementation workers"],
+    "matched_rule": "R007",
+    "rationale": ["Stable independent units now make parallel execution beneficial."],
+    "developer_approval_required": true,
+    "invalidation_conditions": ["Files overlap or shared terminology changes."]
+  },
+  "alternatives_considered": ["Continue the approved single-agent route with lower orchestration cost."],
+  "developer_approval_required": true
+}

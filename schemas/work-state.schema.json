@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://devswitchboard.dev/schemas/work-state.schema.json",
+  "title": "Work State",
+  "type": "object",
+  "oneOf": [
+    {
+      "properties": {
+        "lifecycle_state": { "const": "complete" },
+        "verification_state": { "const": "passed" }
+      }
+    },
+    {
+      "properties": {
+        "lifecycle_state": { "enum": ["ready", "active", "waiting_for_developer", "blocked_by_conflict", "verification_failed"] }
+      }
+    }
+  ],
+  "required": ["$schema_file", "schema", "schema_version", "task_id", "revision", "lifecycle_state", "current_phase", "authoritative_artifacts", "active_route", "completed_gates", "reused_gates", "workspace_state", "verification_state", "next_safe_action", "blockers"],
+  "properties": {
+    "$schema_file": { "const": "../schemas/work-state.schema.json" },
+    "schema": { "const": "work_state" },
+    "schema_version": { "const": "0.1" },
+    "task_id": { "type": "string", "minLength": 1 },
+    "revision": { "type": "integer", "minimum": 1 },
+    "lifecycle_state": { "enum": ["ready", "active", "waiting_for_developer", "blocked_by_conflict", "verification_failed", "complete"] },
+    "current_phase": { "enum": ["requirement_discovery", "design", "specification", "codex_preflight", "implementation_planning", "implementation", "review", "verification", "handoff"] },
+    "authoritative_artifacts": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "active_route": { "$ref": "routing-recommendation.schema.json" },
+    "completed_gates": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "reused_gates": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "workspace_state": { "type": "string", "minLength": 1 },
+    "verification_state": { "enum": ["not_started", "in_progress", "passed", "failed"] },
+    "next_safe_action": { "type": "string", "minLength": 1 },
+    "blockers": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+  },
+  "additionalProperties": false
+}

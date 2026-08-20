@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://devswitchboard.dev/schemas/task-profile.schema.json",
+  "title": "Task Profile",
+  "type": "object",
+  "required": ["$schema_file", "schema", "schema_version", "profile_status", "dimensions"],
+  "properties": {
+    "$schema_file": { "const": "../schemas/task-profile.schema.json" },
+    "schema": { "const": "task_profile" },
+    "schema_version": { "const": "0.1" },
+    "profile_status": { "enum": ["draft", "final"] },
+    "dimensions": {
+      "type": "object",
+      "required": [
+        "requirement_ambiguity",
+        "scope_complexity",
+        "repository_dependency",
+        "regression_risk",
+        "parallelizability",
+        "security_sensitivity",
+        "context_uncertainty"
+      ],
+      "properties": {
+        "requirement_ambiguity": { "$ref": "#/$defs/dimension" },
+        "scope_complexity": { "$ref": "#/$defs/dimension" },
+        "repository_dependency": { "$ref": "#/$defs/dimension" },
+        "regression_risk": { "$ref": "#/$defs/dimension" },
+        "parallelizability": { "$ref": "#/$defs/dimension" },
+        "security_sensitivity": { "$ref": "#/$defs/dimension" },
+        "context_uncertainty": { "$ref": "#/$defs/dimension" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "dimension": {
+      "type": "object",
+      "required": ["level", "evidence"],
+      "properties": {
+        "level": { "enum": ["low", "medium", "high"] },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

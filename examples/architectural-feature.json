@@ -1,0 +1,36 @@
+{
+  "$schema_file": "../schemas/routing-case.schema.json",
+  "schema": "routing_case",
+  "schema_version": "0.1",
+  "title": "Bootstrap an architectural methodology repository",
+  "task_profile": {
+    "$schema_file": "../schemas/task-profile.schema.json",
+    "schema": "task_profile",
+    "schema_version": "0.1",
+    "profile_status": "final",
+    "dimensions": {
+      "requirement_ambiguity": { "level": "low", "evidence": ["The design and bootstrap scope are approved."] },
+      "scope_complexity": { "level": "high", "evidence": ["Contracts, workflows, rules, examples, and measurement artifacts must agree."] },
+      "repository_dependency": { "level": "low", "evidence": ["The baseline is intentionally uninitialized."] },
+      "regression_risk": { "level": "low", "evidence": ["There are no existing users or runtime behaviors."] },
+      "parallelizability": { "level": "medium", "evidence": ["Later examples can separate, but terminology and contracts must stabilize sequentially."] },
+      "security_sensitivity": { "level": "low", "evidence": ["The repository is methodology-first and holds no privileged runtime."] },
+      "context_uncertainty": { "level": "low", "evidence": ["Approved artifacts define the baseline and authority."] }
+    }
+  },
+  "routing_recommendation": {
+    "$schema_file": "../schemas/routing-recommendation.schema.json",
+    "schema": "routing_recommendation",
+    "schema_version": "0.1",
+    "task_id": "example-architectural-feature",
+    "revision": 1,
+    "phase": "implementation_planning",
+    "surface": "codex",
+    "workflow": "writing_plans_then_inline_execution",
+    "resources": ["approved specification", "single author", "fresh review context"],
+    "matched_rule": "R006",
+    "rationale": ["High cross-artifact complexity requires repository-grounded sequencing after approved design."],
+    "developer_approval_required": true,
+    "invalidation_conditions": ["Independent stable units make parallel authorship materially valuable."]
+  }
+}

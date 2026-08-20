@@ -1,0 +1,45 @@
+{
+  "$schema_file": "../schemas/dogfood-record.schema.json",
+  "schema": "dogfood_record",
+  "schema_version": "0.1",
+  "record_type": "template",
+  "task_id": "measurement-template",
+  "revision": 1,
+  "authority": [],
+  "approved_route": [],
+  "execution_strategy": {
+    "implementation_subagents": false,
+    "review_subagent": false,
+    "workspace_isolation": false,
+    "methodology_adapter": "superpowers"
+  },
+  "gates": {
+    "reused": [],
+    "repeated": []
+  },
+  "measurements": {
+    "phase_timings": [],
+    "clarification_loops": 0,
+    "re_routes": [],
+    "verification_failures": [],
+    "developer_overrides": []
+  },
+  "preflight": {
+    "outcome": "not_run",
+    "adaptations": [],
+    "conflicts": []
+  },
+  "review": {
+    "status": "not_run",
+    "findings": []
+  },
+  "verification": {
+    "status": "not_run",
+    "checks": []
+  },
+  "findings": [],
+  "developer_controls": [],
+  "result": "not_run",
+  "observations": [],
+  "next_action": "record_authority_and_approved_route"
+}

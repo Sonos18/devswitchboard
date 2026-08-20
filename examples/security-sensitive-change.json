@@ -1,0 +1,36 @@
+{
+  "$schema_file": "../schemas/routing-case.schema.json",
+  "schema": "routing_case",
+  "schema_version": "0.1",
+  "title": "Change credential-handling guidance",
+  "task_profile": {
+    "$schema_file": "../schemas/task-profile.schema.json",
+    "schema": "task_profile",
+    "schema_version": "0.1",
+    "profile_status": "final",
+    "dimensions": {
+      "requirement_ambiguity": { "level": "low", "evidence": ["Desired guidance and risk acceptance were explicitly approved before review routing."] },
+      "scope_complexity": { "level": "medium", "evidence": ["Policy, examples, and validation guidance change together."] },
+      "repository_dependency": { "level": "medium", "evidence": ["Existing trust-boundary language must remain consistent."] },
+      "regression_risk": { "level": "high", "evidence": ["Unsafe wording could cause downstream credential exposure."] },
+      "parallelizability": { "level": "low", "evidence": ["Policy and examples share one safety argument."] },
+      "security_sensitivity": { "level": "high", "evidence": ["The change directly governs secret handling."] },
+      "context_uncertainty": { "level": "medium", "evidence": ["Repository policy is known but current platform behavior needs confirmation."] }
+    }
+  },
+  "routing_recommendation": {
+    "$schema_file": "../schemas/routing-recommendation.schema.json",
+    "schema": "routing_recommendation",
+    "schema_version": "0.1",
+    "task_id": "example-security-sensitive-change",
+    "revision": 1,
+    "phase": "review",
+    "surface": "codex",
+    "workflow": "security_review_and_fresh_verification",
+    "resources": ["approved risk decision", "independent security review", "fresh verification"],
+    "matched_rule": "R005",
+    "rationale": ["High security sensitivity and regression risk justify independent review and explicit risk approval."],
+    "developer_approval_required": true,
+    "invalidation_conditions": ["Platform behavior changes or review reveals a broader trust boundary."]
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "$schema_file": "../schemas/approved-handoff.schema.json",
+  "schema": "approved_handoff",
+  "schema_version": "0.1",
+  "project": "devswitchboard",
+  "task_id": "devswitchboard-bootstrap-001",
+  "revision": 1,
+  "status": "ready_for_codex_preflight",
+  "task_class": "architectural",
+  "goal": "Bootstrap the initial open-source DevSwitchboard repository from approved Design Revision 2.",
+  "baseline": { "state": "uninitialized", "github_remote_available": false, "local_repository_available": false },
+  "context": { "depth": "medium", "freshness": "adequate", "local_delta_required": false },
+  "workflow_state": { "requirement_discovery": "completed", "design": "completed", "specification": "completed", "developer_approval": true },
+  "superpowers": { "brainstorming": { "satisfied_upstream": true, "source": "DevSwitchboard approved design revision 2" } },
+  "routing": {
+    "codex_preflight": { "active": true },
+    "implementation_planning": { "active": true, "owner": "codex" },
+    "implementation": { "owner": "codex", "subagents": false },
+    "review": { "active": true, "subagent": true },
+    "verification": { "active": true }
+  },
+  "execution": {
+    "isolation": { "recommended": false },
+    "methodology": { "adapter": "superpowers", "path": "architectural" }
+  },
+  "developer_decisions": { "routing_recommendation_approved": true, "implementation_subagents": false, "workspace_isolation": false },
+  "confidence": "high",
+  "task_profile": {
+    "$schema_file": "../schemas/task-profile.schema.json",
+    "schema": "task_profile",
+    "schema_version": "0.1",
+    "profile_status": "final",
+    "dimensions": {
+      "requirement_ambiguity": { "level": "low", "evidence": ["The v0.1 design was explicitly reviewed and approved."] },
+      "scope_complexity": { "level": "high", "evidence": ["Multiple canonical contracts, workflows, rules, examples, and measurements must agree."] },
+      "repository_dependency": { "level": "low", "evidence": ["The repository is intentionally greenfield."] },
+      "regression_risk": { "level": "low", "evidence": ["No existing runtime or users exist."] },
+      "parallelizability": { "level": "medium", "evidence": ["Core semantics are sequential; later examples may separate."] },
+      "security_sensitivity": { "level": "low", "evidence": ["v0.1 contains methodology rather than privileged runtime behavior."] },
+      "context_uncertainty": { "level": "low", "evidence": ["Approved artifacts define the current baseline."] }
+    }
+  },
+  "completed_gates": [
+    { "gate": "requirement_discovery", "status": "passed", "evidence_source": "approved handoff revision 1" },
+    { "gate": "design", "status": "approved", "evidence_source": "DevSwitchboard approved design revision 2" },
+    { "gate": "brainstorming", "status": "reused", "evidence_source": "approved design evidence" }
+  ],
+  "approved_strategy": { "implementation_subagents": false, "workspace_isolation": false, "review_subagent": true, "methodology_adapter": "superpowers" },
+  "scope": {
+    "included": ["OSS foundation", "core contracts", "Chat and Codex workflows", "routing rules", "Superpowers adapter", "canonical examples", "state and recovery", "dogfood kit"],
+    "excluded": ["CLI", "plugin", "web application", "multi-provider integration"]
+  },
+  "acceptance_criteria": ["Canonical artifacts are complete and consistent.", "Fresh verification passes after review."],
+  "verification_expectations": ["Repository structure", "JSON and Markdown consistency", "Terminology and example-to-contract consistency", "Clean Git formatting"],
+  "readiness": {
+    "intent_clear": "pass",
+    "material_decisions_resolved": "pass",
+    "scope_bounded": "pass",
+    "acceptance_testable": "pass",
+    "critical_uncertainty": "none",
+    "unresolved_conflicts": "none",
+    "developer_approval": true
+  }
+}

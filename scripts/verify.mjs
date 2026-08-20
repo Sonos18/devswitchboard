@@ -1,0 +1,377 @@
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const failures = [];
+const schemaCache = new Map();
+const canonicalSchemaFiles = new Map([
+  ["approved_handoff", "approved-handoff.schema.json"],
+  ["codex_preflight", "codex-preflight.schema.json"],
+  ["conflict_report", "conflict-report.schema.json"],
+  ["dogfood_record", "dogfood-record.schema.json"],
+  ["re_route_required", "re-route-required.schema.json"],
+  ["routing_case", "routing-case.schema.json"],
+  ["routing_recommendation", "routing-recommendation.schema.json"],
+  ["task_profile", "task-profile.schema.json"],
+  ["verification_report", "verification-report.schema.json"],
+  ["work_state", "work-state.schema.json"]
+]);
+const pinnedSchemaFiles = new Map([
+  ["examples/devswitchboard-approved-handoff.json", "approved-handoff.schema.json"]
+]);
+
+function fail(group, message) {
+  failures.push(`${group}: ${message}`);
+}
+
+function loadJson(file) {
+  try {
+    return JSON.parse(fs.readFileSync(file, "utf8"));
+  } catch (error) {
+    fail("JSON syntax", `${path.relative(root, file)}: ${error.message}`);
+    return null;
+  }
+}
+
+function loadSchema(file) {
+  const absolute = path.resolve(file);
+  if (!schemaCache.has(absolute)) schemaCache.set(absolute, loadJson(absolute));
+  return schemaCache.get(absolute);
+}
+
+function pointerValue(document, fragment) {
+  if (!fragment || fragment === "#") return document;
+  return fragment
+    .replace(/^#\//, "")
+    .split("/")
+    .map((part) => part.replace(/~1/g, "/").replace(/~0/g, "~"))
+    .reduce((value, key) => value?.[key], document);
+}
+
+function resolveReference(reference, schemaFile, rootSchema) {
+  if (reference.startsWith("#")) {
+    return { schema: pointerValue(rootSchema, reference), schemaFile, rootSchema };
+  }
+  const [relativeFile, fragment = ""] = reference.split("#");
+  const referencedFile = path.resolve(path.dirname(schemaFile), relativeFile);
+  const referencedRoot = loadSchema(referencedFile);
+  return {
+    schema: pointerValue(referencedRoot, fragment ? `#${fragment}` : "#"),
+    schemaFile: referencedFile,
+    rootSchema: referencedRoot
+  };
+}
+
+function sameValue(left, right) {
+  return JSON.stringify(left) === JSON.stringify(right);
+}
+
+function validate(value, schema, schemaFile, rootSchema, location = "$") {
+  const errors = [];
+  if (!schema) return [`${location}: referenced schema was not found`];
+
+  if (schema.$ref) {
+    const resolved = resolveReference(schema.$ref, schemaFile, rootSchema);
+    errors.push(...validate(value, resolved.schema, resolved.schemaFile, resolved.rootSchema, location));
+    schema = { ...schema };
+    delete schema.$ref;
+  }
+
+  if (schema.oneOf) {
+    const matches = schema.oneOf.filter((candidate) => validate(value, candidate, schemaFile, rootSchema, location).length === 0);
+    if (matches.length !== 1) errors.push(`${location}: expected exactly one oneOf branch, matched ${matches.length}`);
+  }
+
+  if (Object.hasOwn(schema, "const") && !sameValue(value, schema.const)) {
+    errors.push(`${location}: expected constant ${JSON.stringify(schema.const)}`);
+  }
+  if (schema.enum && !schema.enum.some((item) => sameValue(value, item))) {
+    errors.push(`${location}: expected one of ${schema.enum.map((item) => JSON.stringify(item)).join(", ")}`);
+  }
+
+  const typeMatches = {
+    object: value !== null && typeof value === "object" && !Array.isArray(value),
+    array: Array.isArray(value),
+    string: typeof value === "string",
+    boolean: typeof value === "boolean",
+    integer: Number.isInteger(value),
+    number: typeof value === "number" && Number.isFinite(value),
+    null: value === null
+  };
+  if (schema.type && !typeMatches[schema.type]) {
+    errors.push(`${location}: expected ${schema.type}`);
+    return errors;
+  }
+
+  if (typeMatches.object) {
+    for (const required of schema.required ?? []) {
+      if (!Object.hasOwn(value, required)) errors.push(`${location}: missing required property ${required}`);
+    }
+    for (const [key, child] of Object.entries(value)) {
+      if (schema.properties?.[key]) {
+        errors.push(...validate(child, schema.properties[key], schemaFile, rootSchema, `${location}.${key}`));
+      } else if (schema.additionalProperties === false) {
+        errors.push(`${location}: unexpected property ${key}`);
+      }
+    }
+  }
+
+  if (typeMatches.array) {
+    if (schema.minItems !== undefined && value.length < schema.minItems) {
+      errors.push(`${location}: expected at least ${schema.minItems} items`);
+    }
+    if (schema.maxItems !== undefined && value.length > schema.maxItems) {
+      errors.push(`${location}: expected at most ${schema.maxItems} items`);
+    }
+    if (schema.items) {
+      value.forEach((item, index) => errors.push(...validate(item, schema.items, schemaFile, rootSchema, `${location}[${index}]`)));
+    }
+  }
+
+  if (typeMatches.string) {
+    if (schema.minLength !== undefined && value.length < schema.minLength) {
+      errors.push(`${location}: expected at least ${schema.minLength} characters`);
+    }
+    if (schema.pattern && !new RegExp(schema.pattern).test(value)) {
+      errors.push(`${location}: does not match ${schema.pattern}`);
+    }
+  }
+
+  if ((typeMatches.integer || typeMatches.number) && schema.minimum !== undefined && value < schema.minimum) {
+    errors.push(`${location}: expected value >= ${schema.minimum}`);
+  }
+  return errors;
+}
+
+function walk(directory, predicate = () => true) {
+  const results = [];
+  if (!fs.existsSync(directory)) return results;
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    if (entry.name === ".git" || entry.name === "node_modules") continue;
+    const absolute = path.join(directory, entry.name);
+    if (entry.isDirectory()) results.push(...walk(absolute, predicate));
+    else if (predicate(absolute)) results.push(absolute);
+  }
+  return results;
+}
+
+function checkRequiredStructure() {
+  const required = [
+    "README.md", "LICENSE", "CONTRIBUTING.md",
+    "docs/superpowers/specs/2026-08-20-devswitchboard-v0.1-design.md",
+    "docs/superpowers/plans/2026-08-20-devswitchboard-bootstrap.md",
+    "docs/contracts/README.md", "docs/workflows/chat.md", "docs/workflows/codex.md",
+    "docs/routing/rules.md", "docs/adapters/superpowers.md", "docs/state-and-recovery.md",
+    "examples/low-risk-doc-fix.json", "examples/architectural-feature.json",
+    "examples/security-sensitive-change.json", "dogfood/measurement-template.json",
+    "examples/devswitchboard-approved-handoff.json", "examples/codex-preflight.json",
+    "examples/conflict-report.json", "examples/re-route-required.json",
+    "examples/work-state.json", "examples/verification-report.json",
+    "dogfood/devswitchboard-bootstrap-001.json"
+  ];
+  for (const relative of required) {
+    if (!fs.existsSync(path.join(root, relative))) fail("structure", `missing ${relative}`);
+  }
+  const forbidden = ["src/cli", ".codex-plugin", "app", "pages"];
+  for (const relative of forbidden) {
+    if (fs.existsSync(path.join(root, relative))) fail("scope", `forbidden v0.1 path exists: ${relative}`);
+  }
+}
+
+function checkJsonAndSchemas() {
+  for (const schemaFile of walk(path.join(root, "schemas"), (file) => file.endsWith(".json"))) loadSchema(schemaFile);
+  for (const directory of ["examples", "dogfood"]) {
+    for (const recordFile of walk(path.join(root, directory), (file) => file.endsWith(".json"))) {
+      const record = loadJson(recordFile);
+      if (!record) continue;
+      if (!record.$schema_file) {
+        fail("schema conformance", `${path.relative(root, recordFile)}: missing $schema_file`);
+        continue;
+      }
+      const schemaFile = path.resolve(path.dirname(recordFile), record.$schema_file);
+      const recordPath = path.relative(root, recordFile).split(path.sep).join("/");
+      const canonicalSchemaName = pinnedSchemaFiles.get(recordPath) ?? canonicalSchemaFiles.get(record.schema);
+      const canonicalSchemaFile = canonicalSchemaName && path.join(root, "schemas", canonicalSchemaName);
+      if (!canonicalSchemaFile || path.normalize(schemaFile) !== path.normalize(canonicalSchemaFile)) {
+        fail("schema conformance", `${path.relative(root, recordFile)}: noncanonical schema selection`);
+        continue;
+      }
+      if (!fs.existsSync(schemaFile)) {
+        fail("schema conformance", `${path.relative(root, recordFile)}: schema file does not exist`);
+        continue;
+      }
+      const schema = loadSchema(schemaFile);
+      for (const error of validate(record, schema, schemaFile, schema)) {
+        fail("schema conformance", `${path.relative(root, recordFile)} ${error}`);
+      }
+    }
+  }
+}
+
+function checkSemanticInvariants() {
+  const handoff = loadJson(path.join(root, "examples/devswitchboard-approved-handoff.json"));
+  if (handoff) {
+    if (handoff.status === "ready_for_codex_preflight" && handoff.task_profile?.profile_status !== "final") {
+      fail("semantic invariants", "ready Approved Handoff requires a final Task Profile");
+    }
+    if (handoff.developer_decisions?.implementation_subagents !== handoff.approved_strategy?.implementation_subagents) {
+      fail("semantic invariants", "Approved Handoff implementation-subagent decisions disagree");
+    }
+    if (handoff.developer_decisions?.workspace_isolation !== handoff.approved_strategy?.workspace_isolation) {
+      fail("semantic invariants", "Approved Handoff workspace-isolation decisions disagree");
+    }
+    if (handoff.routing?.implementation?.subagents !== handoff.approved_strategy?.implementation_subagents) {
+      fail("semantic invariants", "Approved Handoff routing and strategy disagree on implementation subagents");
+    }
+    if (handoff.routing?.review?.subagent !== handoff.approved_strategy?.review_subagent) {
+      fail("semantic invariants", "Approved Handoff routing and strategy disagree on review subagent use");
+    }
+    if (handoff.execution?.isolation?.recommended !== handoff.approved_strategy?.workspace_isolation) {
+      fail("semantic invariants", "Approved Handoff execution and strategy disagree on isolation");
+    }
+    for (const gate of handoff.completed_gates ?? []) {
+      if (gate.status === "reused" && /verification/i.test(gate.gate)) {
+        fail("semantic invariants", "final verification cannot be recorded as a reused gate");
+      }
+    }
+  }
+
+  const preflight = loadJson(path.join(root, "examples/codex-preflight.json"));
+  if (preflight) {
+    const blocked = preflight.outcome === "blocked_by_conflict";
+    if (blocked !== (preflight.conflicts?.length > 0)) {
+      fail("semantic invariants", "Codex Preflight outcome and conflicts array disagree");
+    }
+    if (blocked && !/conflict report/i.test(preflight.next_action)) {
+      fail("semantic invariants", "blocked Codex Preflight must direct the producer to a Conflict Report");
+    }
+  }
+
+  const reports = walk(path.join(root, "examples"), (file) => file.endsWith(".json"));
+  for (const file of reports) {
+    const record = loadJson(file);
+    if (record?.schema !== "verification_report") continue;
+    const failedChecks = record.checks.filter((check) => check.result === "fail");
+    if (record.status === "pass" && (failedChecks.length || record.failed_criteria.length)) {
+      fail("semantic invariants", `${path.relative(root, file)} passes with failed evidence`);
+    }
+    if (record.status === "fail" && !failedChecks.length && !record.failed_criteria.length) {
+      fail("semantic invariants", `${path.relative(root, file)} fails without failed evidence`);
+    }
+  }
+
+  for (const directory of ["examples", "dogfood"]) {
+    for (const file of walk(path.join(root, directory), (candidate) => candidate.endsWith(".json"))) {
+      const record = loadJson(file);
+      if (record?.schema === "work_state" && record.lifecycle_state === "complete" && record.verification_state !== "passed") {
+        fail("semantic invariants", `${path.relative(root, file)}: complete Work State requires passed verification`);
+      }
+    }
+  }
+
+  for (const file of walk(path.join(root, "dogfood"), (candidate) => candidate.endsWith(".json"))) {
+    const record = loadJson(file);
+    if (record?.result === "pass" && record.verification?.status !== "pass") {
+      fail("semantic invariants", `${path.relative(root, file)} passes without passing verification`);
+    }
+    if (record?.result === "pass" && !["pass", "findings_remediated"].includes(record.review?.status)) {
+      fail("semantic invariants", `${path.relative(root, file)} passes without completed review`);
+    }
+  }
+}
+
+function checkMarkdownLinks() {
+  const markdownFiles = walk(root, (file) => file.endsWith(".md"));
+  const linkPattern = /\[[^\]]*\]\(([^)]+)\)/g;
+  for (const file of markdownFiles) {
+    const content = fs.readFileSync(file, "utf8");
+    for (const match of content.matchAll(linkPattern)) {
+      const target = match[1].trim().replace(/^<|>$/g, "").split("#")[0];
+      if (!target || /^(https?:|mailto:)/i.test(target)) continue;
+      const absolute = path.resolve(path.dirname(file), decodeURIComponent(target));
+      if (!fs.existsSync(absolute)) fail("Markdown links", `${path.relative(root, file)} -> ${target}`);
+    }
+  }
+}
+
+function checkTerminologyAndRules() {
+  const docs = walk(root, (file) => file.endsWith(".md")).map((file) => fs.readFileSync(file, "utf8")).join("\n");
+  const terms = ["Task Profile", "Routing Recommendation", "Approved Handoff", "Codex Preflight", "Conflict Report", "Re-route Required", "Work State", "Verification Report"];
+  for (const term of terms) if (!docs.includes(term)) fail("terminology", `missing canonical term ${term}`);
+
+  const dimensions = ["requirement_ambiguity", "scope_complexity", "repository_dependency", "regression_risk", "parallelizability", "security_sensitivity", "context_uncertainty"];
+  const taskProfileSchema = fs.readFileSync(path.join(root, "schemas/task-profile.schema.json"), "utf8");
+  for (const dimension of dimensions) if (!taskProfileSchema.includes(`\"${dimension}\"`)) fail("terminology", `missing Task Profile dimension ${dimension}`);
+
+  const rulesText = fs.readFileSync(path.join(root, "docs/routing/rules.md"), "utf8");
+  const ruleIds = new Set([...rulesText.matchAll(/^## (R\d{3})/gm)].map((match) => match[1]));
+  const expected = Array.from({ length: 12 }, (_, index) => `R${String(index + 1).padStart(3, "0")}`);
+  for (const id of expected) if (!ruleIds.has(id)) fail("routing rules", `missing ${id}`);
+  for (const file of walk(path.join(root, "examples"), (candidate) => candidate.endsWith(".json"))) {
+    const record = loadJson(file);
+    const matched = record?.routing_recommendation?.matched_rule;
+    if (matched && !ruleIds.has(matched)) fail("routing rules", `${path.relative(root, file)} references unknown ${matched}`);
+  }
+}
+
+function checkUnresolvedMarkers() {
+  const excluded = new Set([
+    path.normalize("docs/superpowers/plans/2026-08-20-devswitchboard-bootstrap.md"),
+    path.normalize("scripts/verify.mjs")
+  ]);
+  const pattern = /\b(TBD|TODO|FIXME|PLACEHOLDER)\b/;
+  for (const file of walk(root, (candidate) => /\.(md|json|jsonc|js|mjs)$/.test(candidate))) {
+    if (excluded.has(path.normalize(path.relative(root, file)))) continue;
+    const lines = fs.readFileSync(file, "utf8").split(/\r?\n/);
+    lines.forEach((line, index) => {
+      if (pattern.test(line)) fail("unresolved markers", `${path.relative(root, file)}:${index + 1}`);
+    });
+  }
+}
+
+function checkDecisionValueGate() {
+  const license = fs.readFileSync(path.join(root, "LICENSE"), "utf8");
+  if (!license.startsWith("Apache License\n") || !license.includes("Version 2.0, January 2004") || !license.includes("3. Grant of Patent License.")) {
+    fail("decision value gate", "LICENSE is not the canonical Apache License 2.0 text");
+  }
+
+  const readme = fs.readFileSync(path.join(root, "README.md"), "utf8");
+  if (!readme.includes("Apache License 2.0") || /MIT License/i.test(readme)) {
+    fail("decision value gate", "README does not identify Apache License 2.0 exclusively");
+  }
+
+  const rules = fs.readFileSync(path.join(root, "docs/routing/rules.md"), "utf8").toLowerCase();
+  for (const term of ["licensing", "legal terms", "publication policy", "ownership", "distribution rights", "intent", "developer approval"]) {
+    if (!rules.includes(term)) fail("decision value gate", `R001 legal/distribution intent rule is missing ${term}`);
+  }
+
+  const dogfood = loadJson(path.join(root, "dogfood/devswitchboard-bootstrap-001.json"));
+  const finding = dogfood?.findings?.find((item) => item.type === "ROUTER_ERROR" && item.area === "decision_value_gate");
+  if (!finding || finding.status !== "remediated") {
+    fail("decision value gate", "Dogfood #001 lacks the remediated ROUTER_ERROR finding");
+  }
+}
+
+const groupsBefore = () => new Set(failures.map((item) => item.split(":")[0]));
+checkRequiredStructure();
+checkJsonAndSchemas();
+checkSemanticInvariants();
+checkMarkdownLinks();
+checkTerminologyAndRules();
+checkUnresolvedMarkers();
+checkDecisionValueGate();
+
+const expectedGroups = ["structure", "scope", "JSON syntax", "schema conformance", "semantic invariants", "Markdown links", "terminology", "routing rules", "unresolved markers", "decision value gate"];
+const failedGroups = groupsBefore();
+for (const group of expectedGroups) {
+  if (!failedGroups.has(group)) console.log(`${group}: PASS`);
+}
+
+if (failures.length) {
+  for (const message of failures) console.error(message);
+  console.error(`verification: FAIL (${failures.length} issue${failures.length === 1 ? "" : "s"})`);
+  process.exitCode = 1;
+} else {
+  console.log("verification: PASS");
+}

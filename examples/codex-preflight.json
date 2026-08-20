@@ -1,0 +1,15 @@
+{
+  "$schema_file": "../schemas/codex-preflight.schema.json",
+  "schema": "codex_preflight",
+  "schema_version": "0.1",
+  "task_id": "devswitchboard-bootstrap-001",
+  "revision": 1,
+  "outcome": "compatible_with_adaptation",
+  "inspected_baseline": "uninitialized",
+  "local_repository_state": "Empty workspace with no Git repository, matching the declared baseline.",
+  "material_delta": false,
+  "adaptations": ["Use conventional repository paths and dependency-free JSON validation."],
+  "conflicts": [],
+  "reused_gates": ["Approved requirement discovery", "Approved Design Revision 2"],
+  "next_action": "Persist the approved specification and create the Codex implementation plan."
+}

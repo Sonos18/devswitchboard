@@ -1,0 +1,14 @@
+{
+  "$schema_file": "../schemas/conflict-report.schema.json",
+  "schema": "conflict_report",
+  "schema_version": "0.1",
+  "task_id": "example-runtime-request",
+  "revision": 2,
+  "status": "waiting_for_developer",
+  "conflicting_intent": ["The approved v0.1 scope excludes a CLI.", "The new request requires shipping a CLI inside the same bootstrap."],
+  "feasibility_evidence": ["A CLI would introduce production executable behavior and a new product surface."],
+  "impact": ["Proceeding would silently expand approved scope and invalidate verification expectations."],
+  "safe_adaptations_attempted": ["Considered documenting the CLI as separately approved future work."],
+  "affected_artifacts": ["Approved v0.1 design", "Implementation plan", "Acceptance criteria"],
+  "developer_decisions_required": ["Approve a new scoped design revision or retain the v0.1 exclusion."]
+}

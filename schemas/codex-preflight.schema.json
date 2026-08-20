@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://devswitchboard.dev/schemas/codex-preflight.schema.json",
+  "title": "Codex Preflight",
+  "type": "object",
+  "oneOf": [
+    {
+      "required": ["outcome", "conflicts", "next_action"],
+      "properties": {
+        "outcome": { "const": "blocked_by_conflict" },
+        "conflicts": { "type": "array", "minItems": 1 },
+        "next_action": { "type": "string", "pattern": "Conflict Report" }
+      }
+    },
+    {
+      "required": ["outcome", "conflicts"],
+      "properties": {
+        "outcome": { "enum": ["compatible", "compatible_with_adaptation"] },
+        "conflicts": { "type": "array", "maxItems": 0 }
+      }
+    }
+  ],
+  "required": ["$schema_file", "schema", "schema_version", "task_id", "revision", "outcome", "inspected_baseline", "local_repository_state", "material_delta", "adaptations", "conflicts", "reused_gates", "next_action"],
+  "properties": {
+    "$schema_file": { "const": "../schemas/codex-preflight.schema.json" },
+    "schema": { "const": "codex_preflight" },
+    "schema_version": { "const": "0.1" },
+    "task_id": { "type": "string", "minLength": 1 },
+    "revision": { "type": "integer", "minimum": 1 },
+    "outcome": { "enum": ["compatible", "compatible_with_adaptation", "blocked_by_conflict"] },
+    "inspected_baseline": { "enum": ["uninitialized", "initialized"] },
+    "local_repository_state": { "type": "string", "minLength": 1 },
+    "material_delta": { "type": "boolean" },
+    "adaptations": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "conflicts": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "reused_gates": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "next_action": { "type": "string", "minLength": 1 }
+  },
+  "additionalProperties": false
+}

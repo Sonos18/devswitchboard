@@ -1,0 +1,101 @@
+{
+  "$schema_file": "../schemas/dogfood-record.schema.json",
+  "schema": "dogfood_record",
+  "schema_version": "0.1",
+  "record_type": "run",
+  "task_id": "devswitchboard-bootstrap-001",
+  "revision": 1,
+  "authority": [
+    "DevSwitchboard approved design revision 2",
+    "docs/superpowers/specs/2026-08-20-devswitchboard-v0.1-design.md",
+    "docs/superpowers/specs/2026-08-20-license-intent-update.md",
+    "docs/superpowers/plans/2026-08-20-devswitchboard-bootstrap.md"
+  ],
+  "approved_route": [
+    "Chat requirement discovery, design, and specification completed upstream",
+    "Codex preflight and implementation planning",
+    "Codex inline single-agent implementation",
+    "Fresh non-authoring subagent review",
+    "Fresh Codex verification",
+    "Developer review and final acceptance"
+  ],
+  "execution_strategy": {
+    "implementation_subagents": false,
+    "review_subagent": true,
+    "workspace_isolation": false,
+    "methodology_adapter": "superpowers"
+  },
+  "gates": {
+    "reused": [
+      "Requirement discovery from the approved handoff",
+      "Design brainstorming from approved Design Revision 2",
+      "Developer approval of initial implementation strategy"
+    ],
+    "repeated": []
+  },
+  "measurements": {
+    "phase_timings": [],
+    "clarification_loops": 0,
+    "re_routes": [],
+    "verification_failures": [],
+    "developer_overrides": []
+  },
+  "preflight": {
+    "outcome": "compatible_with_adaptation",
+    "adaptations": [
+      "Use conventional repository paths and focused document boundaries",
+      "Use JSON records that remain YAML 1.2-compatible for dependency-free verification",
+      "Add routing-case and dogfood-record wrapper schemas for coherent validation"
+    ],
+    "conflicts": []
+  },
+  "review": {
+    "status": "findings_remediated",
+    "findings": [
+      "Added ready-handoff cross-field and final-verification invariants.",
+      "Bound Codex Preflight outcomes to conflict evidence and next action.",
+      "Bound verification and dogfood pass results to passing evidence.",
+      "Aligned the security-sensitive example with prior developer risk approval.",
+      "Documented staged and unstaged Git formatting checks.",
+      "Updated custom JSON Schema validation to apply sibling keywords alongside $ref."
+    ]
+  },
+  "verification": {
+    "status": "pass",
+    "checks": [
+      "Required repository structure and v0.1 scope boundaries",
+      "JSON syntax and Draft 2020-12 schema conformance",
+      "Cross-field semantic invariants",
+      "Local Markdown links",
+      "Canonical terminology and seven Task Profile dimensions",
+      "Ordered routing rules and example rule references",
+      "Absence of unresolved markers",
+      "Apache-2.0 license and developer-owned decision-value gate",
+      "Unstaged and staged Git diff formatting"
+    ]
+  },
+  "findings": [
+    {
+      "type": "ROUTER_ERROR",
+      "area": "decision_value_gate",
+      "description": "OSS license selection was initially classified as an implementation adaptation even though licensing is a developer-owned legal and distribution decision.",
+      "correction": "Licensing, publication policy, ownership, legal terms, and comparable distribution decisions require explicit developer approval.",
+      "status": "remediated"
+    }
+  ],
+  "developer_controls": [
+    "Approved Design Revision 2 remains intent authority",
+    "No implementation subagents and no workspace isolation",
+    "Fresh review subagent is limited to non-authoring review",
+    "Developer approval is required before material re-routing",
+    "Developer retains final acceptance"
+  ],
+  "result": "pass",
+  "observations": [
+    "Semantic Gate Deduplication avoided repeating approved product brainstorming.",
+    "Sequential contract authorship preserved canonical terminology before examples were added.",
+    "Fresh review found no critical issues; all important and minor findings were remediated before final verification.",
+    "DEC-LICENSE-001 corrected the initial classification of license choice from implementation adaptation to developer-owned intent."
+  ],
+  "next_action": "developer_review"
+}
