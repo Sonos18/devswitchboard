@@ -1,0 +1,27 @@
+{
+  "$schema_file": "../schemas/micro-consultation-request.schema.json",
+  "schema": "micro_consultation_request",
+  "schema_version": "0.1",
+  "task_id": "devswitchboard-unknown-to-local-delta-011",
+  "revision": 1,
+  "consultation_id": "CONS-011-001",
+  "status": "answered",
+  "requester": "chat",
+  "responder": "codex",
+  "phase_owner": "codex",
+  "consultation_type": "repository_fact",
+  "focused_question": "Does the current Dogfood #011 isolated workspace contain a task-relevant local change to docs/getting-started.md relative to shared baseline 5072b99c5698db60c0f8b9dd4702924335affd3c, such that the workspace is now DIVERGED for this task?",
+  "why_it_matters": "Chat knows Stage 1 attempted a bounded draft but does not treat intended or attempted implementation as observed local truth. One focused repository fact is required before deciding whether a separate Local Delta has decision value.",
+  "requested_evidence": [
+    "Current local HEAD and whether it still equals the recorded shared baseline.",
+    "Working-tree status of docs/getting-started.md only.",
+    "Whether that target file differs locally from the recorded baseline.",
+    "If it differs, its change type and a concise factual statement of why the difference is relevant to Dogfood #011.",
+    "Enough evidence to classify the task-scoped local relation as synced, diverged, or unresolved without returning the full diff or file contents."
+  ],
+  "authority": {
+    "may_change_intent": false,
+    "may_transfer_phase_ownership": false,
+    "boundary": "Codex may report the focused observed repository fact and its factual implication. It must not choose the route, emit Local Delta, change intent, broaden inspection, or continue implementation."
+  }
+}

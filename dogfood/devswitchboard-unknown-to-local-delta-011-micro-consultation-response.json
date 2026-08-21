@@ -1,0 +1,29 @@
+{
+  "$schema_file": "../schemas/micro-consultation-response.schema.json",
+  "schema": "micro_consultation_response",
+  "schema_version": "0.1",
+  "task_id": "devswitchboard-unknown-to-local-delta-011",
+  "revision": 1,
+  "consultation_id": "CONS-011-001",
+  "status": "answered",
+  "requester": "chat",
+  "responder": "codex",
+  "phase_owner": "codex",
+  "consultation_type": "repository_fact",
+  "in_response_to": {
+    "consultation_id": "CONS-011-001",
+    "request_revision": 1
+  },
+  "finding": "The Dogfood #011 workspace HEAD remains at shared baseline 5072b99c5698db60c0f8b9dd4702924335affd3c, but docs/getting-started.md has an unstaged task-relevant modification. The task-scoped local relation is therefore DIVERGED.",
+  "evidence": [
+    "Local HEAD equals the recorded shared baseline: 5072b99c5698db60c0f8b9dd4702924335affd3c.",
+    "Target-only Git status reports docs/getting-started.md as modified in the working tree.",
+    "The target differs from the baseline as a modified file with 20 insertions and no deletions.",
+    "The added material addresses the approved Dogfood #011 positive bridge sequence, confirming that the divergence is relevant to this task."
+  ],
+  "implication": [
+    "Relevant local divergence is established with high confidence.",
+    "This consultation supplies a repository fact only. It does not choose the route, transfer phase ownership, or emit a Local Delta."
+  ],
+  "decision": "none"
+}

@@ -1,0 +1,45 @@
+{
+  "$schema_file": "../schemas/local-delta.schema.json",
+  "schema": "local_delta",
+  "schema_version": "0.1",
+  "task_id": "devswitchboard-unknown-to-local-delta-011",
+  "revision": 1,
+  "status": "ready_for_handoff",
+  "repository": {
+    "remote": "https://github.com/Sonos18/devswitchboard.git",
+    "branch": "main",
+    "baseline_sha": "5072b99c5698db60c0f8b9dd4702924335affd3c"
+  },
+  "local": {
+    "head": "5072b99c5698db60c0f8b9dd4702924335affd3c",
+    "working_tree": "dirty",
+    "baseline_state": "diverged"
+  },
+  "relevance": {
+    "relevant_to_task": true,
+    "confidence": "high",
+    "evidence": [
+      "CONS-011-001 established that the local onboarding draft differs from the shared baseline and directly implements the approved Dogfood #011 positive bridge-sequence example."
+    ]
+  },
+  "changed_files": [
+    {
+      "path": "docs/getting-started.md",
+      "change_type": "modified",
+      "relevant_to_task": true,
+      "evidence": [
+        "The pre-bridge snapshot identified this target as the only local implementation change, with 20 insertions and no deletions relative to the recorded baseline."
+      ]
+    }
+  ],
+  "summary": "The Stage 1 onboarding draft is task-relevant local implementation truth that is absent from the shared main baseline.",
+  "implications": [
+    "Chat now has the minimum established local context needed to evaluate whether the approved bounded route remains valid.",
+    "This Local Delta carries repository facts only; it does not choose a route, change approved intent, or transfer implementation ownership."
+  ],
+  "evidence": [
+    "Before any bridge product was created, the focused snapshot recorded HEAD equal to 5072b99c5698db60c0f8b9dd4702924335affd3c, a dirty working tree, and docs/getting-started.md as the sole modified path.",
+    "The pre-bridge target working-tree blob was 38a7f53263655ddf95a75a1a02ed754324ac3725.",
+    "The consultation request, response, and this Local Delta are bridge products created after that snapshot and are intentionally excluded from changed_files."
+  ]
+}

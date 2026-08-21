@@ -1,0 +1,104 @@
+{
+  "$schema_file": "../schemas/dogfood-record.schema.json",
+  "schema": "dogfood_record",
+  "schema_version": "0.1",
+  "record_type": "run",
+  "task_id": "devswitchboard-unknown-to-local-delta-011",
+  "revision": 1,
+  "authority": [
+    "DevSwitchboard Dogfood #011 Approved Handoff revision 1",
+    "Canonical Micro Consultation CONS-011-001 request and response",
+    "Ready-for-handoff Local Delta for Dogfood #011",
+    "Chat route evaluation CONTINUE_CURRENT_ROUTE",
+    "Shared baseline Sonos18/devswitchboard main at 5072b99c5698db60c0f8b9dd4702924335affd3c"
+  ],
+  "approved_route": [
+    "Reuse approved requirement discovery, design, specification, routing, and bounded execution strategy",
+    "Create an isolated workspace from the exact shared baseline and run compatible Codex Preflight",
+    "Create the bounded onboarding draft, then stop at the planned context-refresh checkpoint",
+    "Use one focused Micro Consultation to establish whether task-relevant local divergence exists",
+    "Materialize a separate minimum-disclosure Local Delta after the consultation establishes relevant DIVERGED state",
+    "Return the Local Delta to Chat for route evaluation without choosing the result in Codex",
+    "Resume from the checkpoint after Chat returns CONTINUE_CURRENT_ROUTE",
+    "Complete Dogfood evidence, inline review, and fresh final verification without Git publication"
+  ],
+  "execution_strategy": {
+    "implementation_subagents": false,
+    "review_subagent": false,
+    "workspace_isolation": true,
+    "methodology_adapter": "superpowers"
+  },
+  "gates": {
+    "reused": [
+      "Approved requirement discovery, design, specification, and bounded route",
+      "Compatible Codex Preflight and clean baseline verification",
+      "Stage 1 onboarding draft and planned context-refresh checkpoint",
+      "CONS-011-001 repository fact and ready-for-handoff Local Delta",
+      "Chat route evaluation CONTINUE_CURRENT_ROUTE"
+    ],
+    "repeated": [
+      "Checkpoint inventory and bridge-artifact preservation check",
+      "Canonical bridge schema and semantic validation",
+      "Inline authority, route, disclosure, and scope review",
+      "Fresh final repository verification"
+    ]
+  },
+  "measurements": {
+    "phase_timings": [],
+    "clarification_loops": 1,
+    "re_routes": [],
+    "verification_failures": [],
+    "developer_overrides": []
+  },
+  "preflight": {
+    "outcome": "compatible",
+    "adaptations": [],
+    "conflicts": []
+  },
+  "review": {
+    "status": "pass",
+    "findings": []
+  },
+  "verification": {
+    "status": "pass",
+    "checks": [
+      "Canonical CONS-011-001 request and response conform to the existing v0.1 schemas and preserve decision none with phase_owner codex",
+      "Ready-for-handoff Local Delta conforms to the existing v0.1 schema and reports relevant task-scoped DIVERGED state",
+      "Local Delta changed_files contains only docs/getting-started.md from the retained pre-bridge implementation snapshot",
+      "Bridge artifact hashes confirm the consultation pair and Local Delta remained unchanged after Chat route evaluation",
+      "Onboarding example separates fact acquisition from minimum-disclosure context transfer and leaves route authority with Chat",
+      "Dogfood evidence records CONTINUE_CURRENT_ROUTE, no Re-route Required, no Conflict Report, and checkpoint resumption without repeated gates",
+      "No contract, schema, routing rule, verifier, or regression file changes",
+      "Exact six-file final task inventory",
+      "Workflow-integrity regressions and complete repository verifier",
+      "Independent JSON parsing, unresolved-marker scan, and unstaged and staged Git whitespace checks"
+    ]
+  },
+  "findings": [],
+  "developer_controls": [
+    "Chat did not infer local truth from intended or attempted implementation",
+    "CONS-011-001 retained phase_owner codex and decision none",
+    "The Micro Consultation established a repository fact but did not authorize or substitute for Local Delta",
+    "The separate Local Delta carried minimum task-relevant evidence and did not choose the route",
+    "Relevant divergence did not automatically trigger re-routing; Chat retained route-evaluation authority",
+    "No Re-route Required or Conflict Report was emitted",
+    "No contract, schema, routing rule, verifier, or regression implementation change",
+    "No implementation or review subagent",
+    "No commit, push, pull request, merge, tag, release, package, Pages, branch deletion, or worktree deletion"
+  ],
+  "result": "pass",
+  "observations": [
+    "The Chat-visible local relation began as UNKNOWN and potentially material after Stage 1 created an approved local draft that Chat could not observe from the shared baseline.",
+    "Codex stopped at the planned context-refresh checkpoint before emitting a bridge artifact automatically.",
+    "One focused Micro Consultation, CONS-011-001, observed local HEAD equal to the shared baseline and a task-relevant modified docs/getting-started.md, establishing task-scoped DIVERGED state with high confidence.",
+    "The consultation response recorded decision none and retained phase_owner codex; it established the fact without choosing a route or becoming a Local Delta.",
+    "After the fact was established, Chat separately authorized a ready-for-handoff Local Delta because the local truth had decision value for route evaluation.",
+    "The Local Delta used minimum disclosure: changed_files contained only docs/getting-started.md and excluded full diff, full file contents, unrelated workspace inventory, conversation history, and bridge products created after the pre-bridge snapshot.",
+    "Chat consumed the Local Delta and returned CONTINUE_CURRENT_ROUTE because the relevant divergence did not invalidate the approved task profile, bounded scope, or execution strategy.",
+    "No Re-route Required or Conflict Report was emitted.",
+    "Execution resumed from the existing checkpoint; requirement discovery, design, specification, preflight, Stage 1, and CONS-011-001 were not restarted.",
+    "Inline review found no authority conflation, automatic-reroute implication, normative contract redefinition, unnecessary disclosure, non-goal expansion, or unresolved finding.",
+    "Fresh final verification passed after the Dogfood record was finalized."
+  ],
+  "next_action": "developer_review"
+}

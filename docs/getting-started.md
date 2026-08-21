@@ -71,6 +71,26 @@ UNKNOWN and possibly material
 
 No Local Delta followed because there was no relevant divergence to communicate. The consultation acquired a fact; it did not transfer ownership, authorize implementation, or choose the route. If the same focused check had found task-relevant local truth that Chat needed, Codex could then provide a Local Delta for that separate cross-surface refresh.
 
+### When the focused answer establishes relevant divergence
+
+Approved implementation can create local truth that Chat cannot observe from the handoff or the shared baseline. Suppose Codex has begun an approved guide edit and Chat later needs to confirm that the bounded route still fits the work. Until Codex reports evidence, Chat should treat the local relation as `UNKNOWN`; intended or attempted implementation is not observed repository truth.
+
+Chat can first use a [Micro Consultation](contracts/micro-consultation.md) to ask one factual question: has the target document actually diverged from the shared baseline, and is that divergence relevant to the active task? If Codex establishes both facts, the response still keeps the phase owner unchanged and records `decision: none`. It establishes `DIVERGED` and relevant; it does not turn the consultation into a Local Delta or authorize a route decision.
+
+If Chat now needs the established local truth to evaluate the approved route, Codex sends a separate [Local Delta](contracts/local-delta.md) containing only the task-relevant baseline, local state, changed paths, summary, implications, and evidence. Do not substitute a full diff, terminal transcript, or unrelated workspace detail.
+
+```text
+UNKNOWN and possibly material
+  → focused MICRO_CONSULTATION
+  → actual local state: DIVERGED and relevant
+  → decision: none; phase owner unchanged
+  → Chat needs the established local truth
+  → separate, focused LOCAL_DELTA
+  → Chat confirms the route, requests re-routing, or surfaces a conflict
+```
+
+The two artifacts answer different questions. The consultation establishes whether the material local fact exists; the Local Delta carries the minimum established fact set needed for cross-surface reasoning. Neither artifact silently changes approved intent or execution strategy.
+
 ## 1. Start in regular ChatGPT Chat
 
 Open a normal ChatGPT conversation and provide the raw requirement plus the GitHub repository that represents the shared baseline. For example:
