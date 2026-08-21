@@ -1,0 +1,58 @@
+{
+  "$schema_file": "../schemas/work-state.schema.json",
+  "schema": "work_state",
+  "schema_version": "0.1",
+  "task_id": "devswitchboard-reroute-recovery-007",
+  "revision": 1,
+  "lifecycle_state": "waiting_for_developer",
+  "current_phase": "implementation",
+  "authoritative_artifacts": [
+    "DevSwitchboard Dogfood #007 Approved Handoff revision 1",
+    "dogfood/devswitchboard-reroute-recovery-007-re-route-required.json",
+    "docs/state-and-recovery.md"
+  ],
+  "active_route": {
+    "$schema_file": "../schemas/routing-recommendation.schema.json",
+    "schema": "routing_recommendation",
+    "schema_version": "0.1",
+    "task_id": "devswitchboard-reroute-recovery-007",
+    "revision": 2,
+    "phase": "implementation",
+    "surface": "chat",
+    "workflow": "evaluate_re_route_required",
+    "resources": [
+      "DevSwitchboard Dogfood #007 Approved Handoff revision 1",
+      "Validated Re-route Required revision 2",
+      "Updated Task Profile evidence",
+      "Preserved initial bounded documentation delta"
+    ],
+    "matched_rule": "R011",
+    "rationale": [
+      "A material scope and risk amendment invalidated the active bounded strategy, so only route evaluation may proceed until the developer approves a replacement."
+    ],
+    "developer_approval_required": true,
+    "invalidation_conditions": [
+      "A developer-approved Revision 2 replaces the paused route.",
+      "New evidence converts the route event into an intent-versus-feasibility conflict."
+    ]
+  },
+  "completed_gates": [
+    "Baseline synchronization",
+    "Isolated worktree creation",
+    "Baseline verification",
+    "Codex Preflight",
+    "Initial bounded explanatory implementation",
+    "Controlled material-event classification"
+  ],
+  "reused_gates": [
+    "Original requirement context that remains valid",
+    "Developer authority decisions from Approved Handoff revision 1",
+    "Fresh baseline evidence at 0dc57cd52f645b273d2d8e7d4c655af07c03d053"
+  ],
+  "workspace_state": "Isolated branch codex/dogfood-007-reroute-recovery contains one initial explanatory documentation delta plus Re-route Required, Work State, and Dogfood checkpoint evidence; no normative routing, schema, verifier, or regression change exists.",
+  "verification_state": "not_started",
+  "next_safe_action": "Return the validated Re-route Required artifact to Chat and the developer for route evaluation and explicit strategy approval.",
+  "blockers": [
+    "Developer approval of a revised task class and execution strategy is required before strategy-dependent work resumes."
+  ]
+}

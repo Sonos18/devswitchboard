@@ -1,0 +1,56 @@
+{
+  "$schema_file": "../schemas/work-state.schema.json",
+  "schema": "work_state",
+  "schema_version": "0.1",
+  "task_id": "devswitchboard-reroute-recovery-007",
+  "revision": 2,
+  "lifecycle_state": "active",
+  "current_phase": "implementation_planning",
+  "authoritative_artifacts": [
+    "dogfood/devswitchboard-reroute-recovery-007-re-route-required.json",
+    "dogfood/devswitchboard-reroute-recovery-007-approved-handoff-revision-2.json",
+    "docs/superpowers/specs/2026-08-21-reroute-lifecycle-enforcement.md",
+    "docs/superpowers/plans/2026-08-21-reroute-lifecycle-enforcement.md"
+  ],
+  "active_route": {
+    "$schema_file": "../schemas/routing-recommendation.schema.json",
+    "schema": "routing_recommendation",
+    "schema_version": "0.1",
+    "task_id": "devswitchboard-reroute-recovery-007",
+    "revision": 2,
+    "phase": "implementation_planning",
+    "surface": "codex",
+    "workflow": "architectural_repository_grounded_planning",
+    "resources": [
+      "Approved Handoff Revision 2",
+      "Re-route Required checkpoint",
+      "Existing isolated workspace",
+      "Sequential Codex implementation",
+      "Dedicated fresh review"
+    ],
+    "matched_rule": "R006",
+    "rationale": [
+      "The approved architectural reclassification activates repository-grounded implementation planning while preserving the checkpoint and valid Revision 1 work."
+    ],
+    "developer_approval_required": false,
+    "invalidation_conditions": [
+      "New evidence invalidates the approved Revision 2 strategy or shows that intent cannot be preserved safely."
+    ]
+  },
+  "completed_gates": [
+    "Revision 1 baseline and Codex Preflight",
+    "Revision 1 controlled material-event classification",
+    "Re-route Required checkpoint validation",
+    "Developer approval of Approved Handoff Revision 2"
+  ],
+  "reused_gates": [
+    "Original requirement context",
+    "Revision 1 explanatory recovery aid",
+    "Baseline evidence at 0dc57cd52f645b273d2d8e7d4c655af07c03d053",
+    "Existing isolated workspace"
+  ],
+  "workspace_state": "Approved Revision 2 resolved the pending route gate in the existing isolated worktree; historical checkpoint artifacts remain present and architectural planning is active.",
+  "verification_state": "not_started",
+  "next_safe_action": "Complete and self-review docs/superpowers/plans/2026-08-21-reroute-lifecycle-enforcement.md before regression-first implementation.",
+  "blockers": []
+}

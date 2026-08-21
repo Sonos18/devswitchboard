@@ -85,10 +85,10 @@ Rules are deterministic and evaluated in ascending identifier order. The first m
 ## R011 — Material event
 
 - **Match:** New evidence invalidates the active route, profile, or approved execution strategy.
-- **Recommend:** Emit Re-route Required, re-profile affected dimensions, and pause strategy-dependent work.
+- **Recommend:** Emit Re-route Required, re-profile affected dimensions, and pause strategy-dependent work in a corresponding `waiting_for_developer` Work State. That state names the Re-route Required artifact and permits only an approval-oriented next safe action.
 - **Rationale:** Routes are evidence-bound decisions.
-- **Approval:** Developer approval required for the replacement strategy.
-- **Invalidated by:** Approved re-route or evidence showing the event was non-material.
+- **Approval:** Developer approval is required for a replacement strategy. A later Approved Handoff supersedes the pending gate only when it belongs to the same task, is at least the checkpoint revision, and records an approved `re_route_required` gate whose evidence source is that exact checkpoint artifact. Resumed active or complete Work State names that Approved Handoff and uses its revision or later.
+- **Invalidated by:** A provenance-linked approved replacement route or evidence showing the event was non-material. Historical Re-route Required evidence remains canonical but is no longer pending after valid supersession. Evidence that intent cannot be preserved safely matches R004 instead.
 
 ## R012 — Low-risk direct execution
 

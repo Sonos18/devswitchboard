@@ -55,6 +55,26 @@ Dogfood #006 exercised this path with `node scripts/verify.mjs`. A task-scoped D
 
 The key distinction is semantic: a verification failure becomes Re-route Required only when new evidence invalidates the approved strategy, and it becomes a Conflict Report only when safe implementation can no longer preserve approved intent. Otherwise, recover from the current Work State.
 
+## Continue, re-route, or report a conflict?
+
+Classify what the new evidence invalidates before choosing a recovery path:
+
+| New evidence | Response | Why |
+| --- | --- | --- |
+| Approved intent and the execution strategy remain valid. | Continue the current route from [Work State](contracts/work-state.md). | No new decision or execution strategy is needed. An understood verification failure with a local cause belongs here: diagnose, correct, and verify. |
+| Approved intent remains feasible, but a material event invalidates the approved route or strategy. | Emit [Re-route Required](contracts/re-route-required.md) and wait for developer approval. | The work can still be done, but continuing would presuppose an unapproved strategy. |
+| Approved intent cannot be preserved through safe adaptation. | Emit a [Conflict Report](contracts/conflict-report.md) and stop. | The developer must resolve the intent-versus-feasibility conflict. |
+
+Do not infer a conflict merely because execution became harder, and do not silently expand a route merely because the intent remains feasible. Preserve completed and reusable gates in Work State so an approved recovery resumes from current evidence rather than restarting the task.
+
+### Re-route approval lifecycle
+
+When Re-route Required is pending, preserve the checkpoint and a matching `waiting_for_developer` Work State, then pause strategy-dependent implementation. The next safe action asks for route evaluation or approval; it does not tell an operator to plan, implement, continue, or resume under the unapproved strategy.
+
+A replacement Approved Handoff resolves the gate only through explicit provenance: the same task, an adequate revision, affirmative approval/readiness, and an approved `re_route_required` completed gate that names the exact checkpoint path. Every later same-task state naming that checkpoint remains subject to the lifecycle gate. A resumed snapshot names the unique highest approved handoff applicable to its route revision; this preserves older authorized snapshots even after a newer route is approved. The historical checkpoint stays in the record but no longer blocks approved work. If current authority is duplicated at the highest revision, or a resumed state omits its applicable authority artifact, stop rather than guess.
+
+This is distinct from infeasible intent. A route change can revise planning, task class, review level, sequencing, or resources while preserving intent. Evidence that safe implementation cannot preserve intent requires Conflict Report instead.
+
 ## Material events
 
 Material events include scope expansion, new security or regression evidence, an unexpected repository architecture, independent parallel units, missing required authority, failed acceptance criteria, or a change that invalidates verification. Editorial corrections that preserve contract semantics are not material events, but they still make final verification stale.

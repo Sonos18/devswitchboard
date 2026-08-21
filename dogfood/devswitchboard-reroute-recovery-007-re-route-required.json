@@ -1,0 +1,68 @@
+{
+  "$schema_file": "../schemas/re-route-required.schema.json",
+  "schema": "re_route_required",
+  "schema_version": "0.1",
+  "task_id": "devswitchboard-reroute-recovery-007",
+  "revision": 2,
+  "status": "waiting_for_developer",
+  "trigger": "Pending scope amendment changes the task from explanatory documentation to normative routing and verifier enforcement.",
+  "affected_assumptions": [
+    "Revision 1 limits implementation to explanatory documentation and Dogfood evidence.",
+    "Regression risk is low because no normative or executable verification behavior changes.",
+    "Bounded direct execution is adequate without architectural implementation planning.",
+    "No implementation-planning phase is active.",
+    "Proportionate inline review is adequate without a dedicated fresh reviewer."
+  ],
+  "updated_profile_evidence": [
+    "requirement_ambiguity: low; the pending amendment clearly requests normative routing and verifier enforcement.",
+    "scope_complexity: high; the amendment crosses routing rules, verifier semantics, regression fixtures, and explanatory documentation.",
+    "repository_dependency: high; safe specification and implementation depend on the current rule catalog, verifier control flow, schema boundaries, and regression conventions.",
+    "regression_risk: high; incorrect enforcement could permit invalid route continuation or reject valid recovery paths across canonical records.",
+    "parallelizability: low; routing semantics, enforcement behavior, and regression cases share one integrity boundary and should stabilize sequentially.",
+    "security_sensitivity: low; the amendment changes workflow integrity rather than privileged or security-sensitive runtime behavior.",
+    "context_uncertainty: low; the controlled amendment and live repository expose the affected surfaces and authority boundary."
+  ],
+  "affected_phases": [
+    "specification",
+    "implementation_planning",
+    "implementation",
+    "review",
+    "verification"
+  ],
+  "recommended_route": {
+    "$schema_file": "../schemas/routing-recommendation.schema.json",
+    "schema": "routing_recommendation",
+    "schema_version": "0.1",
+    "task_id": "devswitchboard-reroute-recovery-007",
+    "revision": 2,
+    "phase": "specification",
+    "surface": "chat",
+    "workflow": "approve_architectural_enforcement_strategy",
+    "resources": [
+      "Architectural task classification",
+      "Codex-owned repository-grounded implementation planning after approval",
+      "Sequential Codex implementation without implementation subagents",
+      "Dedicated fresh review context",
+      "Existing isolated workspace",
+      "Fresh full verification"
+    ],
+    "matched_rule": "R011",
+    "rationale": [
+      "The controlled amendment is a material event that invalidates the approved bounded strategy while leaving the intended enforcement feasible.",
+      "The replacement strategy should activate specification, architectural implementation planning, independent review, and fresh verification without repeating still-valid authority or baseline gates."
+    ],
+    "developer_approval_required": true,
+    "invalidation_conditions": [
+      "The developer rejects or revises the normative enforcement amendment.",
+      "Chat or repository evidence materially changes the affected profile dimensions or required resources.",
+      "Live feasibility evidence shows the approved intent cannot be preserved safely."
+    ]
+  },
+  "alternatives_considered": [
+    "Continue the bounded route: rejected because docs-only execution cannot deliver normative routing and verifier enforcement.",
+    "Expand scope silently: prohibited because it would bypass developer approval of task class, planning, risk controls, and review strategy.",
+    "Re-route to an architectural strategy: recommended because the intent remains feasible but requires specification, repository-grounded planning, dedicated fresh review, and fresh verification.",
+    "Emit Conflict Report: rejected because no evidence shows that safe implementation cannot preserve the pending intent."
+  ],
+  "developer_approval_required": true
+}
