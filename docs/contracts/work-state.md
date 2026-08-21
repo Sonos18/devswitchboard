@@ -8,6 +8,10 @@ For a pending [Re-route Required](re-route-required.md), the checkpoint Work Sta
 
 When an Approved Handoff supersedes that gate, resumed `active` or `complete` Work State names both the historical checkpoint and the unique highest approved replacement applicable to its own route revision. This provenance distinguishes an approved resume from silent continuation, while per-state revision selection keeps older authorized snapshots valid after a newer route is approved.
 
+For a pending [Conflict Report](conflict-report.md), the historical checkpoint uses the same task and report revision, names the exact report path, and remains `blocked_by_conflict`. Every same-task state whose route revision is equal to or greater than the report revision MUST name that report and remains subject to the same lifecycle gate; omitting provenance is not an escape. Until a provenance-linked Approved Handoff resolves the report, subject state cannot be `active` or `complete`, and every whole `next_safe_action` clause must match a canonical developer-decision/report-return form or explicit prohibition. Safe substrings with appended text fail closed. Pre-conflict snapshots are exempt.
+
+After resolution, the blocked checkpoint remains canonical. A resumed `active` or `complete` snapshot names the unique highest qualifying Approved Handoff whose revision does not exceed that snapshot's route revision. This preserves historical authority without turning old Conflict Reports into permanent blockers. Missing exact provenance or duplicate highest authority fails closed.
+
 When a pause depends on local-only context, `artifacts` and `next_safe_action` identify the applicable [Local Delta](local-delta.md) or linked [Micro Consultation](micro-consultation.md). The record carries references and state, not hidden conversation history, and consultation does not change the recorded phase owner.
 
 Schema: [`work-state.schema.json`](../../schemas/work-state.schema.json).

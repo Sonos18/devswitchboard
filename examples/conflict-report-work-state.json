@@ -1,0 +1,46 @@
+{
+  "$schema_file": "../schemas/work-state.schema.json",
+  "schema": "work_state",
+  "schema_version": "0.1",
+  "task_id": "example-runtime-request",
+  "revision": 2,
+  "lifecycle_state": "blocked_by_conflict",
+  "current_phase": "implementation",
+  "authoritative_artifacts": [
+    "examples/conflict-report.json"
+  ],
+  "active_route": {
+    "$schema_file": "../schemas/routing-recommendation.schema.json",
+    "schema": "routing_recommendation",
+    "schema_version": "0.1",
+    "task_id": "example-runtime-request",
+    "revision": 2,
+    "phase": "implementation",
+    "surface": "developer",
+    "workflow": "intent_conflict_resolution",
+    "resources": [
+      "examples/conflict-report.json"
+    ],
+    "matched_rule": "R004",
+    "rationale": [
+      "The approved v0.1 exclusion and the newly required CLI cannot both be preserved without a developer intent decision."
+    ],
+    "developer_approval_required": true,
+    "invalidation_conditions": [
+      "A provenance-linked Approved Handoff records the developer's resolution of the exact Conflict Report."
+    ]
+  },
+  "completed_gates": [
+    "Live feasibility analysis",
+    "Conflict Report validation"
+  ],
+  "reused_gates": [
+    "Approved v0.1 intent"
+  ],
+  "workspace_state": "Strategy-dependent work is paused; no repository mutation follows until the developer resolves the intent conflict.",
+  "verification_state": "not_started",
+  "next_safe_action": "Return the Conflict Report for a developer intent decision.",
+  "blockers": [
+    "Developer intent decision required."
+  ]
+}

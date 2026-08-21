@@ -213,6 +213,127 @@ function writeLaterActiveState(copyRoot, label, taskId, reroutePath, revision, a
   return statePath;
 }
 
+function writeConflictScenario(copyRoot, label, options = {}) {
+  const taskId = `regression-conflict-${label}`;
+  const conflictPath = `dogfood/regression-${label}-conflict-report.json`;
+  const workStatePath = `dogfood/regression-${label}-conflict-work-state.json`;
+  const resumedStatePath = `dogfood/regression-${label}-conflict-resumed-work-state.json`;
+  const approvalPath = `dogfood/regression-${label}-conflict-approved-handoff.json`;
+  const conflict = readJson(path.join(copyRoot, "dogfood", "devswitchboard-conflict-recovery-008-conflict-report.json"));
+  conflict.task_id = taskId;
+  conflict.revision = 2;
+  writeJson(path.join(copyRoot, conflictPath), conflict);
+
+  if (options.omitWorkState) return { taskId, conflictPath, workStatePath, resumedStatePath, approvalPath };
+
+  const workState = readJson(path.join(copyRoot, "dogfood", "devswitchboard-conflict-recovery-008-work-state.json"));
+  workState.task_id = taskId;
+  workState.revision = 2;
+  workState.authoritative_artifacts = [conflictPath];
+  workState.active_route.task_id = taskId;
+  workState.active_route.revision = 2;
+  workState.lifecycle_state = "blocked_by_conflict";
+  workState.current_phase = "implementation";
+  workState.verification_state = "not_started";
+  workState.next_safe_action = options.nextSafeAction
+    ?? "Return the Conflict Report for a developer intent decision.";
+  workState.blockers = ["Developer intent decision required."];
+
+  let stateToWrite = workState;
+  let statePathToWrite = workStatePath;
+  if (!options.approval && options.lifecycleState && options.lifecycleState !== "blocked_by_conflict") {
+    stateToWrite = structuredClone(workState);
+    stateToWrite.lifecycle_state = options.lifecycleState;
+    stateToWrite.current_phase = options.lifecycleState === "complete" ? "handoff" : "implementation";
+    stateToWrite.verification_state = options.lifecycleState === "complete" ? "passed" : "in_progress";
+    stateToWrite.next_safe_action = options.lifecycleState === "complete"
+      ? "developer_review"
+      : "Continue implementation while the developer decides.";
+    stateToWrite.blockers = [];
+  }
+
+  if (options.approval) {
+    const handoff = readJson(path.join(copyRoot, "dogfood", "devswitchboard-conflict-recovery-008-approved-handoff-revision-2.json"));
+    handoff.task_id = options.approvalTaskId ?? taskId;
+    handoff.revision = options.approvalRevision ?? 2;
+    if (options.unapproved) {
+      handoff.workflow_state.developer_approval = false;
+      handoff.readiness.developer_approval = false;
+    }
+    for (const gate of handoff.completed_gates) {
+      if (gate.gate === "conflict_report") {
+        gate.evidence_source = options.omitApprovalGateProvenance
+          ? "dogfood/unrelated-conflict-report.json"
+          : conflictPath;
+      }
+    }
+    writeJson(path.join(copyRoot, approvalPath), handoff);
+
+    if (["active", "complete"].includes(options.lifecycleState)) {
+      stateToWrite = structuredClone(workState);
+      statePathToWrite = resumedStatePath;
+      stateToWrite.lifecycle_state = options.lifecycleState;
+      stateToWrite.current_phase = options.lifecycleState === "complete" ? "handoff" : "implementation";
+      stateToWrite.verification_state = options.lifecycleState === "complete" ? "passed" : "in_progress";
+      stateToWrite.blockers = [];
+      stateToWrite.active_route.revision = options.approvalRevision ?? 2;
+      stateToWrite.active_route.surface = options.lifecycleState === "complete" ? "developer" : "codex";
+      stateToWrite.active_route.workflow = options.lifecycleState === "complete"
+        ? "developer_review"
+        : "approved_conflict_resolution_execution";
+      stateToWrite.active_route.developer_approval_required = false;
+      stateToWrite.next_safe_action = options.lifecycleState === "complete"
+        ? "developer_review"
+        : "Execute the approved intent revision.";
+      if (options.resumedReferencesApproval !== false) stateToWrite.authoritative_artifacts.push(approvalPath);
+    }
+
+    if (options.duplicateApproval) {
+      writeJson(path.join(copyRoot, `dogfood/regression-${label}-conflict-approved-handoff-duplicate.json`), handoff);
+    }
+  }
+
+  if (!options.omitHistoricalCheckpoint) writeJson(path.join(copyRoot, workStatePath), workState);
+  if (statePathToWrite !== workStatePath || options.omitHistoricalCheckpoint) {
+    writeJson(path.join(copyRoot, statePathToWrite), stateToWrite);
+  } else if (!options.omitHistoricalCheckpoint) {
+    writeJson(path.join(copyRoot, workStatePath), stateToWrite);
+  }
+  return { taskId, conflictPath, workStatePath, resumedStatePath, approvalPath };
+}
+
+function writeApprovedConflictResolution(copyRoot, label, taskId, conflictPath, revision) {
+  const approvalPath = `dogfood/regression-${label}-conflict-approved-handoff-revision-${revision}.json`;
+  const handoff = readJson(path.join(copyRoot, "dogfood", "devswitchboard-conflict-recovery-008-approved-handoff-revision-2.json"));
+  handoff.task_id = taskId;
+  handoff.revision = revision;
+  for (const gate of handoff.completed_gates) {
+    if (gate.gate === "conflict_report") gate.evidence_source = conflictPath;
+  }
+  writeJson(path.join(copyRoot, approvalPath), handoff);
+  return approvalPath;
+}
+
+function writeLaterConflictState(copyRoot, label, taskId, conflictPath, revision, approvalPath = null) {
+  const statePath = `dogfood/regression-${label}-conflict-active-state-revision-${revision}.json`;
+  const state = readJson(path.join(copyRoot, "dogfood", "devswitchboard-conflict-recovery-008-resumed-work-state.json"));
+  state.task_id = taskId;
+  state.revision = revision;
+  state.lifecycle_state = "active";
+  state.current_phase = "implementation";
+  state.authoritative_artifacts = [conflictPath];
+  if (approvalPath) state.authoritative_artifacts.push(approvalPath);
+  state.active_route.task_id = taskId;
+  state.active_route.revision = revision;
+  state.active_route.phase = "implementation";
+  state.active_route.workflow = `approved_conflict_revision_${revision}_execution`;
+  state.verification_state = "in_progress";
+  state.next_safe_action = `Execute approved conflict resolution Revision ${revision}.`;
+  state.blockers = [];
+  writeJson(path.join(copyRoot, statePath), state);
+  return statePath;
+}
+
 function expectRejected(name, mutate, expectedMessage) {
   const { temporaryRoot, copyRoot } = copyRepository();
   try {
@@ -306,6 +427,74 @@ for (const regression of [
         "approval-history",
         scenario.taskId,
         scenario.reroutePath,
+        3,
+        revision3Approval
+      );
+    }
+  },
+  {
+    name: "pending Conflict Report accepts blocked-by-conflict developer decision state",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "pending-conflict-blocked");
+    }
+  },
+  {
+    name: "pending Conflict Report accepts an explicit prohibition before returning the report",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "pending-conflict-prohibition", {
+        nextSafeAction: "Do not continue implementation; return the Conflict Report for a developer intent decision."
+      });
+    }
+  },
+  {
+    name: "approved conflict resolution permits provenance-linked active work",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "approved-conflict-resume", {
+        lifecycleState: "active",
+        approval: true
+      });
+    }
+  },
+  {
+    name: "approved conflict resolution preserves historical blocked evidence",
+    mutate(copyRoot) {
+      const scenario = writeConflictScenario(copyRoot, "conflict-history-blocked");
+      const approvalPath = writeApprovedConflictResolution(
+        copyRoot,
+        "conflict-history-blocked",
+        scenario.taskId,
+        scenario.conflictPath,
+        2
+      );
+      writeLaterConflictState(
+        copyRoot,
+        "conflict-history-blocked",
+        scenario.taskId,
+        scenario.conflictPath,
+        2,
+        approvalPath
+      );
+    }
+  },
+  {
+    name: "newer conflict approval does not retroactively invalidate historical approved state",
+    mutate(copyRoot) {
+      const scenario = writeConflictScenario(copyRoot, "conflict-approval-history", {
+        lifecycleState: "active",
+        approval: true
+      });
+      const revision3Approval = writeApprovedConflictResolution(
+        copyRoot,
+        "conflict-approval-history",
+        scenario.taskId,
+        scenario.conflictPath,
+        3
+      );
+      writeLaterConflictState(
+        copyRoot,
+        "conflict-approval-history",
+        scenario.taskId,
+        scenario.conflictPath,
         3,
         revision3Approval
       );
@@ -527,6 +716,257 @@ for (const regression of [
       rewriteJson(path.join(copyRoot, scenario.reroutePath), (reroute) => {
         reroute.trigger = "Live evidence shows safe implementation cannot preserve approved intent.";
       });
+    }
+  },
+  {
+    name: "pending Conflict Report requires a matching Work State",
+    expectedMessage: "pending Conflict Report requires a matching Work State",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "conflict-missing-state", { omitWorkState: true });
+    }
+  },
+  {
+    name: "pending Conflict Report rejects active implementation",
+    expectedMessage: "pending Conflict Report requires blocked_by_conflict Work State",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "conflict-pending-active", { lifecycleState: "active" });
+    }
+  },
+  {
+    name: "pending Conflict Report rejects premature completion",
+    expectedMessage: "pending Conflict Report cannot be complete",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "conflict-pending-complete", { lifecycleState: "complete" });
+    }
+  },
+  {
+    name: "pending Conflict Report rejects strategy-dependent next action",
+    expectedMessage: "pending Conflict Report next safe action must wait for a developer intent decision",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "conflict-pending-action", {
+        nextSafeAction: "Continue implementation while the developer decides."
+      });
+    }
+  },
+  {
+    name: "pending Conflict Report rejects later-revision active continuation",
+    expectedMessage: "pending Conflict Report requires blocked_by_conflict Work State",
+    mutate(copyRoot) {
+      const scenario = writeConflictScenario(copyRoot, "conflict-pending-later-active");
+      writeLaterConflictState(
+        copyRoot,
+        "conflict-pending-later-active",
+        scenario.taskId,
+        scenario.conflictPath,
+        3
+      );
+    }
+  },
+  {
+    name: "pending Conflict Report rejects a later active state that omits report provenance",
+    expectedMessage: "post-conflict Work State must reference Conflict Report",
+    mutate(copyRoot) {
+      const scenario = writeConflictScenario(copyRoot, "conflict-pending-omitted-report");
+      const statePath = writeLaterConflictState(
+        copyRoot,
+        "conflict-pending-omitted-report",
+        scenario.taskId,
+        scenario.conflictPath,
+        3
+      );
+      rewriteJson(path.join(copyRoot, statePath), (state) => {
+        state.authoritative_artifacts = ["docs/state-and-recovery.md"];
+      });
+    }
+  },
+  {
+    name: "unrelated task approval cannot resolve pending Conflict Report",
+    expectedMessage: "pending Conflict Report requires blocked_by_conflict Work State",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "conflict-unrelated-approval", {
+        lifecycleState: "active",
+        approval: true,
+        approvalTaskId: "regression-unrelated-conflict-task"
+      });
+    }
+  },
+  {
+    name: "approval without exact Conflict Report provenance cannot resolve pending conflict",
+    expectedMessage: "pending Conflict Report requires blocked_by_conflict Work State",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "conflict-unproven-approval", {
+        lifecycleState: "active",
+        approval: true,
+        omitApprovalGateProvenance: true
+      });
+    }
+  },
+  {
+    name: "unapproved handoff cannot resolve pending Conflict Report",
+    expectedMessage: "expected constant true",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "conflict-unapproved-handoff", {
+        lifecycleState: "active",
+        approval: true,
+        unapproved: true
+      });
+    }
+  },
+  {
+    name: "resumed conflict Work State must reference approved intent revision",
+    expectedMessage: "resumed conflict Work State must reference approved intent revision",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "conflict-missing-resume-provenance", {
+        lifecycleState: "active",
+        approval: true,
+        resumedReferencesApproval: false
+      });
+    }
+  },
+  {
+    name: "approved conflict resolution rejects active state omitting report and approval provenance",
+    expectedMessage: "post-conflict Work State must reference Conflict Report",
+    mutate(copyRoot) {
+      const scenario = writeConflictScenario(copyRoot, "conflict-approved-omitted-provenance");
+      const approvalPath = writeApprovedConflictResolution(
+        copyRoot,
+        "conflict-approved-omitted-provenance",
+        scenario.taskId,
+        scenario.conflictPath,
+        2
+      );
+      const statePath = writeLaterConflictState(
+        copyRoot,
+        "conflict-approved-omitted-provenance",
+        scenario.taskId,
+        scenario.conflictPath,
+        2,
+        approvalPath
+      );
+      rewriteJson(path.join(copyRoot, statePath), (state) => {
+        state.authoritative_artifacts = ["docs/state-and-recovery.md"];
+      });
+    }
+  },
+  {
+    name: "approved conflict resolution preserves a historical blocked checkpoint",
+    expectedMessage: "Conflict Report lifecycle requires historical blocked checkpoint Work State",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "conflict-missing-history", {
+        lifecycleState: "active",
+        approval: true,
+        omitHistoricalCheckpoint: true
+      });
+    }
+  },
+  {
+    name: "ambiguous highest approved conflict resolution is rejected",
+    expectedMessage: "ambiguous approved conflict resolution revision",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "conflict-ambiguous-approval", {
+        lifecycleState: "active",
+        approval: true,
+        duplicateApproval: true
+      });
+    }
+  },
+  {
+    name: "pending Conflict Report rejects build and ship after requesting approval",
+    expectedMessage: "pending Conflict Report next safe action must wait for a developer intent decision",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "conflict-action-build-ship", {
+        nextSafeAction: "Ask the developer to approve option A, then build and ship the change."
+      });
+    }
+  },
+  {
+    name: "pending Conflict Report rejects write and apply after requesting approval",
+    expectedMessage: "pending Conflict Report next safe action must wait for a developer intent decision",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "conflict-action-write-apply", {
+        nextSafeAction: "Request a developer decision, then write and apply the patch."
+      });
+    }
+  },
+  {
+    name: "pending Conflict Report rejects test and validate after requesting approval",
+    expectedMessage: "pending Conflict Report next safe action must wait for a developer intent decision",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "conflict-action-test-validate", {
+        nextSafeAction: "Return the Conflict Report for a developer decision, then test and validate the implementation."
+      });
+    }
+  },
+  {
+    name: "pending Conflict Report rejects alter appended to an approval request",
+    expectedMessage: "pending Conflict Report next safe action must wait for a developer intent decision",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "conflict-action-alter", {
+        nextSafeAction: "Ask the developer to approve option A and alter the implementation."
+      });
+    }
+  },
+  {
+    name: "pending Conflict Report rejects overwrite appended to a decision request",
+    expectedMessage: "pending Conflict Report next safe action must wait for a developer intent decision",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "conflict-action-overwrite", {
+        nextSafeAction: "Request a developer decision and overwrite the workflow record."
+      });
+    }
+  },
+  {
+    name: "pending Conflict Report rejects refactor appended to a report return",
+    expectedMessage: "pending Conflict Report next safe action must wait for a developer intent decision",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "conflict-action-refactor", {
+        nextSafeAction: "Return the Conflict Report for a developer intent decision and refactor the verifier."
+      });
+    }
+  },
+  {
+    name: "pending Conflict Report rejects affirmative refactor hidden after a prohibition",
+    expectedMessage: "pending Conflict Report next safe action must wait for a developer intent decision",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "conflict-action-prohibition-refactor", {
+        nextSafeAction: "Do not continue implementation and you should refactor the verifier; return the Conflict Report for a developer intent decision."
+      });
+    }
+  },
+  {
+    name: "pending Conflict Report rejects affirmative overwrite hidden after a prohibition",
+    expectedMessage: "pending Conflict Report next safe action must wait for a developer intent decision",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "conflict-action-prohibition-overwrite", {
+        nextSafeAction: "Do not continue implementation and you should overwrite the workflow record; return the Conflict Report for a developer intent decision."
+      });
+    }
+  },
+  {
+    name: "pending Conflict Report rejects a colon imperative after a prohibition",
+    expectedMessage: "pending Conflict Report next safe action must wait for a developer intent decision",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "conflict-action-prohibition-colon", {
+        nextSafeAction: "Do not continue implementation: refactor the verifier; return the Conflict Report for a developer intent decision."
+      });
+    }
+  },
+  {
+    name: "pending Conflict Report rejects a dash imperative after a prohibition",
+    expectedMessage: "pending Conflict Report next safe action must wait for a developer intent decision",
+    mutate(copyRoot) {
+      writeConflictScenario(copyRoot, "conflict-action-prohibition-dash", {
+        nextSafeAction: "Do not continue implementation — overwrite the workflow record; return the Conflict Report for a developer intent decision."
+      });
+    }
+  },
+  {
+    name: "intent conflict cannot be recorded without a same-task Conflict Report",
+    expectedMessage: "INTENT_CONFLICT requires Conflict Report",
+    mutate(copyRoot) {
+      const record = readJson(path.join(copyRoot, "dogfood", "devswitchboard-conflict-recovery-008.json"));
+      record.task_id = "regression-silent-intent-conflict";
+      writeJson(path.join(copyRoot, "dogfood", "regression-silent-intent-conflict.json"), record);
     }
   },
   {

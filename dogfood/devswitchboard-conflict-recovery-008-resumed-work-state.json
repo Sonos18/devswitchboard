@@ -1,0 +1,57 @@
+{
+  "$schema_file": "../schemas/work-state.schema.json",
+  "schema": "work_state",
+  "schema_version": "0.1",
+  "task_id": "devswitchboard-conflict-recovery-008",
+  "revision": 2,
+  "lifecycle_state": "active",
+  "current_phase": "implementation_planning",
+  "authoritative_artifacts": [
+    "dogfood/devswitchboard-conflict-recovery-008-conflict-report.json",
+    "dogfood/devswitchboard-conflict-recovery-008-approved-handoff-revision-2.json",
+    "docs/superpowers/specs/2026-08-21-conflict-lifecycle-enforcement.md",
+    "docs/superpowers/plans/2026-08-21-conflict-lifecycle-enforcement.md"
+  ],
+  "active_route": {
+    "$schema_file": "../schemas/routing-recommendation.schema.json",
+    "schema": "routing_recommendation",
+    "schema_version": "0.1",
+    "task_id": "devswitchboard-conflict-recovery-008",
+    "revision": 2,
+    "phase": "implementation_planning",
+    "surface": "codex",
+    "workflow": "architectural_repository_grounded_planning",
+    "resources": [
+      "Approved Handoff Revision 2",
+      "Conflict Report checkpoint",
+      "Existing isolated workspace",
+      "Sequential Codex implementation",
+      "Dedicated fresh review"
+    ],
+    "matched_rule": "R006",
+    "rationale": [
+      "The developer-approved intent revision resolved the Conflict Report by preserving machine enforcement and superseding only the documentation-only restriction."
+    ],
+    "developer_approval_required": false,
+    "invalidation_conditions": [
+      "New evidence invalidates the approved Revision 2 strategy or creates a new intent-versus-feasibility conflict."
+    ]
+  },
+  "completed_gates": [
+    "Revision 1 baseline and Codex Preflight",
+    "Revision 1 live feasibility analysis",
+    "Conflict Report checkpoint validation",
+    "Developer approval of Approved Handoff Revision 2"
+  ],
+  "reused_gates": [
+    "Requirement discovery",
+    "Revision 1 explanatory recovery aid",
+    "Revision 1 Conflict Report and blocked Work State",
+    "Baseline evidence at ee7499f4aea2a56bc3459f07f6b3ca5290c50650",
+    "Existing isolated workspace"
+  ],
+  "workspace_state": "Approved Revision 2 resolved the blocked conflict in the existing isolated worktree; the historical Conflict Report and blocked Work State remain present while architectural planning is active.",
+  "verification_state": "not_started",
+  "next_safe_action": "Execute docs/superpowers/plans/2026-08-21-conflict-lifecycle-enforcement.md using regression-first implementation.",
+  "blockers": []
+}
