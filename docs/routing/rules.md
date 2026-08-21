@@ -29,10 +29,10 @@ Rules are deterministic and evaluated in ascending identifier order. The first m
 ## R004 — Intent-versus-feasibility conflict
 
 - **Match:** Live evidence shows approved intent cannot be implemented safely without a material intent change.
-- **Recommend:** Emit Conflict Report and route the decision to the developer.
+- **Recommend:** Emit Conflict Report, preserve a matching `blocked_by_conflict` Work State, pause strategy-dependent work, and route the intent decision to the developer. Every same-task Work State at or after the conflict revision names the report; omission cannot bypass the gate.
 - **Rationale:** Adaptation cannot silently redesign intent.
-- **Approval:** Developer decision required.
-- **Invalidated by:** An approved intent revision or new feasibility evidence.
+- **Approval:** Developer decision required. A later Approved Handoff resolves the pending gate only when it belongs to the same task, is not older than the report, retains affirmative approval/readiness, and records an approved `conflict_report` gate whose evidence source is that exact report artifact. Resumed active or complete Work State names the applicable approved handoff.
+- **Invalidated by:** A unique provenance-linked approved intent revision or new feasibility evidence. Historical Conflict Report and blocked Work State evidence remain canonical but no longer block the approved route. Duplicate highest authority or missing provenance remains invalid.
 
 ## R005 — Security or regression sensitivity
 

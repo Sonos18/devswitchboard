@@ -1,0 +1,47 @@
+{
+  "$schema_file": "../schemas/conflict-report.schema.json",
+  "schema": "conflict_report",
+  "schema_version": "0.1",
+  "task_id": "devswitchboard-conflict-recovery-008",
+  "revision": 2,
+  "status": "waiting_for_developer",
+  "conflicting_intent": [
+    "A. Make the Conflict Report lifecycle machine-enforceable.",
+    "B. Keep this revision documentation-only and do not modify verifier code, regression tests, routing rules, contracts, schemas, executable tooling, or any other machine-enforcement surface."
+  ],
+  "feasibility_evidence": [
+    "scripts/verify.mjs implements semantic enforcement in checkSemanticInvariants by collecting canonical records and hard-coding cross-record rules for Re-route Required, Work State, Approved Handoff, Local Delta, consultation, and verification behavior; it does not collect or associate Conflict Report records with Work State.",
+    "schemas/conflict-report.schema.json validates the internal Conflict Report shape, while schemas/work-state.schema.json independently permits active and complete lifecycle values and constrains next_safe_action only to a non-empty string; neither schema can enforce the cross-record pending-conflict stop by itself.",
+    "tests/verify-regressions.mjs contains focused Re-route Required lifecycle regressions but no regression proving that a pending Conflict Report rejects active or complete strategy-dependent Work State.",
+    "In a disposable copy of the synchronized repository, node scripts/verify.mjs returned PASS for a schema-conforming waiting_for_developer Conflict Report paired with a same-task active Work State whose next action continued strategy-dependent implementation.",
+    "docs/routing/rules.md and the human contracts describe R004 and the conflict stop, but the repository has no configuration-driven rule engine or data-only hook that converts those prose or record values into executable lifecycle enforcement."
+  ],
+  "impact": [
+    "Documentation-only changes can clarify the intended lifecycle but cannot make invalid continuation fail machine verification.",
+    "Adding actual enforcement requires changing at least verifier behavior and regression coverage, both of which the active documentation-only constraint explicitly forbids.",
+    "Proceeding would require Codex to silently weaken either the machine-enforcement goal or the documentation-only constraint, exceeding Codex authority."
+  ],
+  "safe_adaptations_attempted": [
+    "Documentation-only adaptation: preserves the constraint and improves explanation, but cannot create machine enforcement.",
+    "Tests-only adaptation: prohibited by the constraint and, without verifier behavior, would only demonstrate an absent rule rather than enforce repository state.",
+    "Verifier-only adaptation: could implement cross-record enforcement, but directly violates the constraint forbidding verifier and executable-tooling changes and still needs regression evidence for confidence.",
+    "Routing, contract, or schema adaptation: prohibited by the active constraint; declarative clarification alone would also remain unenforced without verifier integration.",
+    "Existing-behavior reuse: rejected by the disposable-copy result proving that the current verifier accepts invalid active continuation during a pending conflict.",
+    "Configuration or data-only adaptation: unavailable because the verifier does not load semantic lifecycle rules from configuration or canonical records as executable policy."
+  ],
+  "affected_artifacts": [
+    "scripts/verify.mjs",
+    "tests/verify-regressions.mjs",
+    "docs/routing/rules.md",
+    "docs/contracts/conflict-report.md",
+    "docs/contracts/work-state.md",
+    "schemas/conflict-report.schema.json",
+    "schemas/work-state.schema.json"
+  ],
+  "developer_decisions_required": [
+    "A. Preserve the machine-enforcement goal and authorize changes to the necessary machine-enforcement surfaces.",
+    "B. Preserve the documentation-only constraint and reduce the goal to explanatory, non-enforced guidance.",
+    "C. Approve another requirement revision that makes the goal and constraints jointly feasible.",
+    "D. Cancel Dogfood #008."
+  ]
+}

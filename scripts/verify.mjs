@@ -187,12 +187,13 @@ function referencesArtifact(record, expectedPath) {
   return (record.authoritative_artifacts ?? []).some((value) => artifactPath(value) === expectedPath);
 }
 
-function isApprovalOrientedNextAction(action) {
-  if (typeof action !== "string") return false;
-  const requestsApproval = /(approv\w*|route evaluation|return\b.*re-?route)/i.test(action);
+const baseStrategyWorkPattern = "(?:start|begin)\\s+(?:the\\s+)?(?:implementation|execution|coding|planning|modification|work)|implement(?:s|ed|ing)?|execut(?:e|es|ed|ing)|modif(?:y|ies|ied|ying)|continu(?:e|es|ed|ing)|resum(?:e|es|ed|ing)|plan(?:s|ned|ning)?|cod(?:e|es|ed|ing)";
+const extendedStrategyWorkPattern = "|verif(?:y|ies|ied|ying)|complet(?:e|es|ed|ing)|build(?:s|ing|built)?|ship(?:s|ped|ping)?|edit(?:s|ed|ing)?|writ(?:e|es|ten|ing)|appl(?:y|ies|ied|ying)|patch(?:es|ed|ing)?|test(?:s|ed|ing)?|validat(?:e|es|ed|ing)|deploy(?:s|ed|ing)?|publish(?:es|ed|ing)?|commit(?:s|ted|ting)?|push(?:es|ed|ing)?|merg(?:e|es|ed|ing)|creat(?:e|es|ed|ing)|add(?:s|ed|ing)?|delet(?:e|es|ed|ing)|remov(?:e|es|ed|ing)|run(?:s|ning)?";
+
+function containsPositiveStrategyWork(action, includeCompletionWork = false) {
   const clauses = action.split(/[.;,]|\b(?:and then|but|then)\b/i);
-  const performsStrategyWork = clauses.some((clause) => {
-    const strategyMatches = [...clause.matchAll(/\b((?:start|begin)\s+(?:the\s+)?(?:implementation|execution|coding|planning|modification|work)|implement(?:s|ed|ing)?|execut(?:e|es|ed|ing)|modif(?:y|ies|ied|ying)|continu(?:e|es|ed|ing)|resum(?:e|es|ed|ing)|plan(?:s|ned|ning)?|cod(?:e|es|ed|ing))\b/gi)];
+  return clauses.some((clause) => {
+    const strategyMatches = [...clause.matchAll(new RegExp(`\\b(${baseStrategyWorkPattern}${includeCompletionWork ? extendedStrategyWorkPattern : ""})\\b`, "gi"))];
     let previousEnd = 0;
     let prohibitionActive = false;
     for (const strategyMatch of strategyMatches) {
@@ -205,7 +206,40 @@ function isApprovalOrientedNextAction(action) {
     }
     return false;
   });
-  return requestsApproval && !performsStrategyWork;
+}
+
+function isExplicitStrategyProhibition(clause) {
+  const match = /^(?:do not|don't|must not|may not|cannot|can't)\s+(.+)$/i.exec(clause);
+  if (!match) return false;
+  const prohibitedSegments = match[1].split(/\s+(?:and|or)\s+/i);
+  const workObjectToken = "(?:the|this|that|approved|current|old|new|replacement|strategy-dependent|repository|workflow|implementation|execution|coding|planning|modification|work|route|task|change|changes|code|patch|file|files|verifier|record|records)";
+  const prohibitedPredicate = new RegExp(
+    `^(?:${baseStrategyWorkPattern}${extendedStrategyWorkPattern})(?:\\s+${workObjectToken}){0,6}$`,
+    "i"
+  );
+  return prohibitedSegments.every((segment) => prohibitedPredicate.test(segment.trim()));
+}
+
+function isApprovalOrientedNextAction(action) {
+  if (typeof action !== "string") return false;
+  const requestsApproval = /(approv\w*|route evaluation|return\b.*re-?route)/i.test(action);
+  return requestsApproval && !containsPositiveStrategyWork(action);
+}
+
+function isDeveloperDecisionOrientedNextAction(action) {
+  if (typeof action !== "string") return false;
+  if (containsPositiveStrategyWork(action, true)) return false;
+  const clauses = action
+    .split(/[.;,]|\b(?:and then|but|then)\b/i)
+    .map((clause) => clause.trim())
+    .filter(Boolean);
+  return clauses.length > 0 && clauses.every((clause) => {
+    const explicitProhibition = isExplicitStrategyProhibition(clause);
+    const returnsReport = /^(?:return|send|present)\s+(?:(?:this|the)\s+)?conflict report(?:\s+to\s+(?:chat(?:\s+and\s+(?:the\s+)?developer)?|(?:the\s+)?developer))?(?:\s+for\s+(?:(?:a|the)\s+)?(?:non-mutating\s+)?(?:(?:developer|intent)\s+)*(?:decision|approval|resolution))?$/i.test(clause);
+    const requestsDeveloperDecision = /^ask\s+(?:the\s+)?developer\s+to\s+(?:decide|approve|resolve|choose|select)(?:\s+(?:the\s+)?(?:option(?:\s+[a-z0-9_-]+)?|resolution|intent|conflict))?$/i.test(clause)
+      || /^(?:ask|request|seek|await|wait for|obtain)\s+(?:(?:a|the)\s+)?developer\s+(?:for\s+)?(?:(?:a|the)\s+)?(?:intent\s+)?(?:decision|approval|resolution|choice|selection)$/i.test(clause);
+    return explicitProhibition || returnsReport || requestsDeveloperDecision;
+  });
 }
 
 function statesIntentInfeasible(record) {
@@ -242,7 +276,8 @@ function checkRequiredStructure() {
     "examples/low-risk-doc-fix.json", "examples/architectural-feature.json",
     "examples/security-sensitive-change.json", "dogfood/measurement-template.json",
     "examples/devswitchboard-approved-handoff.json", "examples/codex-preflight.json",
-    "examples/conflict-report.json", "examples/re-route-required.json",
+    "examples/conflict-report.json", "examples/conflict-report-work-state.json",
+    "examples/re-route-required.json",
     "examples/re-route-required-work-state.json",
     "examples/work-state.json", "examples/verification-report.json",
     "dogfood/devswitchboard-bootstrap-001.json",
@@ -430,6 +465,7 @@ function checkSemanticInvariants() {
 
   const records = collectRecords();
   const reroutes = records.filter(({ record }) => record.schema === "re_route_required");
+  const conflictReports = records.filter(({ record }) => record.schema === "conflict_report");
   const workStates = records.filter(({ record }) => record.schema === "work_state");
   const approvedHandoffs = records.filter(({ record }) => record.schema === "approved_handoff");
 
@@ -514,12 +550,108 @@ function checkSemanticInvariants() {
     }
   }
 
+  for (const conflictEntry of conflictReports) {
+    const conflict = conflictEntry.record;
+    const postConflictStates = workStates.filter(({ record }) =>
+      record.task_id === conflict.task_id
+      && record.active_route?.revision >= conflict.revision
+    );
+    const associatedStates = postConflictStates.filter(({ record }) =>
+      referencesArtifact(record, conflictEntry.path)
+    );
+    for (const stateEntry of postConflictStates) {
+      if (!referencesArtifact(stateEntry.record, conflictEntry.path)) {
+        fail("semantic invariants", `${stateEntry.path}: post-conflict Work State must reference Conflict Report`);
+      }
+    }
+    const checkpointStates = associatedStates.filter(({ record }) =>
+      record.active_route?.revision === conflict.revision
+      && record.lifecycle_state === "blocked_by_conflict"
+    );
+    const resolutions = approvedHandoffs.filter(({ record }) =>
+      record.task_id === conflict.task_id
+      && record.revision >= conflict.revision
+      && record.status === "ready_for_codex_preflight"
+      && record.workflow_state?.developer_approval === true
+      && record.developer_decisions?.routing_recommendation_approved === true
+      && record.readiness?.developer_approval === true
+      && (record.completed_gates ?? []).some((gate) =>
+        gate.gate === "conflict_report"
+        && gate.status === "approved"
+        && artifactPath(gate.evidence_source) === conflictEntry.path
+      )
+    );
+    const highestResolutionRevision = resolutions.reduce(
+      (highest, { record }) => Math.max(highest, record.revision),
+      -1
+    );
+    const highestResolutions = resolutions.filter(
+      ({ record }) => record.revision === highestResolutionRevision
+    );
+
+    if (highestResolutions.length > 1) {
+      fail("semantic invariants", `${conflictEntry.path}: ambiguous approved conflict resolution revision`);
+      continue;
+    }
+
+    const resolution = highestResolutions[0];
+    if (!resolution) {
+      if (!associatedStates.some(({ record }) => record.active_route?.revision === conflict.revision)) {
+        fail("semantic invariants", `${conflictEntry.path}: pending Conflict Report requires a matching Work State`);
+      }
+      for (const stateEntry of associatedStates) {
+        const state = stateEntry.record;
+        if (state.lifecycle_state === "complete") {
+          fail("semantic invariants", `${stateEntry.path}: pending Conflict Report cannot be complete`);
+        } else if (state.lifecycle_state !== "blocked_by_conflict") {
+          fail("semantic invariants", `${stateEntry.path}: pending Conflict Report requires blocked_by_conflict Work State`);
+        } else if (!isDeveloperDecisionOrientedNextAction(state.next_safe_action)) {
+          fail("semantic invariants", `${stateEntry.path}: pending Conflict Report next safe action must wait for a developer intent decision`);
+        }
+      }
+      continue;
+    }
+
+    if (!checkpointStates.length) {
+      fail("semantic invariants", `${conflictEntry.path}: Conflict Report lifecycle requires historical blocked checkpoint Work State`);
+    }
+
+    for (const stateEntry of associatedStates) {
+      const state = stateEntry.record;
+      if (!["active", "complete"].includes(state.lifecycle_state)) continue;
+      const applicableResolutions = resolutions.filter(
+        ({ record }) => record.revision <= state.active_route?.revision
+      );
+      const applicableRevision = applicableResolutions.reduce(
+        (highest, { record }) => Math.max(highest, record.revision),
+        -1
+      );
+      const applicableHighest = applicableResolutions.filter(
+        ({ record }) => record.revision === applicableRevision
+      );
+      if (applicableHighest.length > 1) {
+        fail("semantic invariants", `${stateEntry.path}: ambiguous approved conflict resolution revision`);
+        continue;
+      }
+      const applicableResolution = applicableHighest[0];
+      if (!applicableResolution || !referencesArtifact(state, applicableResolution.path)) {
+        fail("semantic invariants", `${stateEntry.path}: resumed conflict Work State must reference approved intent revision`);
+      }
+    }
+  }
+
   for (const recordEntry of records) {
     const hasRouteInvalidation = (recordEntry.record.findings ?? []).some(
       (finding) => finding.type === "ROUTE_INVALIDATION"
     );
     if (hasRouteInvalidation && !reroutes.some(({ record }) => record.task_id === recordEntry.record.task_id)) {
       fail("semantic invariants", `${recordEntry.path}: ROUTE_INVALIDATION requires Re-route Required`);
+    }
+    const hasIntentConflict = (recordEntry.record.findings ?? []).some(
+      (finding) => finding.type === "INTENT_CONFLICT"
+    );
+    if (hasIntentConflict && !conflictReports.some(({ record }) => record.task_id === recordEntry.record.task_id)) {
+      fail("semantic invariants", `${recordEntry.path}: INTENT_CONFLICT requires Conflict Report`);
     }
   }
 

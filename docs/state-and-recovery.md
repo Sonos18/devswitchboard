@@ -67,6 +67,29 @@ Classify what the new evidence invalidates before choosing a recovery path:
 
 Do not infer a conflict merely because execution became harder, and do not silently expand a route merely because the intent remains feasible. Preserve completed and reusable gates in Work State so an approved recovery resumes from current evidence rather than restarting the task.
 
+### When Conflict Report is warranted
+
+Use a Conflict Report only after live feasibility evidence shows that safe implementation cannot preserve all approved intent at the same time. First separate a change in **how** the work must run from an incompatibility in **what** the developer requires:
+
+| Feasibility finding | Recovery artifact |
+| --- | --- |
+| The approved outcome remains feasible, but planning, sequencing, review level, resources, or another execution choice must change. | [Re-route Required](contracts/re-route-required.md) |
+| Two approved requirements cannot coexist through any safe implementation or adaptation. | [Conflict Report](contracts/conflict-report.md) |
+
+For example, a requirement to introduce executable behavior conflicts with a simultaneous non-negotiable prohibition on every permissible executable surface when the repository has no existing mechanism that already supplies that behavior. The report must identify both requirements, inspect the actual implementation surfaces, evaluate safe adaptations, and return the unresolved decision to the developer. It must not choose which requirement to weaken.
+
+Missing preferences, harmless filename or layout adaptation, stale local context, environment or authentication failure, recoverable verification failure, and complexity that merely needs a different route are not conflicts. Record those through the applicable context, environment, verification-recovery, or Re-route Required path.
+
+### Conflict Report approval lifecycle
+
+When Conflict Report is pending, preserve the report and a matching `blocked_by_conflict` Work State, then stop strategy-dependent mutation. The state belongs to the same task, uses the report revision in its active route, and names the exact report path. Every same-task Work State at or after that route revision must also name the report; a later state cannot escape the pause by omitting provenance. Pre-conflict snapshots remain valid and outside the gate.
+
+The checkpoint's next safe action uses only whole clauses that match a canonical report return, developer decision request, or explicit prohibition. Matching a safe phrase is not enough: arbitrary trailing content fails closed. It cannot append building, shipping, editing, writing, applying, patching, testing, validation, deployment, publication, Git mutation, creation, deletion, command execution, or equivalent strategy-dependent work after the decision request.
+
+An intent-revision Approved Handoff resolves this gate only through exact provenance: the same task, a revision not older than the report, affirmative canonical approval/readiness, and an approved `conflict_report` completed gate naming the exact report path. Every later same-task state naming the report remains subject to the gate. A resumed `active` or `complete` snapshot names the unique highest qualifying handoff applicable to its own route revision.
+
+Keep the historical report and blocked state after approval. They prove why work stopped; the provenance-linked handoff proves why it resumed. A newer approval does not retroactively invalidate an older authorized snapshot, but duplicated highest authority or a resumed state without its applicable handoff fails closed.
+
 ### Re-route approval lifecycle
 
 When Re-route Required is pending, preserve the checkpoint and a matching `waiting_for_developer` Work State, then pause strategy-dependent implementation. The next safe action asks for route evaluation or approval; it does not tell an operator to plan, implement, continue, or resume under the unapproved strategy.
