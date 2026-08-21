@@ -1,0 +1,99 @@
+{
+  "$schema_file": "../schemas/dogfood-record.schema.json",
+  "schema": "dogfood_record",
+  "schema_version": "0.1",
+  "record_type": "run",
+  "task_id": "devswitchboard-irrelevant-local-divergence-009",
+  "revision": 1,
+  "authority": [
+    "DevSwitchboard Dogfood #009 Approved Handoff revision 1",
+    "Synced baseline Sonos18/devswitchboard main at 69c3e7cf627abc09b6032dbc39c0fc654b657cc0",
+    "Controlled relevance checkpoint CONTINUE_WITHOUT_LOCAL_DELTA"
+  ],
+  "approved_route": [
+    "Create an isolated workspace directly from the exact shared baseline without moving local main",
+    "Reuse approved requirement discovery, design, routing approval, and baseline intent",
+    "Run Codex Preflight against the initially clean workspace",
+    "Create one task-owned unrelated scratch divergence before bounded implementation",
+    "Classify divergence relevance and continue without Local Delta when decision value is absent",
+    "Remove only the controlled scratch file",
+    "Implement the bounded onboarding example and Dogfood evidence",
+    "Run inline review and fresh final verification without Git publication"
+  ],
+  "execution_strategy": {
+    "implementation_subagents": false,
+    "review_subagent": false,
+    "workspace_isolation": true,
+    "methodology_adapter": "superpowers"
+  },
+  "gates": {
+    "reused": [
+      "Approved requirement discovery and design",
+      "Approved bounded routing decision",
+      "Canonical Local Delta, Micro Consultation, baseline, and relevance semantics"
+    ],
+    "repeated": [
+      "Remote baseline refresh and exact-SHA check",
+      "Clean-worktree baseline verification",
+      "Codex Preflight",
+      "Controlled divergence relevance inspection",
+      "Controlled scratch cleanup verification",
+      "Fresh final repository verification"
+    ]
+  },
+  "measurements": {
+    "phase_timings": [],
+    "clarification_loops": 0,
+    "re_routes": [],
+    "verification_failures": [],
+    "developer_overrides": []
+  },
+  "preflight": {
+    "outcome": "compatible",
+    "adaptations": [],
+    "conflicts": []
+  },
+  "review": {
+    "status": "pass",
+    "findings": []
+  },
+  "verification": {
+    "status": "pass",
+    "checks": [
+      "Onboarding table distinguishes SYNCED, irrelevant DIVERGED, relevant DIVERGED requiring a cross-surface refresh, and possibly material UNKNOWN state",
+      "Guide states dirty does not mean relevant and Local Delta is a decision-value bridge rather than a mandatory dirty-tree report",
+      "Canonical Local Delta and Micro Consultation links resolve without redefining their contracts",
+      "Controlled scratch creation, isolated DIVERGED evidence, high-confidence irrelevance assessment, CONTINUE_WITHOUT_LOCAL_DELTA, and exact cleanup are recorded",
+      "No task-specific Local Delta, Micro Consultation, Re-route Required, or Conflict Report artifact exists",
+      "Exact final three-file task inventory excludes the controlled scratch path",
+      "Workflow-integrity regressions and full repository verification",
+      "Independent JSON parsing, unresolved-marker scan, and unstaged/staged Git whitespace checks"
+    ]
+  },
+  "findings": [],
+  "developer_controls": [
+    "The controlled scratch path was absent before Codex created it",
+    "Only the exact task-owned scratch file was authorized for cleanup",
+    "Irrelevant divergence did not transfer phase ownership or authorize a cross-surface artifact",
+    "No Local Delta, Micro Consultation, Re-route Required, or Conflict Report artifact",
+    "No implementation or review subagent",
+    "No commit, push, merge, pull request, tag, release, package, Pages, branch deletion, or worktree deletion"
+  ],
+  "result": "pass",
+  "observations": [
+    "The isolated worktree began clean at 69c3e7cf627abc09b6032dbc39c0fc654b657cc0, equal to origin/main.",
+    "Codex Preflight was compatible before the controlled divergence existed.",
+    "Codex created .devswitchboard-dogfood-009-unrelated.tmp with SHA-256 9ed60f32944ce8656b7bea8e1c0a24f3154ba07e40dbce586313503051a3979c as disposable #009 data outside the approved documentation scope.",
+    "At the mandatory checkpoint, HEAD and origin/main remained equal, tracked diff was empty, and the scratch file was the only untracked path, so baseline_state was diverged.",
+    "The scratch content identified itself as unrelated task-owned test data; no repository file referenced it; it changed no contract, routing rule, behavior, acceptance criterion, or verifier; and implementation did not depend on it.",
+    "Relevance was false with high confidence, so the decision was CONTINUE_WITHOUT_LOCAL_DELTA.",
+    "Context events recorded one irrelevant local divergence; Local Delta emissions, Micro Consultations, re-routes, conflicts, and Chat round trips after preflight were all zero.",
+    "Avoiding Local Delta eliminated one unnecessary cross-surface interruption while Codex retained phase ownership and the approved route remained valid.",
+    "The controlled unrelated divergence moved through created, classified irrelevant, and removed; cleanup removed only .devswitchboard-dogfood-009-unrelated.tmp and restored a clean workspace before bounded implementation.",
+    "Task-relevant implementation changes after the checkpoint do not contradict the negative path: Local Delta remains appropriate when Chat needs material local truth, not merely because approved Codex implementation is underway.",
+    "Implementation subagents and review subagents were false; workspace isolation was true.",
+    "Inline review found no contradiction, normative redefinition, non-goal expansion, or unresolved finding.",
+    "Fresh final verification passed after the Dogfood record was finalized."
+  ],
+  "next_action": "developer_review"
+}

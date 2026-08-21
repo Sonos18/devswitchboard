@@ -39,6 +39,19 @@ For example, Dogfood #004 used a Local Delta after its local implementation had 
 
 Remote-retrievable facts remain with Chat and GitHub, while intent and business decisions remain with the developer. Codex supplies local implementation truth; it is not a generic fallback for missing context. The normative [Chat workflow](workflows/chat.md) and [Codex workflow](workflows/codex.md) define how these artifacts fit into phase ownership.
 
+### Dirty does not mean relevant
+
+A dirty working tree proves only that local state differs from the shared baseline. It does not prove that the difference matters to the active task. For example, an unrelated scratch note from another experiment can make the workspace `DIVERGED`; if the approved task does not read, modify, or depend on that note, continue without sending it to Chat.
+
+| Local condition | Task relevance | Action |
+| --- | --- | --- |
+| `SYNCED` | — | Use the shared remote baseline. |
+| `DIVERGED` | Irrelevant | Continue the approved route; do not emit Local Delta. |
+| `DIVERGED` | Relevant, and Chat needs the local truth | Emit a focused [Local Delta](contracts/local-delta.md). |
+| `UNKNOWN` and possibly material | Unresolved | Acquire focused local evidence through [Micro Consultation](contracts/micro-consultation.md); emit Local Delta only if relevant divergence is established and a cross-surface refresh is needed. |
+
+Local Delta is a decision-value bridge, not a mandatory dirty-tree report. Do not create one with `relevant_to_task: false` merely to document unrelated dirtiness. This rule does not mean relevant implementation changes never need a Local Delta: use one when Chat must reason about material local truth that the shared baseline cannot show.
+
 ## 1. Start in regular ChatGPT Chat
 
 Open a normal ChatGPT conversation and provide the raw requirement plus the GitHub repository that represents the shared baseline. For example:
