@@ -52,6 +52,25 @@ A dirty working tree proves only that local state differs from the shared baseli
 
 Local Delta is a decision-value bridge, not a mandatory dirty-tree report. Do not create one with `relevant_to_task: false` merely to document unrelated dirtiness. This rule does not mean relevant implementation changes never need a Local Delta: use one when Chat must reason about material local truth that the shared baseline cannot show.
 
+### Resolve a possibly material `UNKNOWN` with one focused question
+
+Do not guess that an unknown local relation is either safe or divergent. If the missing fact could affect the task, keep the phase with its current owner and ask only for the evidence needed to resolve it.
+
+For Dogfood #010, Chat already understood the shared remote baseline but did not know whether a preserved worktree contained local-only changes to this guide. Chat sent one [Micro Consultation request](../dogfood/devswitchboard-unknown-local-context-010-micro-consultation-request.json) asking Codex to inspect only the target document. The [response](../dogfood/devswitchboard-unknown-local-context-010-micro-consultation-response.json) established that every target-file checkout was clean: some worktrees were merely historical branches behind the baseline, and none contained material local-only truth.
+
+The result was:
+
+```text
+UNKNOWN and possibly material
+  → one focused MICRO_CONSULTATION
+  → relevant local-only truth: none
+  → decision: none; phase owner: Chat
+  → no LOCAL_DELTA
+  → continue the approved bounded route
+```
+
+No Local Delta followed because there was no relevant divergence to communicate. The consultation acquired a fact; it did not transfer ownership, authorize implementation, or choose the route. If the same focused check had found task-relevant local truth that Chat needed, Codex could then provide a Local Delta for that separate cross-surface refresh.
+
 ## 1. Start in regular ChatGPT Chat
 
 Open a normal ChatGPT conversation and provide the raw requirement plus the GitHub repository that represents the shared baseline. For example:

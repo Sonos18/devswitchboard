@@ -1,0 +1,101 @@
+{
+  "$schema_file": "../schemas/dogfood-record.schema.json",
+  "schema": "dogfood_record",
+  "schema_version": "0.1",
+  "record_type": "run",
+  "task_id": "devswitchboard-unknown-local-context-010",
+  "revision": 1,
+  "authority": [
+    "DevSwitchboard Dogfood #010 Approved Handoff revision 1",
+    "Canonical Micro Consultation CONS-010-001 request and response",
+    "Synced baseline Sonos18/devswitchboard main at 34dcefa32a2429cd804135899e8eeb5d84fd1952"
+  ],
+  "approved_route": [
+    "Reuse approved requirement discovery, design, specification, routing, and CONS-010-001 context acquisition",
+    "Create an isolated workspace directly from the exact shared baseline",
+    "Persist and validate the canonical CONS-010-001 request and response without repeating local inspection",
+    "Add one bounded onboarding example and Dogfood evidence",
+    "Run inline review and fresh final repository verification without Git publication"
+  ],
+  "execution_strategy": {
+    "implementation_subagents": false,
+    "review_subagent": false,
+    "workspace_isolation": true,
+    "methodology_adapter": "superpowers"
+  },
+  "gates": {
+    "reused": [
+      "Approved requirement discovery, design, specification, and bounded route",
+      "CONS-010-001 focused local repository evidence",
+      "Canonical Micro Consultation and Local Delta semantics"
+    ],
+    "repeated": [
+      "Exact remote baseline and isolated-workspace check",
+      "Clean-worktree baseline verification",
+      "Codex Preflight",
+      "Canonical consultation pair validation",
+      "Inline scope and semantics review",
+      "Fresh final repository verification"
+    ]
+  },
+  "measurements": {
+    "phase_timings": [],
+    "clarification_loops": 1,
+    "re_routes": [],
+    "verification_failures": [],
+    "developer_overrides": []
+  },
+  "preflight": {
+    "outcome": "compatible",
+    "adaptations": [],
+    "conflicts": []
+  },
+  "review": {
+    "status": "pass",
+    "findings": []
+  },
+  "verification": {
+    "status": "pass",
+    "checks": [
+      "Canonical CONS-010-001 request and response JSON parse and conform to the existing v0.1 schemas",
+      "Response linkage, requester and responder roles, phase owner, consultation type, authority boundary, and decision none are machine-valid",
+      "Onboarding example preserves UNKNOWN as possibly material until focused evidence resolves it",
+      "One Micro Consultation resolves the local fact without a second inspection, phase transfer, or Codex decision authority",
+      "No Local Delta, Re-route Required, or Conflict Report is emitted for Dogfood #010",
+      "Original non-canonical envelope and metadata-only correction remain recorded without changing the accepted factual result",
+      "No contract, schema, routing rule, verifier, or regression file changes",
+      "Exact five-file task inventory contains only the onboarding guide, dogfood index, canonical request and response, and Dogfood record",
+      "Workflow-integrity regressions and complete repository verifier",
+      "Independent JSON parsing, unresolved-marker scan, and unstaged and staged Git whitespace checks"
+    ]
+  },
+  "findings": [
+    {
+      "type": "ARTIFACT_FORMAT_ERROR",
+      "area": "micro_consultation_envelope",
+      "description": "The initial user-visible CONS-010-001 request used the non-canonical schema label micro_consultation, and the initial response omitted canonical request/response linkage and role metadata even though the focused repository evidence and authority boundary were correct.",
+      "correction": "Persisted separate schema-conforming micro_consultation_request and micro_consultation_response records with canonical roles, status, consultation type, authority boundary, response linkage, phase owner, and decision fields. The correction reused the accepted evidence and did not repeat local inspection or change the factual result.",
+      "status": "remediated"
+    }
+  ],
+  "developer_controls": [
+    "The original CONS-010-001 evidence was reused; no second worktree inspection was performed to correct metadata",
+    "Chat remained phase owner and Codex supplied repository facts with decision none",
+    "No Local Delta, Re-route Required, or Conflict Report was emitted",
+    "No contract, schema, routing rule, verifier, or regression implementation change",
+    "No implementation or review subagent",
+    "No commit, push, pull request, merge, tag, release, package, Pages, branch deletion, or worktree deletion"
+  ],
+  "result": "pass",
+  "observations": [
+    "The initial local relation was UNKNOWN and potentially material because Chat had the shared remote baseline but lacked the focused local target-file fact.",
+    "CONS-010-001 resolved the missing local fact in one consultation loop with high confidence while phase ownership remained with Chat and decision remained none.",
+    "The accepted response found no uncommitted or unpushed local-only change to docs/getting-started.md; older clean worktrees were historical branches behind the baseline rather than local-only task truth.",
+    "No Local Delta followed because the consultation found no relevant local divergence requiring a cross-surface context refresh.",
+    "Correcting the non-canonical user-visible envelope was a metadata-only persistence change: it did not trigger a second consultation, local inspection, phase transfer, route change, or factual revision.",
+    "The approved bounded route continued in an isolated workspace without implementation subagents or a dedicated review subagent.",
+    "Inline review found no normative redefinition, authority drift, unnecessary bridge artifact, non-goal expansion, or unresolved finding.",
+    "Fresh final verification passed after the Dogfood record was finalized."
+  ],
+  "next_action": "developer_review"
+}

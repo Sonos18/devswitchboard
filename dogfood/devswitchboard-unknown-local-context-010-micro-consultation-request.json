@@ -1,0 +1,24 @@
+{
+  "$schema_file": "../schemas/micro-consultation-request.schema.json",
+  "schema": "micro_consultation_request",
+  "schema_version": "0.1",
+  "task_id": "devswitchboard-unknown-local-context-010",
+  "revision": 1,
+  "consultation_id": "CONS-010-001",
+  "status": "answered",
+  "requester": "chat",
+  "responder": "codex",
+  "phase_owner": "chat",
+  "consultation_type": "repository_fact",
+  "focused_question": "Do any currently preserved local worktrees contain uncommitted or unpushed local-only changes to docs/getting-started.md that are absent from origin/main at 34dcefa32a2429cd804135899e8eeb5d84fd1952 and would materially affect a new bounded edit to that guide?",
+  "why_it_matters": "The remote baseline supplied the shared project context, but the possibly material UNKNOWN local relation had to be resolved before Chat could recommend an execution strategy for the bounded guide edit.",
+  "requested_evidence": [
+    "Existing repository worktrees, their branch and HEAD relation to the supplied baseline, and target-file status for docs/getting-started.md.",
+    "Whether any target-file difference is uncommitted or unpushed local-only truth rather than a clean historical branch behind the baseline."
+  ],
+  "authority": {
+    "may_change_intent": false,
+    "may_transfer_phase_ownership": false,
+    "boundary": "Codex may report focused local repository facts about docs/getting-started.md; Chat retains phase ownership and routing authority, and Codex may not change intent or choose the execution route."
+  }
+}
