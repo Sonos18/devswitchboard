@@ -1,0 +1,126 @@
+{
+  "$schema_file": "../schemas/dogfood-record.schema.json",
+  "schema": "dogfood_record",
+  "schema_version": "0.1",
+  "record_type": "run",
+  "task_id": "devswitchboard-reroute-recovery-007",
+  "revision": 2,
+  "authority": [
+    "DevSwitchboard Dogfood #007 Approved Handoff revision 1",
+    "Synced baseline Sonos18/devswitchboard main at 0dc57cd52f645b273d2d8e7d4c655af07c03d053",
+    "Controlled pending intent amendment authorized for material-event evaluation only",
+    "DevSwitchboard Dogfood #007 Approved Handoff revision 2",
+    "dogfood/devswitchboard-reroute-recovery-007-approved-handoff-revision-2.json",
+    "docs/superpowers/specs/2026-08-21-reroute-lifecycle-enforcement.md",
+    "docs/superpowers/plans/2026-08-21-reroute-lifecycle-enforcement.md"
+  ],
+  "approved_route": [
+    "Reuse approved upstream requirement and routing evidence",
+    "Create an isolated workspace and begin bounded explanatory documentation directly",
+    "Process the controlled material event after the initial route becomes concrete",
+    "Emit and validate Re-route Required if strategy assumptions are invalidated",
+    "Stop before expanded normative implementation, planning, review, or publication under Revision 1",
+    "Resume the preserved checkpoint after Revision 2 developer approval",
+    "Execute architectural planning and regression-first semantic enforcement sequentially",
+    "Run a dedicated fresh-context review and fresh full verification before completion"
+  ],
+  "execution_strategy": {
+    "implementation_subagents": false,
+    "review_subagent": true,
+    "workspace_isolation": true,
+    "methodology_adapter": "superpowers"
+  },
+  "gates": {
+    "reused": [
+      "Approved Revision 1 requirement context",
+      "Approved bounded routing decision",
+      "Developer authority and workspace-isolation decisions"
+    ],
+    "repeated": [
+      "Codex Preflight against the exact synchronized baseline",
+      "Checkpoint artifact schema and structural validation",
+      "Repository-grounded architectural planning",
+      "Regression-first reroute lifecycle verification",
+      "Full repository verification after semantic enforcement"
+    ]
+  },
+  "measurements": {
+    "phase_timings": [],
+    "clarification_loops": 0,
+    "re_routes": [
+      "One expected re-route: the controlled amendment invalidated the docs-only bounded strategy and produced Re-route Required revision 2."
+    ],
+    "verification_failures": [],
+    "developer_overrides": []
+  },
+  "preflight": {
+    "outcome": "compatible_with_adaptation",
+    "adaptations": [
+      "Use canonical waiting_for_developer Work State because the schema does not define RE_ROUTE_REQUIRED as a lifecycle_state.",
+      "Record the updated seven-dimension profile as evidence strings in the canonical Re-route Required representation."
+    ],
+    "conflicts": []
+  },
+  "review": {
+    "status": "findings_remediated",
+    "findings": [
+      "Critical: later route revisions evaded pending and resumed checkpoint enforcement; remediated with path-associated lifecycle snapshots and later-revision regressions.",
+      "Important: globally newest approval retroactively invalidated older authorized snapshots; remediated with per-state applicable authority selection.",
+      "Important: approval-oriented action polarity accepted positive coding and rejected explicit prohibitions; remediated with clause-aware verb and coordinated-negation coverage.",
+      "Important: conflict wording produced a negation false positive and subject-order false negative; remediated with structured-marker precedence and affirmative-clause recognition.",
+      "Important on re-review: only the first strategy verb was checked; remediated by checking every verb.",
+      "Important on second re-review: coordinated prohibition did not propagate; remediated only across adjacent plain and/or connectors.",
+      "Final re-review found no remaining Critical or Important issue."
+    ]
+  },
+  "verification": {
+    "status": "pass",
+    "checks": [
+      "Focused and complete workflow-integrity regressions",
+      "Full repository structure and v0.1 scope verification",
+      "JSON syntax and schema conformance across 28 example and Dogfood records",
+      "Cross-record reroute lifecycle and all existing semantic invariants",
+      "Markdown links, canonical terminology, routing rules, and unresolved markers",
+      "Decision-value gate and verification-report integrity",
+      "Unstaged and staged Git whitespace checks",
+      "Exact 17-file Dogfood #007 inventory"
+    ]
+  },
+  "findings": [
+    {
+      "type": "ROUTE_INVALIDATION",
+      "area": "controlled_material_event",
+      "description": "The pending amendment expands Revision 1 from explanatory documentation into normative routing and verifier enforcement, increasing scope complexity, repository dependency, regression risk, planning needs, and review needs.",
+      "correction": "Emit Re-route Required revision 2, preserve reusable gates and local bounded work, pause strategy-dependent execution, then resume only after the developer-approved Revision 2 handoff explicitly supersedes the checkpoint.",
+      "status": "remediated"
+    }
+  ],
+  "developer_controls": [
+    "Developer approval is required before adopting the recommended architectural strategy",
+    "Revision 1 did not pre-authorize specification, planning, normative implementation, verifier changes, regression changes, or dedicated review",
+    "Revision 2 explicitly authorized architectural planning, verifier and regression changes, and dedicated fresh review",
+    "No implementation subagent was used; the dedicated reviewer is read-only",
+    "No commit, push, merge, pull request, tag, release, package, Pages, branch deletion, or worktree deletion"
+  ],
+  "result": "pass",
+  "observations": [
+    "The initial bounded route became concrete through a local developer-facing three-way recovery aid before the controlled event was processed.",
+    "The event is new pending intent evidence, not requirement rework and not a failure of the original bounded reasoning.",
+    "Approved intent remains feasible, the original route is inadequate, and no intent conflict exists.",
+    "The docs-only scope, low regression risk, bounded direct execution, inactive implementation-planning phase, and no-dedicated-review assumptions were invalidated.",
+    "The updated profile is low ambiguity, high scope complexity, high repository dependency, high regression risk, low parallelizability, low security sensitivity, and low context uncertainty.",
+    "Re-routes were one, conflicts were zero, requirement rework was zero, and developer interruptions were one for material strategy approval.",
+    "Initial implementation subagents were false, initial review subagent was false, and initial workspace isolation was true.",
+    "Original requirement context, developer authority decisions, baseline evidence, and the initial bounded documentation delta remain reusable.",
+    "No architectural plan or strategy-dependent expanded implementation was started before Revision 2 approval.",
+    "Revision 2 resumed the same isolated checkpoint rather than restarting requirement discovery, design, or baseline acquisition.",
+    "Regression-first RED evidence contained ten expected failures because the prior verifier accepted pending active, pending complete, strategy-dependent next action, missing state, unrelated or unproven approval, missing resumed approval provenance, duplicate highest approval, silent route invalidation, and infeasible-intent reroute cases.",
+    "After minimal cross-record enforcement, all lifecycle regressions and the full repository verifier passed.",
+    "Historical Re-route Required evidence remains canonical while exact same-task gate provenance and unique highest approved revision distinguish a resolved checkpoint from a pending one.",
+    "Implementation subagents remained false; dedicated review changed from false under Revision 1 to true under approved Revision 2; workspace isolation remained true.",
+    "Re-routes total one, conflicts total zero, developer strategy approvals after start total one, and requirement rework total zero.",
+    "The dedicated reviewer found one Critical and five Important findings across initial review and re-reviews; each was regression-tested, remediated, and finally re-reviewed with no Critical or Important issue remaining.",
+    "Fresh completion verification passed after the final review remediation and exact inventory remained limited to 17 approved task files."
+  ],
+  "next_action": "developer_review"
+}

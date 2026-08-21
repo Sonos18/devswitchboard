@@ -164,6 +164,68 @@ function walk(directory, predicate = () => true) {
   return results;
 }
 
+function recordPath(file) {
+  return path.relative(root, file).split(path.sep).join("/");
+}
+
+function artifactPath(value) {
+  return typeof value === "string" ? value.replace(/\\/g, "/").replace(/^\.\//, "") : "";
+}
+
+function collectRecords() {
+  const records = [];
+  for (const directory of ["examples", "dogfood"]) {
+    for (const file of walk(path.join(root, directory), (candidate) => candidate.endsWith(".json"))) {
+      const record = loadJson(file);
+      if (record) records.push({ file, path: recordPath(file), record });
+    }
+  }
+  return records;
+}
+
+function referencesArtifact(record, expectedPath) {
+  return (record.authoritative_artifacts ?? []).some((value) => artifactPath(value) === expectedPath);
+}
+
+function isApprovalOrientedNextAction(action) {
+  if (typeof action !== "string") return false;
+  const requestsApproval = /(approv\w*|route evaluation|return\b.*re-?route)/i.test(action);
+  const clauses = action.split(/[.;,]|\b(?:and then|but|then)\b/i);
+  const performsStrategyWork = clauses.some((clause) => {
+    const strategyMatches = [...clause.matchAll(/\b((?:start|begin)\s+(?:the\s+)?(?:implementation|execution|coding|planning|modification|work)|implement(?:s|ed|ing)?|execut(?:e|es|ed|ing)|modif(?:y|ies|ied|ying)|continu(?:e|es|ed|ing)|resum(?:e|es|ed|ing)|plan(?:s|ned|ning)?|cod(?:e|es|ed|ing))\b/gi)];
+    let previousEnd = 0;
+    let prohibitionActive = false;
+    for (const strategyMatch of strategyMatches) {
+      const connector = clause.slice(previousEnd, strategyMatch.index);
+      const explicitProhibition = /\b(do not|don't|must not|may not|cannot|can't|without)\s*$/i.test(connector);
+      const coordinatedProhibition = prohibitionActive && /^\s*(?:and|or)\s*$/i.test(connector);
+      prohibitionActive = explicitProhibition || coordinatedProhibition;
+      if (!prohibitionActive) return true;
+      previousEnd = strategyMatch.index + strategyMatch[0].length;
+    }
+    return false;
+  });
+  return requestsApproval && !performsStrategyWork;
+}
+
+function statesIntentInfeasible(record) {
+  const evidence = [record.trigger, ...(record.updated_profile_evidence ?? [])]
+    .filter((value) => typeof value === "string");
+  if (evidence.some((value) => /intent_feasibility\s*:\s*infeasible\b/i.test(value))) return true;
+
+  const conflictPattern = /approved intent (?:cannot|can not) be preserved safely|safe implementation (?:cannot|can not) preserve approved intent|approved intent (?:is |remains )?infeasible/i;
+  for (const value of evidence) {
+    for (const clause of value.split(/[.;]/)) {
+      const conflictMatch = conflictPattern.exec(clause);
+      if (!conflictMatch) continue;
+      const prefix = clause.slice(0, conflictMatch.index);
+      const isNegatedOrHypothetical = /\b(no evidence|without evidence|not established|hypothetical|if|unless|whether)\b/i.test(prefix);
+      if (!isNegatedOrHypothetical) return true;
+    }
+  }
+  return false;
+}
+
 function checkRequiredStructure() {
   const required = [
     "README.md", "LICENSE", "CONTRIBUTING.md",
@@ -181,6 +243,7 @@ function checkRequiredStructure() {
     "examples/security-sensitive-change.json", "dogfood/measurement-template.json",
     "examples/devswitchboard-approved-handoff.json", "examples/codex-preflight.json",
     "examples/conflict-report.json", "examples/re-route-required.json",
+    "examples/re-route-required-work-state.json",
     "examples/work-state.json", "examples/verification-report.json",
     "dogfood/devswitchboard-bootstrap-001.json",
     "dogfood/devswitchboard-local-context-bridge-004-local-delta.json",
@@ -362,6 +425,101 @@ function checkSemanticInvariants() {
           }
         }
       }
+    }
+  }
+
+  const records = collectRecords();
+  const reroutes = records.filter(({ record }) => record.schema === "re_route_required");
+  const workStates = records.filter(({ record }) => record.schema === "work_state");
+  const approvedHandoffs = records.filter(({ record }) => record.schema === "approved_handoff");
+
+  for (const rerouteEntry of reroutes) {
+    const reroute = rerouteEntry.record;
+    if (statesIntentInfeasible(reroute)) {
+      fail("semantic invariants", `${rerouteEntry.path}: intent infeasible requires Conflict Report`);
+    }
+
+    const associatedStates = workStates.filter(({ record }) =>
+      record.task_id === reroute.task_id
+      && referencesArtifact(record, rerouteEntry.path)
+    );
+    const checkpointStates = associatedStates.filter(
+      ({ record }) => record.active_route?.revision === reroute.revision
+    );
+    const replacements = approvedHandoffs.filter(({ record }) =>
+      record.task_id === reroute.task_id
+      && record.revision >= reroute.revision
+      && record.status === "ready_for_codex_preflight"
+      && record.workflow_state?.developer_approval === true
+      && record.developer_decisions?.routing_recommendation_approved === true
+      && record.readiness?.developer_approval === true
+      && (record.completed_gates ?? []).some((gate) =>
+        gate.gate === "re_route_required"
+        && gate.status === "approved"
+        && artifactPath(gate.evidence_source) === rerouteEntry.path
+      )
+    );
+    const highestReplacementRevision = replacements.reduce(
+      (highest, { record }) => Math.max(highest, record.revision),
+      -1
+    );
+    const highestReplacements = replacements.filter(
+      ({ record }) => record.revision === highestReplacementRevision
+    );
+
+    if (highestReplacements.length > 1) {
+      fail("semantic invariants", `${rerouteEntry.path}: ambiguous approved replacement revision`);
+      continue;
+    }
+
+    const replacement = highestReplacements[0];
+    if (!replacement) {
+      if (!checkpointStates.length) {
+        fail("semantic invariants", `${rerouteEntry.path}: pending Re-route Required requires a matching Work State`);
+      }
+      for (const stateEntry of associatedStates) {
+        const state = stateEntry.record;
+        if (state.lifecycle_state === "complete") {
+          fail("semantic invariants", `${stateEntry.path}: pending Re-route Required cannot be complete`);
+        } else if (state.lifecycle_state !== "waiting_for_developer") {
+          fail("semantic invariants", `${stateEntry.path}: pending Re-route Required requires waiting_for_developer Work State`);
+        } else if (!isApprovalOrientedNextAction(state.next_safe_action)) {
+          fail("semantic invariants", `${stateEntry.path}: pending Re-route Required next safe action must wait for approval`);
+        }
+      }
+      continue;
+    }
+
+    for (const stateEntry of associatedStates) {
+      const state = stateEntry.record;
+      if (!["active", "complete"].includes(state.lifecycle_state)) continue;
+      const applicableReplacements = replacements.filter(
+        ({ record }) => record.revision <= state.active_route?.revision
+      );
+      const applicableRevision = applicableReplacements.reduce(
+        (highest, { record }) => Math.max(highest, record.revision),
+        -1
+      );
+      const applicableHighest = applicableReplacements.filter(
+        ({ record }) => record.revision === applicableRevision
+      );
+      if (applicableHighest.length > 1) {
+        fail("semantic invariants", `${stateEntry.path}: ambiguous approved replacement revision`);
+        continue;
+      }
+      const applicableReplacement = applicableHighest[0];
+      if (!applicableReplacement || !referencesArtifact(state, applicableReplacement.path)) {
+        fail("semantic invariants", `${stateEntry.path}: resumed Work State must reference approved replacement`);
+      }
+    }
+  }
+
+  for (const recordEntry of records) {
+    const hasRouteInvalidation = (recordEntry.record.findings ?? []).some(
+      (finding) => finding.type === "ROUTE_INVALIDATION"
+    );
+    if (hasRouteInvalidation && !reroutes.some(({ record }) => record.task_id === recordEntry.record.task_id)) {
+      fail("semantic invariants", `${recordEntry.path}: ROUTE_INVALIDATION requires Re-route Required`);
     }
   }
 

@@ -118,6 +118,101 @@ function validMicroConsultationResponse() {
   };
 }
 
+function readJson(file) {
+  return JSON.parse(fs.readFileSync(file, "utf8"));
+}
+
+function writeRerouteScenario(copyRoot, label, options = {}) {
+  const taskId = `regression-reroute-${label}`;
+  const reroutePath = `dogfood/regression-${label}-reroute.json`;
+  const workStatePath = `dogfood/regression-${label}-work-state.json`;
+  const approvalPath = `dogfood/regression-${label}-approved-handoff.json`;
+  const reroute = readJson(path.join(copyRoot, "dogfood", "devswitchboard-reroute-recovery-007-re-route-required.json"));
+  reroute.task_id = taskId;
+  reroute.revision = 2;
+  reroute.recommended_route.task_id = taskId;
+  reroute.recommended_route.revision = 2;
+  if (options.intentInfeasible) {
+    reroute.updated_profile_evidence.push("intent_feasibility: infeasible; approved intent cannot be preserved safely.");
+  }
+  writeJson(path.join(copyRoot, reroutePath), reroute);
+
+  if (options.omitWorkState) return { taskId, reroutePath, workStatePath, approvalPath };
+
+  const workState = readJson(path.join(copyRoot, "dogfood", "devswitchboard-reroute-recovery-007-work-state.json"));
+  workState.task_id = taskId;
+  workState.revision = 1;
+  workState.authoritative_artifacts = workState.authoritative_artifacts.map((artifact) =>
+    artifact === "dogfood/devswitchboard-reroute-recovery-007-re-route-required.json" ? reroutePath : artifact
+  );
+  workState.active_route.task_id = taskId;
+  workState.active_route.revision = 2;
+  workState.lifecycle_state = options.lifecycleState ?? "waiting_for_developer";
+  workState.current_phase = options.lifecycleState === "complete" ? "handoff" : "implementation";
+  workState.verification_state = options.lifecycleState === "complete" ? "passed" : options.lifecycleState === "active" ? "in_progress" : "not_started";
+  workState.next_safe_action = options.nextSafeAction ?? "Return the Re-route Required artifact for developer approval.";
+  workState.blockers = workState.lifecycle_state === "waiting_for_developer" ? ["Developer approval is required."] : [];
+
+  if (options.approval) {
+    const handoff = readJson(path.join(copyRoot, "dogfood", "devswitchboard-reroute-recovery-007-approved-handoff-revision-2.json"));
+    handoff.task_id = options.approvalTaskId ?? taskId;
+    handoff.revision = 2;
+    handoff.routing.implementation.owner = "codex";
+    for (const gate of handoff.completed_gates) {
+      if (gate.gate === "re_route_required") {
+        gate.evidence_source = options.omitApprovalGateProvenance ? "dogfood/unrelated-reroute.json" : reroutePath;
+      }
+    }
+    writeJson(path.join(copyRoot, approvalPath), handoff);
+
+    if (workState.lifecycle_state !== "waiting_for_developer") {
+      workState.active_route.revision = 2;
+      workState.active_route.surface = "codex";
+      workState.active_route.workflow = "approved_revision_2_execution";
+      workState.active_route.developer_approval_required = false;
+      workState.next_safe_action = workState.lifecycle_state === "complete" ? "developer_review" : "Execute approved Revision 2 implementation.";
+      if (options.resumedReferencesApproval !== false) workState.authoritative_artifacts.push(approvalPath);
+    }
+
+    if (options.duplicateApproval) {
+      writeJson(path.join(copyRoot, `dogfood/regression-${label}-approved-handoff-duplicate.json`), handoff);
+    }
+  }
+
+  writeJson(path.join(copyRoot, workStatePath), workState);
+  return { taskId, reroutePath, workStatePath, approvalPath };
+}
+
+function writeApprovedReplacement(copyRoot, label, taskId, reroutePath, revision) {
+  const approvalPath = `dogfood/regression-${label}-approved-handoff-revision-${revision}.json`;
+  const handoff = readJson(path.join(copyRoot, "dogfood", "devswitchboard-reroute-recovery-007-approved-handoff-revision-2.json"));
+  handoff.task_id = taskId;
+  handoff.revision = revision;
+  for (const gate of handoff.completed_gates) {
+    if (gate.gate === "re_route_required") gate.evidence_source = reroutePath;
+  }
+  writeJson(path.join(copyRoot, approvalPath), handoff);
+  return approvalPath;
+}
+
+function writeLaterActiveState(copyRoot, label, taskId, reroutePath, revision, approvalPath = null) {
+  const statePath = `dogfood/regression-${label}-active-state-revision-${revision}.json`;
+  const state = readJson(path.join(copyRoot, "dogfood", "devswitchboard-reroute-recovery-007-resumed-work-state.json"));
+  state.task_id = taskId;
+  state.revision = revision;
+  state.lifecycle_state = "active";
+  state.current_phase = "implementation";
+  state.authoritative_artifacts = [reroutePath];
+  if (approvalPath) state.authoritative_artifacts.push(approvalPath);
+  state.active_route.task_id = taskId;
+  state.active_route.revision = revision;
+  state.active_route.phase = "implementation";
+  state.active_route.workflow = `approved_revision_${revision}_execution`;
+  state.next_safe_action = `Execute approved Revision ${revision} implementation.`;
+  writeJson(path.join(copyRoot, statePath), state);
+  return statePath;
+}
+
 function expectRejected(name, mutate, expectedMessage) {
   const { temporaryRoot, copyRoot } = copyRepository();
   try {
@@ -135,12 +230,95 @@ function expectRejected(name, mutate, expectedMessage) {
   }
 }
 
+function expectAccepted(name, mutate) {
+  const { temporaryRoot, copyRoot } = copyRepository();
+  try {
+    mutate(copyRoot);
+    const result = runVerifier(copyRoot);
+    if (result.status !== 0) {
+      throw new Error(`${name}: verifier rejected the valid record set\n${result.stdout}${result.stderr}`);
+    }
+  } finally {
+    fs.rmSync(temporaryRoot, { recursive: true, force: true });
+  }
+}
+
 const baseline = runVerifier(root);
 if (baseline.status !== 0) {
   throw new Error(`baseline verifier must pass before regression cases run\n${baseline.stdout}${baseline.stderr}`);
 }
 
 const failures = [];
+for (const regression of [
+  {
+    name: "pending Re-route Required accepts waiting-for-developer approval state",
+    mutate(copyRoot) {
+      writeRerouteScenario(copyRoot, "pending-waiting");
+    }
+  },
+  {
+    name: "approved replacement revision permits provenance-linked active work",
+    mutate(copyRoot) {
+      writeRerouteScenario(copyRoot, "approved-resume", { lifecycleState: "active", approval: true });
+    }
+  },
+  {
+    name: "pending reroute accepts an explicit prohibition on strategy work",
+    mutate(copyRoot) {
+      writeRerouteScenario(copyRoot, "safe-prohibition", {
+        nextSafeAction: "Do not continue implementation; return the Re-route Required artifact for developer approval."
+      });
+    }
+  },
+  {
+    name: "pending reroute accepts a prohibition across coordinated strategy verbs",
+    mutate(copyRoot) {
+      writeRerouteScenario(copyRoot, "coordinated-prohibition", {
+        nextSafeAction: "Do not implement or execute the replacement; request developer approval."
+      });
+    }
+  },
+  {
+    name: "feasible reroute accepts explicitly negated conflict wording",
+    mutate(copyRoot) {
+      const scenario = writeRerouteScenario(copyRoot, "feasible-negation");
+      rewriteJson(path.join(copyRoot, scenario.reroutePath), (reroute) => {
+        reroute.trigger = "New repository constraints invalidate the route; no evidence says approved intent cannot be preserved safely.";
+      });
+    }
+  },
+  {
+    name: "newer approval does not retroactively invalidate historical approved state",
+    mutate(copyRoot) {
+      const scenario = writeRerouteScenario(copyRoot, "approval-history", {
+        lifecycleState: "active",
+        approval: true
+      });
+      const revision3Approval = writeApprovedReplacement(
+        copyRoot,
+        "approval-history",
+        scenario.taskId,
+        scenario.reroutePath,
+        3
+      );
+      writeLaterActiveState(
+        copyRoot,
+        "approval-history",
+        scenario.taskId,
+        scenario.reroutePath,
+        3,
+        revision3Approval
+      );
+    }
+  }
+]) {
+  try {
+    expectAccepted(regression.name, regression.mutate);
+  } catch (error) {
+    failures.push(error.message);
+  }
+}
+
 for (const regression of [
   {
     name: "unapproved handoff cannot select a permissive schema",
@@ -212,6 +390,142 @@ for (const regression of [
     mutate(copyRoot) {
       rewriteJson(path.join(copyRoot, "examples", "work-state.json"), (workState) => {
         workState.verification_state = "unknown";
+      });
+    }
+  },
+  {
+    name: "pending Re-route Required requires a matching Work State",
+    expectedMessage: "pending Re-route Required requires a matching Work State",
+    mutate(copyRoot) {
+      writeRerouteScenario(copyRoot, "missing-state", { omitWorkState: true });
+    }
+  },
+  {
+    name: "pending Re-route Required rejects active strategy-dependent implementation",
+    expectedMessage: "pending Re-route Required requires waiting_for_developer Work State",
+    mutate(copyRoot) {
+      writeRerouteScenario(copyRoot, "pending-active", { lifecycleState: "active" });
+    }
+  },
+  {
+    name: "pending Re-route Required rejects premature completion",
+    expectedMessage: "pending Re-route Required cannot be complete",
+    mutate(copyRoot) {
+      writeRerouteScenario(copyRoot, "pending-complete", { lifecycleState: "complete" });
+    }
+  },
+  {
+    name: "pending Re-route Required rejects strategy-dependent next action",
+    expectedMessage: "pending Re-route Required next safe action must wait for approval",
+    mutate(copyRoot) {
+      writeRerouteScenario(copyRoot, "pending-action", {
+        nextSafeAction: "Continue implementation while developer approval is pending."
+      });
+    }
+  },
+  {
+    name: "pending Re-route Required rejects later-revision active continuation",
+    expectedMessage: "pending Re-route Required requires waiting_for_developer Work State",
+    mutate(copyRoot) {
+      const scenario = writeRerouteScenario(copyRoot, "pending-later-active");
+      writeLaterActiveState(copyRoot, "pending-later-active", scenario.taskId, scenario.reroutePath, 3);
+    }
+  },
+  {
+    name: "later approved Work State must reference its replacement artifact",
+    expectedMessage: "resumed Work State must reference approved replacement",
+    mutate(copyRoot) {
+      const scenario = writeRerouteScenario(copyRoot, "later-missing-provenance");
+      writeApprovedReplacement(copyRoot, "later-missing-provenance", scenario.taskId, scenario.reroutePath, 3);
+      writeLaterActiveState(copyRoot, "later-missing-provenance", scenario.taskId, scenario.reroutePath, 3);
+    }
+  },
+  {
+    name: "pending Re-route Required rejects coding after approval in next action",
+    expectedMessage: "pending Re-route Required next safe action must wait for approval",
+    mutate(copyRoot) {
+      writeRerouteScenario(copyRoot, "pending-start-coding", {
+        nextSafeAction: "Request developer approval, then start coding the replacement route."
+      });
+    }
+  },
+  {
+    name: "pending Re-route Required rejects positive strategy work after a negated verb",
+    expectedMessage: "pending Re-route Required next safe action must wait for approval",
+    mutate(copyRoot) {
+      writeRerouteScenario(copyRoot, "pending-mixed-polarity", {
+        nextSafeAction: "Do not continue the old route and instead implement the replacement; request developer approval."
+      });
+    }
+  },
+  {
+    name: "unrelated task approval cannot supersede pending Re-route Required",
+    expectedMessage: "pending Re-route Required requires waiting_for_developer Work State",
+    mutate(copyRoot) {
+      writeRerouteScenario(copyRoot, "unrelated-approval", {
+        lifecycleState: "active",
+        approval: true,
+        approvalTaskId: "regression-unrelated-task"
+      });
+    }
+  },
+  {
+    name: "approval without checkpoint provenance cannot supersede pending Re-route Required",
+    expectedMessage: "pending Re-route Required requires waiting_for_developer Work State",
+    mutate(copyRoot) {
+      writeRerouteScenario(copyRoot, "unproven-approval", {
+        lifecycleState: "active",
+        approval: true,
+        omitApprovalGateProvenance: true
+      });
+    }
+  },
+  {
+    name: "resumed Work State must reference approved replacement artifact",
+    expectedMessage: "resumed Work State must reference approved replacement",
+    mutate(copyRoot) {
+      writeRerouteScenario(copyRoot, "missing-resume-provenance", {
+        lifecycleState: "active",
+        approval: true,
+        resumedReferencesApproval: false
+      });
+    }
+  },
+  {
+    name: "ambiguous highest approved replacement revision is rejected",
+    expectedMessage: "ambiguous approved replacement revision",
+    mutate(copyRoot) {
+      writeRerouteScenario(copyRoot, "ambiguous-approval", {
+        lifecycleState: "active",
+        approval: true,
+        duplicateApproval: true
+      });
+    }
+  },
+  {
+    name: "material route invalidation cannot be represented as silent adaptation",
+    expectedMessage: "ROUTE_INVALIDATION requires Re-route Required",
+    mutate(copyRoot) {
+      const record = readJson(path.join(copyRoot, "dogfood", "devswitchboard-reroute-recovery-007.json"));
+      record.task_id = "regression-silent-route-adaptation";
+      record.measurements.re_routes = [];
+      writeJson(path.join(copyRoot, "dogfood", "regression-silent-route-adaptation.json"), record);
+    }
+  },
+  {
+    name: "intent infeasible cannot be encoded as ordinary Re-route Required",
+    expectedMessage: "intent infeasible requires Conflict Report",
+    mutate(copyRoot) {
+      writeRerouteScenario(copyRoot, "intent-infeasible", { intentInfeasible: true });
+    }
+  },
+  {
+    name: "equivalent intent conflict wording cannot be encoded as ordinary reroute",
+    expectedMessage: "intent infeasible requires Conflict Report",
+    mutate(copyRoot) {
+      const scenario = writeRerouteScenario(copyRoot, "intent-conflict-ordering");
+      rewriteJson(path.join(copyRoot, scenario.reroutePath), (reroute) => {
+        reroute.trigger = "Live evidence shows safe implementation cannot preserve approved intent.";
       });
     }
   },

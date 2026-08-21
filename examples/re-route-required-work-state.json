@@ -1,0 +1,46 @@
+{
+  "$schema_file": "../schemas/work-state.schema.json",
+  "schema": "work_state",
+  "schema_version": "0.1",
+  "task_id": "example-parallel-units",
+  "revision": 2,
+  "lifecycle_state": "waiting_for_developer",
+  "current_phase": "implementation",
+  "authoritative_artifacts": [
+    "examples/re-route-required.json"
+  ],
+  "active_route": {
+    "$schema_file": "../schemas/routing-recommendation.schema.json",
+    "schema": "routing_recommendation",
+    "schema_version": "0.1",
+    "task_id": "example-parallel-units",
+    "revision": 2,
+    "phase": "implementation",
+    "surface": "developer",
+    "workflow": "approve_re_route_required",
+    "resources": [
+      "examples/re-route-required.json"
+    ],
+    "matched_rule": "R011",
+    "rationale": [
+      "A material event invalidated the approved execution strategy while intent remained feasible."
+    ],
+    "developer_approval_required": true,
+    "invalidation_conditions": [
+      "New evidence shows the approved intent cannot be preserved safely."
+    ]
+  },
+  "completed_gates": [
+    "Material event detected",
+    "Re-route Required emitted"
+  ],
+  "reused_gates": [
+    "Approved intent"
+  ],
+  "workspace_state": "Strategy-dependent implementation is paused while the replacement route awaits developer approval.",
+  "verification_state": "not_started",
+  "next_safe_action": "Return the Re-route Required artifact for developer approval.",
+  "blockers": [
+    "Replacement strategy requires developer approval."
+  ]
+}
