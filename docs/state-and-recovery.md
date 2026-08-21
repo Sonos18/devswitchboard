@@ -41,6 +41,20 @@ A dirty working tree is evidence of divergence, not evidence of task relevance. 
 7. Emit Conflict Report when safe adaptation cannot preserve intent.
 8. Set `verification_failed` when implementation is viable but required checks fail.
 
+## Verification-failure recovery example
+
+Suppose a required schema-conformance check rejects a task record while the approved implementation is still feasible. Treat the result as execution evidence, not as a reason to reopen intent:
+
+1. Preserve a Work State with `lifecycle_state: verification_failed`, the failing command and evidence, the current route and workspace, reused gates, and one concrete `next_safe_action`.
+2. Confirm whether the failure invalidates intent or routing. If it does not, keep Codex as phase owner and activate diagnosis under the current route.
+3. Read and reproduce the failure, compare the invalid artifact with its schema and a passing example, and identify the root cause before editing it.
+4. Apply only the correction supported by that diagnosis.
+5. Rerun the affected check. After the last task change, rerun the full required verification before setting Work State to `complete`.
+
+Dogfood #006 exercised this path with `node scripts/verify.mjs`. A task-scoped Dogfood record supplied a numeric count where its schema requires an evidence array, so schema conformance failed deterministically. The recorded next safe action was `diagnose_the_observed_verification_failure_before_modifying_the_fixture`; diagnosis confirmed the type mismatch, and replacing the count with one evidence entry corrected the fault. Requirement discovery, design, brainstorming, and routing approval remained reused because the failure contradicted none of them.
+
+The key distinction is semantic: a verification failure becomes Re-route Required only when new evidence invalidates the approved strategy, and it becomes a Conflict Report only when safe implementation can no longer preserve approved intent. Otherwise, recover from the current Work State.
+
 ## Material events
 
 Material events include scope expansion, new security or regression evidence, an unexpected repository architecture, independent parallel units, missing required authority, failed acceptance criteria, or a change that invalidates verification. Editorial corrections that preserve contract semantics are not material events, but they still make final verification stale.

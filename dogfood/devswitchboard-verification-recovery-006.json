@@ -1,0 +1,101 @@
+{
+  "$schema_file": "../schemas/dogfood-record.schema.json",
+  "schema": "dogfood_record",
+  "schema_version": "0.1",
+  "record_type": "run",
+  "task_id": "devswitchboard-verification-recovery-006",
+  "revision": 1,
+  "authority": [
+    "DevSwitchboard Dogfood #006 Approved Handoff revision 1",
+    "Synced baseline Sonos18/devswitchboard main at b0ad6c976823061ff3081db26b2bb2c4e650371d"
+  ],
+  "approved_route": [
+    "Reuse approved requirement discovery, design, and routing gates",
+    "Create an isolated worktree for one controlled invalid intermediate state",
+    "Observe and diagnose the required-check failure under the current Codex route",
+    "Apply the minimum correction and rerun affected and full verification",
+    "Return verified local changes without commit or publication"
+  ],
+  "execution_strategy": {
+    "implementation_subagents": false,
+    "review_subagent": false,
+    "workspace_isolation": true,
+    "methodology_adapter": "superpowers"
+  },
+  "gates": {
+    "reused": [
+      "Approved requirement discovery",
+      "Approved design",
+      "Approved routing"
+    ],
+    "repeated": [
+      "Codex Preflight against the exact synchronized baseline",
+      "Affected verification after correction",
+      "Fresh full verification after the last change"
+    ]
+  },
+  "measurements": {
+    "phase_timings": [],
+    "clarification_loops": 0,
+    "re_routes": [],
+    "verification_failures": [
+      "node scripts/verify.mjs exited 1: schema conformance expected an array at $.measurements.verification_failures"
+    ],
+    "developer_overrides": []
+  },
+  "preflight": {
+    "outcome": "compatible_with_adaptation",
+    "adaptations": [
+      "Use one invalid measurement field type in this task-scoped Dogfood record to exercise the existing schema-conformance gate",
+      "Preserve the observed failure checkpoint as a canonical Work State record"
+    ],
+    "conflicts": []
+  },
+  "review": {
+    "status": "pass",
+    "findings": []
+  },
+  "verification": {
+    "status": "pass",
+    "checks": [
+      "Controlled node scripts/verify.mjs run exited 1 with exactly one schema-conformance issue",
+      "Affected node scripts/verify.mjs rerun passed after the minimum correction",
+      "Fresh workflow-integrity regressions after the last change",
+      "Fresh full repository verification after the last change",
+      "Unstaged and staged Git whitespace checks"
+    ]
+  },
+  "findings": [
+    {
+      "type": "VERIFICATION_FAILURE",
+      "area": "controlled_dogfood_schema_conformance",
+      "description": "The task-scoped Dogfood record deliberately encoded measurements.verification_failures as integer 1, and node scripts/verify.mjs rejected it because the canonical schema requires an evidence array.",
+      "correction": "After diagnosis compared the observed value with the schema and a passing record, the integer was replaced with one evidence string in an array; the affected verifier then passed.",
+      "status": "remediated"
+    }
+  ],
+  "developer_controls": [
+    "No requirement, design, or routing gate is reopened by the expected verification failure",
+    "No implementation or review subagent",
+    "No normative schema, verifier, routing, authority, or failure-taxonomy change",
+    "No developer interruption or decision was required during recovery",
+    "No commit, push, merge, pull request, tag, release, package, Pages, branch deletion, or worktree deletion"
+  ],
+  "result": "pass",
+  "observations": [
+    "The controlled invalid intermediate state existed only in the isolated Dogfood #006 worktree.",
+    "Expected failure injection was true, and the recorded verification-failure evidence count was one.",
+    "The state transition was active -> verification_failed -> diagnosis -> corrected -> fresh verification -> complete.",
+    "node scripts/verify.mjs exited 1 with exactly one issue: schema conformance expected an array at $.measurements.verification_failures.",
+    "The failure was classified VERIFICATION_FAILURE; intent remained feasible, the approved route remained valid, and neither a conflict nor a developer-owned decision appeared.",
+    "The failure Work State recorded current phase verification, prior and reused gates, workspace evidence, and next safe action diagnose_the_observed_verification_failure_before_modifying_the_fixture.",
+    "Diagnosis used three observable evidence steps: read the exact verifier message, inspect the supplied runtime value and canonical schema type, and compare a passing Dogfood record.",
+    "Failure evidence was sufficient to identify the root cause without guesswork: integer 1 represented a count, but the contract requires an array of evidence strings.",
+    "The minimum correction replaced the integer with a one-entry evidence array; the affected verifier then passed every group.",
+    "Requirement discovery, design, brainstorming, and routing approval were not reopened; requirement rework, re-routes, conflicts, and developer interruptions during recovery were all zero.",
+    "Recovery resumed from the Approved Handoff, Work State, failure output, and live workspace without reconstructing conversation history.",
+    "Implementation subagents were false, review subagent was false, and workspace isolation was true.",
+    "No verifier or recovery-documentation friction required a semantic change; the existing schema and Work State contract represented the recovery path."
+  ],
+  "next_action": "developer_review"
+}

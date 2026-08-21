@@ -1,0 +1,53 @@
+{
+  "$schema_file": "../schemas/work-state.schema.json",
+  "schema": "work_state",
+  "schema_version": "0.1",
+  "task_id": "devswitchboard-verification-recovery-006",
+  "revision": 1,
+  "lifecycle_state": "verification_failed",
+  "current_phase": "verification",
+  "authoritative_artifacts": [
+    "DevSwitchboard Dogfood #006 Approved Handoff revision 1",
+    "dogfood/devswitchboard-verification-recovery-006.json"
+  ],
+  "active_route": {
+    "$schema_file": "../schemas/routing-recommendation.schema.json",
+    "schema": "routing_recommendation",
+    "schema_version": "0.1",
+    "task_id": "devswitchboard-verification-recovery-006",
+    "revision": 1,
+    "phase": "verification",
+    "surface": "codex",
+    "workflow": "diagnose_and_recover_current_route",
+    "resources": [
+      "Observed node scripts/verify.mjs failure",
+      "Dogfood record schema",
+      "Systematic debugging"
+    ],
+    "matched_rule": "R010",
+    "rationale": [
+      "The required schema-conformance check failed while approved intent and the bounded Codex route remain feasible."
+    ],
+    "developer_approval_required": false,
+    "invalidation_conditions": [
+      "Diagnosis reveals an intent conflict, invalid routing assumption, or developer-owned decision outside the controlled fault injection."
+    ]
+  },
+  "completed_gates": [
+    "Baseline synchronization",
+    "Isolated worktree creation",
+    "Baseline verification",
+    "Codex Preflight",
+    "Controlled fault injection",
+    "Observed required-check failure"
+  ],
+  "reused_gates": [
+    "Approved requirement discovery",
+    "Approved design",
+    "Approved routing"
+  ],
+  "workspace_state": "Isolated branch codex/dogfood-006-verification-recovery at baseline b0ad6c976823061ff3081db26b2bb2c4e650371d with a task-scoped invalid Dogfood measurement field; remote state is unchanged.",
+  "verification_state": "failed",
+  "next_safe_action": "diagnose_the_observed_verification_failure_before_modifying_the_fixture",
+  "blockers": []
+}
