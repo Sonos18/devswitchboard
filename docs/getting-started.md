@@ -91,6 +91,28 @@ UNKNOWN and possibly material
 
 The two artifacts answer different questions. The consultation establishes whether the material local fact exists; the Local Delta carries the minimum established fact set needed for cross-surface reasoning. Neither artifact silently changes approved intent or execution strategy.
 
+### Stop acquiring context when it cannot change the decision
+
+Context acquisition is complete when the readiness questions are answered and more evidence would only increase confidence without changing scope, acceptance, risk, feasibility, or the approved route. At that point, record `NO_MORE_CONTEXT_NEEDED` and execute the selected path. Do not ask another clarification question or create a Micro Consultation or Local Delta merely because more context is available.
+
+| Evidence situation | Action |
+| --- | --- |
+| A missing fact could change scope, acceptance, risk, feasibility, or routing. | Acquire that specific fact from its authoritative source. |
+| Readiness is satisfied and extra context would not change a material decision. | Stop acquiring context and continue the approved route. |
+| New evidence invalidates an assumption after execution begins. | Classify the material event and recover, re-route, or report a conflict as appropriate. |
+
+For example, a bounded edit to this onboarding guide can proceed directly when the exact shared baseline is synced, the requested wording and acceptance criteria are explicit, and the existing guidance already establishes the relevant semantics. Asking Chat for another design comparison or asking Codex for unrelated local facts would add confidence but no decision value. The efficient path is therefore:
+
+```text
+readiness satisfied
+  -> no decision-changing uncertainty
+  -> NO_MORE_CONTEXT_NEEDED
+  -> bounded direct execution
+  -> fresh verification still required
+```
+
+Stopping context acquisition does not weaken the completion gate. Fresh verification remains mandatory after the final change. The normative [Chat readiness flow](workflows/chat.md) and low-risk direct-execution rule [R012](routing/rules.md#r012--low-risk-direct-execution) remain authoritative.
+
 ## 1. Start in regular ChatGPT Chat
 
 Open a normal ChatGPT conversation and provide the raw requirement plus the GitHub repository that represents the shared baseline. For example:
