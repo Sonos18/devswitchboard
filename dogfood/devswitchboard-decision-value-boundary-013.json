@@ -1,0 +1,133 @@
+{
+  "$schema_file": "../schemas/dogfood-record.schema.json",
+  "schema": "dogfood_record",
+  "schema_version": "0.1",
+  "record_type": "run",
+  "task_id": "devswitchboard-decision-value-boundary-013",
+  "revision": 1,
+  "authority": [
+    "DevSwitchboard Dogfood #013 Approved Handoff revision 1",
+    "Developer-approved architectural execution strategy",
+    "Shared baseline Sonos18/devswitchboard main at 0b82696d0ce6129117b62815fcacbdf6b89805d0"
+  ],
+  "approved_route": [
+    "Reuse approved requirement discovery, design, specification, remote context acquisition, and architectural routing evidence",
+    "Create an isolated workspace directly from the exact shared baseline",
+    "Run Codex Preflight and persist a repository-grounded implementation plan",
+    "Add decision-value regressions before the optional schema extension",
+    "Implement sequentially without implementation subagents",
+    "Run one fresh independent review, remediate applicable findings, and run fresh final verification"
+  ],
+  "execution_strategy": {
+    "implementation_subagents": false,
+    "review_subagent": true,
+    "workspace_isolation": true,
+    "methodology_adapter": "superpowers"
+  },
+  "gates": {
+    "reused": [
+      "Approved requirement discovery, design, and specification",
+      "Exactly one authoritative REMOTE fact acquired by Chat from GitHub",
+      "Developer approval of the architectural task class and execution strategy"
+    ],
+    "repeated": [
+      "Exact remote baseline and clean isolated-workspace check",
+      "Codex Preflight",
+      "Repository-grounded implementation planning",
+      "Regression-first schema validation",
+      "Fresh independent review",
+      "Fresh final repository verification"
+    ]
+  },
+  "measurements": {
+    "phase_timings": [],
+    "clarification_loops": 0,
+    "re_routes": [],
+    "verification_failures": [],
+    "developer_overrides": [],
+    "decision_value_checks": [
+      {
+        "checkpoint_id": "DV-013-001",
+        "decision": "MORE_CONTEXT_REQUIRED",
+        "context_source": "REMOTE",
+        "missing_fact": "Does the canonical Dogfood record schema support structured decision-value checkpoints without a schema change?",
+        "material_to": [
+          "execution_strategy",
+          "task_class"
+        ],
+        "evidence": [
+          "If supported, the task could remain bounded documentation work; if unsupported, machine-readable acceptance requires an architectural schema change."
+        ]
+      },
+      {
+        "checkpoint_id": "DV-013-002",
+        "decision": "NO_MORE_CONTEXT_NEEDED",
+        "context_source": "NONE",
+        "missing_fact": null,
+        "material_to": [],
+        "evidence": [
+          "The authoritative REMOTE fact was acquired and the developer approved the resulting architectural execution strategy."
+        ]
+      }
+    ]
+  },
+  "preflight": {
+    "outcome": "compatible_with_adaptation",
+    "adaptations": [
+      "Use the verifier-supported oneOf conditional shape instead of adding custom semantic-verifier code."
+    ],
+    "conflicts": []
+  },
+  "review": {
+    "status": "pass",
+    "findings": []
+  },
+  "verification": {
+    "status": "pass",
+    "checks": [
+      "Valid MORE_CONTEXT_REQUIRED record passes with a non-NONE source, non-null fact, and non-empty material targets",
+      "Valid NO_MORE_CONTEXT_NEEDED record passes with source NONE, a null fact, and empty material targets",
+      "Ten contradictory or malformed decision-value checkpoint cases are rejected by the intended schema invariant",
+      "All 30 pre-existing Dogfood JSON artifacts validate unchanged and Dogfood #012 remains byte-for-byte unchanged",
+      "Dogfood record schema version remains 0.1 and the optional field requires no historical migration",
+      "Complete workflow-integrity regressions and full repository verifier",
+      "JSON parsing, schema conformance, Markdown links, terminology, routing, unresolved markers, decision-value gate, and Git whitespace",
+      "Exact six-file inventory contains the five approved core files plus the required repository-grounded Superpowers plan",
+      "No Approved Handoff, bridge, routing, Work State, Re-route Required, Conflict Report, or scripts/verify.mjs change"
+    ]
+  },
+  "findings": [
+    {
+      "type": "MEASUREMENT_GAP",
+      "area": "decision_value_checkpoints",
+      "description": "The authoritative GitHub baseline showed that the closed v0.1 Dogfood measurements object could not represent structured decision-value checkpoints.",
+      "correction": "Added one optional, backward-compatible decision_value_checks array with schema-enforced MORE_CONTEXT_REQUIRED and NO_MORE_CONTEXT_NEEDED combinations.",
+      "status": "remediated"
+    }
+  ],
+  "developer_controls": [
+    "Initial readiness was almost satisfied; exactly one missing REMOTE fact had material decision value",
+    "Chat acquired exactly that authoritative repository fact from GitHub before Approved Handoff existed",
+    "The fact changed the candidate execution strategy from bounded to architectural, so no Re-route Required was emitted",
+    "The developer approved the architectural route before this Approved Handoff authorized implementation",
+    "No Approved Handoff, bridge, routing, Work State, Re-route Required, or Conflict Report semantic change",
+    "No implementation subagent",
+    "No commit, push, pull request, merge, tag, release, package, Pages, or other publication"
+  ],
+  "result": "pass",
+  "observations": [
+    "Before handoff approval, readiness was almost satisfied except for one missing REMOTE fact: whether the canonical Dogfood record schema already supported structured decision-value checkpoints.",
+    "DV-013-001 recorded MORE_CONTEXT_REQUIRED because that fact could change execution_strategy and task_class.",
+    "Chat acquired exactly that authoritative fact from the shared GitHub baseline; it showed that structured Dogfood measurement was unsupported by the closed measurements schema.",
+    "The repository fact changed the candidate execution strategy from bounded documentation work to architectural schema and regression work.",
+    "No Approved Handoff existed when the candidate route changed, so the lifecycle did not emit Re-route Required.",
+    "The developer approved the architectural route, after which DV-013-002 recorded NO_MORE_CONTEXT_NEEDED with source NONE, a null missing fact, and no material targets.",
+    "Implementation then proceeded under Approved Handoff Revision 1 in an isolated workspace without implementation subagents.",
+    "Regression-first execution produced 12 RED cases before the schema change: both approved checkpoint shapes were rejected and 10 adversarial cases failed for the pre-feature reason rather than their intended invariant.",
+    "The smallest optional additive schema extension used verifier-supported oneOf validation, so scripts/verify.mjs did not change and historical Dogfood records required no migration.",
+    "After the schema extension, the complete regression suite turned GREEN: both approved decisions passed and all 10 adversarial cases failed for their intended conditional or structural reason.",
+    "A fresh independent reviewer reported no Critical, Important, or Minor findings and confirmed backward compatibility, machine validation, test quality, and authority-boundary integrity.",
+    "Fresh final verification passed after the review evidence and Dogfood record were finalized."
+  ],
+  "next_action": "developer_review"
+}

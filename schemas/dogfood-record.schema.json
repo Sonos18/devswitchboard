@@ -52,7 +52,54 @@
         "clarification_loops": { "type": "integer", "minimum": 0 },
         "re_routes": { "type": "array", "items": { "type": "string", "minLength": 1 } },
         "verification_failures": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-        "developer_overrides": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+        "developer_overrides": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "decision_value_checks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["checkpoint_id", "decision", "context_source", "missing_fact", "material_to", "evidence"],
+            "properties": {
+              "checkpoint_id": { "type": "string", "minLength": 1 },
+              "decision": { "enum": ["MORE_CONTEXT_REQUIRED", "NO_MORE_CONTEXT_NEEDED"] },
+              "context_source": { "enum": ["REMOTE", "LOCAL", "INTENT", "NONE"] },
+              "missing_fact": {
+                "oneOf": [
+                  { "type": "string", "minLength": 1 },
+                  { "type": "null" }
+                ]
+              },
+              "material_to": {
+                "type": "array",
+                "items": { "type": "string", "minLength": 1 }
+              },
+              "evidence": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "type": "string", "minLength": 1 }
+              }
+            },
+            "oneOf": [
+              {
+                "properties": {
+                  "decision": { "const": "MORE_CONTEXT_REQUIRED" },
+                  "context_source": { "enum": ["REMOTE", "LOCAL", "INTENT"] },
+                  "missing_fact": { "type": "string", "minLength": 1 },
+                  "material_to": { "type": "array", "minItems": 1 }
+                }
+              },
+              {
+                "properties": {
+                  "decision": { "const": "NO_MORE_CONTEXT_NEEDED" },
+                  "context_source": { "const": "NONE" },
+                  "missing_fact": { "type": "null" },
+                  "material_to": { "type": "array", "maxItems": 0 }
+                }
+              }
+            ],
+            "additionalProperties": false
+          }
+        }
       },
       "additionalProperties": false
     },
