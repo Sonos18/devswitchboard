@@ -113,6 +113,26 @@ readiness satisfied
 
 Stopping context acquisition does not weaken the completion gate. Fresh verification remains mandatory after the final change. The normative [Chat readiness flow](workflows/chat.md) and low-risk direct-execution rule [R012](routing/rules.md#r012--low-risk-direct-execution) remain authoritative.
 
+#### When one fact still has decision value
+
+Almost ready is not ready when one unresolved fact can still change a material decision. Record `MORE_CONTEXT_REQUIRED`, identify the fact's authoritative source, and acquire only that fact. Then evaluate decision value again.
+
+Dogfood #013 began as a candidate bounded documentation task, but Chat did not yet know whether the canonical Dogfood schema could represent structured decision-value checkpoints. That one `REMOTE` fact was material to both task class and execution strategy. GitHub showed that the closed schema had no such field, so the candidate route changed from bounded documentation to developer-approved architectural schema work.
+
+```text
+readiness almost satisfied
+  -> one REMOTE fact can change task class and execution strategy
+  -> MORE_CONTEXT_REQUIRED
+  -> Chat acquires that fact from GitHub
+  -> candidate bounded route is unsupported
+  -> developer approves the architectural route
+  -> NO_MORE_CONTEXT_NEEDED
+  -> Approved Handoff
+  -> Codex implementation and fresh verification
+```
+
+This was not Re-route Required: no Approved Handoff or approved execution route existed when the fact was acquired. The route was still being selected. Re-route Required applies only when new material evidence invalidates an already approved route while intent remains feasible. The [Dogfood #013 record](../dogfood/devswitchboard-decision-value-boundary-013.json) preserves both decision-value checkpoints in machine-valid form.
+
 ## 1. Start in regular ChatGPT Chat
 
 Open a normal ChatGPT conversation and provide the raw requirement plus the GitHub repository that represents the shared baseline. For example:

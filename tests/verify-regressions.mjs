@@ -118,6 +118,35 @@ function validMicroConsultationResponse() {
   };
 }
 
+function moreContextRequiredCheck() {
+  return {
+    checkpoint_id: "DV-regression-001",
+    decision: "MORE_CONTEXT_REQUIRED",
+    context_source: "REMOTE",
+    missing_fact: "Does the canonical schema support structured decision-value checkpoints?",
+    material_to: ["execution_strategy", "task_class"],
+    evidence: ["The answer determines whether schema work is required."]
+  };
+}
+
+function noMoreContextNeededCheck() {
+  return {
+    checkpoint_id: "DV-regression-002",
+    decision: "NO_MORE_CONTEXT_NEEDED",
+    context_source: "NONE",
+    missing_fact: null,
+    material_to: [],
+    evidence: ["The authoritative fact and resulting strategy are resolved."]
+  };
+}
+
+function writeDecisionValueRecord(copyRoot, label, check) {
+  const record = readJson(path.join(copyRoot, "dogfood", "devswitchboard-adaptive-readiness-012.json"));
+  record.task_id = `regression-decision-value-${label}`;
+  if (check !== undefined) record.measurements.decision_value_checks = [check];
+  writeJson(path.join(copyRoot, "dogfood", `regression-decision-value-${label}.json`), record);
+}
+
 function readJson(file) {
   return JSON.parse(fs.readFileSync(file, "utf8"));
 }
@@ -372,6 +401,24 @@ if (baseline.status !== 0) {
 const failures = [];
 for (const regression of [
   {
+    name: "historical Dogfood record remains valid without decision-value checkpoints",
+    mutate(copyRoot) {
+      writeDecisionValueRecord(copyRoot, "historical-omission");
+    }
+  },
+  {
+    name: "MORE_CONTEXT_REQUIRED accepts a focused material REMOTE fact",
+    mutate(copyRoot) {
+      writeDecisionValueRecord(copyRoot, "more-context-valid", moreContextRequiredCheck());
+    }
+  },
+  {
+    name: "NO_MORE_CONTEXT_NEEDED accepts resolved context with no material target",
+    mutate(copyRoot) {
+      writeDecisionValueRecord(copyRoot, "no-more-context-valid", noMoreContextNeededCheck());
+    }
+  },
+  {
     name: "pending Re-route Required accepts waiting-for-developer approval state",
     mutate(copyRoot) {
       writeRerouteScenario(copyRoot, "pending-waiting");
@@ -509,6 +556,96 @@ for (const regression of [
 }
 
 for (const regression of [
+  {
+    name: "MORE_CONTEXT_REQUIRED rejects context source NONE",
+    expectedMessage: "expected exactly one oneOf branch",
+    mutate(copyRoot) {
+      const check = moreContextRequiredCheck();
+      check.context_source = "NONE";
+      writeDecisionValueRecord(copyRoot, "more-context-none-source", check);
+    }
+  },
+  {
+    name: "MORE_CONTEXT_REQUIRED rejects a null missing fact",
+    expectedMessage: "expected exactly one oneOf branch",
+    mutate(copyRoot) {
+      const check = moreContextRequiredCheck();
+      check.missing_fact = null;
+      writeDecisionValueRecord(copyRoot, "more-context-null-fact", check);
+    }
+  },
+  {
+    name: "MORE_CONTEXT_REQUIRED rejects an empty material target list",
+    expectedMessage: "expected exactly one oneOf branch",
+    mutate(copyRoot) {
+      const check = moreContextRequiredCheck();
+      check.material_to = [];
+      writeDecisionValueRecord(copyRoot, "more-context-empty-material", check);
+    }
+  },
+  {
+    name: "NO_MORE_CONTEXT_NEEDED rejects a non-NONE context source",
+    expectedMessage: "expected exactly one oneOf branch",
+    mutate(copyRoot) {
+      const check = noMoreContextNeededCheck();
+      check.context_source = "REMOTE";
+      writeDecisionValueRecord(copyRoot, "no-more-context-remote-source", check);
+    }
+  },
+  {
+    name: "NO_MORE_CONTEXT_NEEDED rejects a non-null missing fact",
+    expectedMessage: "expected exactly one oneOf branch",
+    mutate(copyRoot) {
+      const check = noMoreContextNeededCheck();
+      check.missing_fact = "One more fact";
+      writeDecisionValueRecord(copyRoot, "no-more-context-non-null-fact", check);
+    }
+  },
+  {
+    name: "NO_MORE_CONTEXT_NEEDED rejects a non-empty material target list",
+    expectedMessage: "expected exactly one oneOf branch",
+    mutate(copyRoot) {
+      const check = noMoreContextNeededCheck();
+      check.material_to = ["execution_strategy"];
+      writeDecisionValueRecord(copyRoot, "no-more-context-material", check);
+    }
+  },
+  {
+    name: "decision-value checkpoint rejects an unknown decision",
+    expectedMessage: "expected exactly one oneOf branch",
+    mutate(copyRoot) {
+      const check = moreContextRequiredCheck();
+      check.decision = "MAYBE_MORE_CONTEXT";
+      writeDecisionValueRecord(copyRoot, "unknown-decision", check);
+    }
+  },
+  {
+    name: "decision-value checkpoint requires every canonical field",
+    expectedMessage: "missing required property missing_fact",
+    mutate(copyRoot) {
+      const check = moreContextRequiredCheck();
+      delete check.missing_fact;
+      writeDecisionValueRecord(copyRoot, "missing-field", check);
+    }
+  },
+  {
+    name: "decision-value checkpoint requires evidence",
+    expectedMessage: "expected at least 1 items",
+    mutate(copyRoot) {
+      const check = moreContextRequiredCheck();
+      check.evidence = [];
+      writeDecisionValueRecord(copyRoot, "empty-evidence", check);
+    }
+  },
+  {
+    name: "decision-value checkpoint rejects unexpected properties",
+    expectedMessage: "unexpected property extra",
+    mutate(copyRoot) {
+      const check = moreContextRequiredCheck();
+      check.extra = "not canonical";
+      writeDecisionValueRecord(copyRoot, "unexpected-property", check);
+    }
+  },
   {
     name: "unapproved handoff cannot select a permissive schema",
     expectedMessage: "noncanonical schema selection",
