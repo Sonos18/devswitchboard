@@ -1,6 +1,6 @@
 # v0.1 Routing Rule Catalog
 
-Rules are deterministic and evaluated in ascending identifier order. The first matching rule recommends the next incomplete phase unless an explicit developer decision already fixes it. When multiple recommendations remain equally valid, choose the lower-orchestration route and record the evidence. Every route is advisory.
+Rules are deterministic and evaluated in ascending identifier order. The first matching rule recommends the next incomplete phase unless an explicit developer decision already fixes it. A match for an optional resource establishes technical eligibility, not resource selection or authorization. Select an optional resource only when concrete evidence shows that its expected execution, decision, or confidence value materially exceeds its coordination, context-transfer, and integration costs; numeric estimates are not required and MUST NOT be invented. When optional routes are effectively tied, no decision-changing fact remains, and required confidence and risk controls are satisfied, choose the lower-orchestration route and record the evidence. This value gate does not apply to mandatory confidence work such as fresh final verification. Every route is advisory.
 
 ## R001 — Developer-owned intent and decisions
 
@@ -52,33 +52,33 @@ Rules are deterministic and evaluated in ascending identifier order. The first m
 
 ## R007 — Independent parallel units
 
-- **Match:** Two or more units have stable interfaces, independent state, and independent verification.
-- **Recommend:** Consider parallel implementation resources and emit Re-route Required if this changes approved strategy.
-- **Rationale:** Parallelism creates value only when coordination cost is lower than saved time.
+- **Match:** Two or more units have stable interfaces, independent state, and independent verification. This establishes parallel-resource eligibility only.
+- **Recommend:** Select parallel implementation resources only when their expected execution, decision, or confidence value materially exceeds coordination, context-transfer, and integration costs. Otherwise retain the lower-orchestration route. If selected parallel resources would change the approved strategy, emit Re-route Required before dispatch.
+- **Rationale:** A parallelizable decomposition identifies an available option; it does not show that extra orchestration creates positive value for the actual task.
 - **Approval:** Required before changing approved subagent strategy.
 - **Invalidated by:** Shared semantics, ordering dependencies, overlapping files, or developer rejection.
 
 ## R008 — Bounded implementation delegation
 
-- **Match:** A bounded implementation unit has clear constraints, acceptance criteria, relevant files, and verification commands.
-- **Recommend:** A Codex implementation worker MAY receive minimal context when delegation was approved.
-- **Rationale:** A focused worker can reduce cost without transferring authority.
+- **Match:** A bounded implementation unit has clear constraints, acceptance criteria, relevant files, and verification commands. This establishes delegation eligibility only.
+- **Recommend:** A Codex implementation worker MAY receive minimal context only when delegation has positive orchestration value and implementation subagents are approved. Bounded-unit eligibility neither authorizes nor selects delegation; retain the lower-orchestration route when the expected benefit does not materially exceed coordination, context-transfer, and integration costs.
+- **Rationale:** A focused worker can add execution or confidence value without transferring authority, but delegation is optional and its integration burden can exceed that value.
 - **Approval:** Required when the approved strategy disabled implementation subagents.
 - **Invalidated by:** Ambiguous interfaces, shared mutable state, or cross-subsystem reasoning needs.
 
 ## R009 — Fresh-context review
 
-- **Match:** The change is architectural, contract-heavy, high-risk, or likely to benefit from contradiction detection.
-- **Recommend:** Route review to a fresh Codex context that does not author changes.
-- **Rationale:** Context separation improves defect discovery.
+- **Match:** The change is architectural, contract-heavy, high-risk, or otherwise has material independent contradiction-detection value.
+- **Recommend:** Fresh-context review MAY be selected independently when that value is material, including when implementation remains single-context. Route selected review to a Codex context that did not author the changes.
+- **Rationale:** Review-resource value is distinct from implementation-resource value; context separation can improve defect discovery without requiring delegated or parallel implementation.
 - **Approval:** No additional approval when review was already approved; review actions that change external state still require authority.
 - **Invalidated by:** A developer-approved lower review level after re-profiling.
 
 ## R010 — Fresh final verification
 
 - **Match:** Work is about to be declared complete.
-- **Recommend:** Route verification to Codex and rerun all acceptance checks after the last change.
-- **Rationale:** Completion claims require current evidence.
+- **Recommend:** Route verification to Codex and rerun all acceptance checks after the last change. This mandatory confidence work cannot be skipped through optional-resource value or orchestration-cost reasoning.
+- **Rationale:** Completion claims require current evidence regardless of the implementation and review resources selected.
 - **Approval:** Developer acceptance follows verification.
 - **Invalidated by:** Never deduplicated; any later content change makes evidence stale.
 

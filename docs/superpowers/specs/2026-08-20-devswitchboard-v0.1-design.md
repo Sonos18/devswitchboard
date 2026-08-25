@@ -41,7 +41,7 @@ The v0.1 release is a public, documentation-first methodology. It is not a produ
 2. **Manual first:** Every v0.1 workflow must be executable by a person using the documented artifacts.
 3. **Advisory first:** The system explains a recommendation and its evidence. It does not conceal consequential choices behind defaults.
 4. **Route by phase:** Discovery, design, planning, implementation, review, and verification can require different surfaces and resources.
-5. **Balance efficiency and confidence:** Add process when uncertainty, risk, or complexity warrants it; remove duplicate gates when evidence remains valid.
+5. **Balance efficiency and confidence:** Add process when uncertainty, risk, complexity, or concrete resource value warrants it; remove duplicate gates when evidence remains valid. Technical eligibility for an optional resource is not selection: use it only when expected execution, decision, or confidence value materially exceeds coordination, context-transfer, and integration costs. This optimization never removes mandatory confidence work.
 6. **Rules before automation:** Routing rules are ordered, inspectable, and deterministic.
 7. **Recovery is normal:** State needed to resume or re-route is a first-class contract, not conversational memory.
 
@@ -96,7 +96,7 @@ Routing is evaluated for the next incomplete phase, not once for the entire task
 | `verification` | `codex` | Run fresh evidence-producing checks. |
 | `handoff` | `developer` | Review results and exercise final authority. |
 
-The rule catalog may override a default using profile evidence. Every recommendation records the selected phase, surface, workflow, resources, rationale, approval requirement, and conditions that would invalidate the route.
+The rule catalog may override a default using profile evidence. Every recommendation records the selected phase, surface, workflow, resources, rationale, approval requirement, and conditions that would invalidate the route. Optional-resource match conditions establish eligibility, not invocation. The rationale compares concrete expected value with material orchestration costs without inventing numeric estimates; when optional routes are effectively tied, no decision-changing fact remains, and confidence and risk requirements are satisfied, select the lower-orchestration route. Mandatory confidence work remains required.
 
 ### Context depth and source
 
@@ -174,7 +174,7 @@ Codex owns repository-facing phases:
 
 ## 11. Rule-Based Routing
 
-Rules are evaluated in catalog order. The first matching rule supplies the recommendation unless a higher-authority developer decision already fixes the route. Ties at the same priority choose the lower-orchestration route and explain why. No rule may override explicit developer authority.
+Rules are evaluated in catalog order. The first matching rule supplies the recommendation unless a higher-authority developer decision already fixes the route. Technical eligibility for an optional resource does not select or authorize it. Ties at the same priority choose the lower-orchestration route when no decision-changing fact remains and required confidence and risk controls are satisfied, and explain why. No rule may override explicit developer authority, and optional-resource optimization cannot suppress mandatory final verification.
 
 Required rule families cover:
 

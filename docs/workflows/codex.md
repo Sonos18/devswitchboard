@@ -25,21 +25,21 @@ Context Depth is the amount of information required; Context Source is where it 
 
 ## 2. Persist and plan
 
-Persist the approved specification before implementation. Create a repository-grounded implementation plan with exact files, interfaces, checks, and scope constraints. Apply Semantic Gate Deduplication: an approved upstream design can satisfy design exploration, but it does not satisfy local preflight or final verification.
+Persist the approved specification before implementation. Create a repository-grounded implementation plan with exact files, interfaces, checks, and scope constraints. Decompose the actual work far enough to evaluate implementation parallelism, bounded implementation delegation, fresh independent review, and fresh final verification independently. For each optional resource, distinguish technical eligibility from selection and report concrete eligibility evidence, expected execution, decision, or confidence benefits, coordination, context-transfer, and integration costs, and any missing repository fact that could change the value judgment. Do not invent numeric savings or infer that `parallelizable` means parallel agents or that `bounded` means an implementation worker. When Chat owns the pending route/value evaluation, return the evidence without selecting resources and preserve the active strategy until Chat responds. Apply Semantic Gate Deduplication: an approved upstream design can satisfy design exploration, but it does not satisfy local preflight or final verification.
 
 ## 3. Implement
 
-Follow the developer-approved execution strategy. Before changing strategy, evaluate material events. If repository planning reveals new profile evidence, refresh the affected dimensions and return them for Chat route evaluation before strategy-dependent implementation. Independent units discovered after single-agent execution was approved do not by themselves require Re-route Required; emit it with trigger `PARALLEL_UNITS_DISCOVERED` when route evaluation determines that either the active route or approved execution strategy is invalidated. Continue the current route without developer reapproval only when both remain valid, and do not dispatch implementation subagents without developer approval.
+Follow the developer-approved execution strategy and the selected resources in the active Routing Recommendation. Technical eligibility or adapter-practice availability alone neither selects a resource nor authorizes invocation. Before changing strategy, evaluate material events. If repository planning reveals new profile evidence, refresh the affected dimensions and return them for Chat route evaluation before strategy-dependent implementation. Independent units discovered after single-agent execution was approved do not by themselves require Re-route Required; emit it with trigger `PARALLEL_UNITS_DISCOVERED` when route evaluation determines that either the active route or approved execution strategy is invalidated. Continue the current route without developer reapproval only when both remain valid, and do not dispatch implementation subagents without developer approval. When optional resource value does not materially exceed its orchestration costs, retain the lower-orchestration route.
 
 Keep bridge contract names and field semantics stable. When production executable code exists, use the appropriate correctness cycle; documentation-only work uses structural and semantic checks.
 
 ## 4. Review
 
-Review against the approved specification, not only the implementation plan. Use fresh context when the route calls for it. Confirm contract/schema agreement, example conformity, routing order, developer authority, scope exclusions, and acceptance coverage. Triage findings by evidence and remediate confirmed defects.
+Review against the approved specification, not only the implementation plan. Select fresh review independently when a non-authoring context has material contradiction-detection value; single-context implementation does not preclude that review resource. Confirm contract/schema agreement, example conformity, routing order, developer authority, scope exclusions, and acceptance coverage. Triage findings by evidence and remediate confirmed defects.
 
 ## 5. Verify and hand off
 
-Run fresh verification after the last change. Final verification is never reused. Emit Verification Report, update Work State to `complete` only when required checks pass, and set the next safe action to developer review. The developer performs final acceptance.
+Run fresh verification after the last change. Final verification is mandatory, never reused, and never removed through optional-resource value or orchestration-cost reasoning. Emit Verification Report, update Work State to `complete` only when required checks pass, and set the next safe action to developer review. The developer performs final acceptance.
 
 ## Recovery paths
 
