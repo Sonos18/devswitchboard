@@ -100,7 +100,7 @@ This is distinct from infeasible intent. A route change can revise planning, tas
 
 ## Material events
 
-Material events include scope expansion, new security or regression evidence, an unexpected repository architecture, independent parallel units, missing required authority, failed acceptance criteria, or a change that invalidates verification. Editorial corrections that preserve contract semantics are not material events, but they still make final verification stale.
+Candidate material evidence includes scope expansion, new security or regression evidence, an unexpected repository architecture, independent parallel units, missing required authority, failed acceptance criteria, or a change that invalidates verification. Refresh affected Task Profile dimensions and evaluate route impact immediately. The evidence becomes an R011 material event when that evaluation determines that it invalidates either the active route or approved execution strategy; a level change that leaves both valid continues on the current route without developer reapproval or Re-route Required. Editorial corrections that preserve contract semantics are not material events, but they still make final verification stale.
 
 ## Decision table
 
