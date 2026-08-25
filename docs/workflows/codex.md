@@ -29,7 +29,7 @@ Persist the approved specification before implementation. Create a repository-gr
 
 ## 3. Implement
 
-Follow the developer-approved execution strategy. Before changing strategy, evaluate material events. If independent units emerge after single-agent execution was approved, emit Re-route Required with trigger `PARALLEL_UNITS_DISCOVERED`; do not dispatch implementation subagents until the developer approves.
+Follow the developer-approved execution strategy. Before changing strategy, evaluate material events. If repository planning reveals new profile evidence, refresh the affected dimensions and return them for Chat route evaluation before strategy-dependent implementation. Independent units discovered after single-agent execution was approved do not by themselves require Re-route Required; emit it with trigger `PARALLEL_UNITS_DISCOVERED` when route evaluation determines that either the active route or approved execution strategy is invalidated. Continue the current route without developer reapproval only when both remain valid, and do not dispatch implementation subagents without developer approval.
 
 Keep bridge contract names and field semantics stable. When production executable code exists, use the appropriate correctness cycle; documentation-only work uses structural and semantic checks.
 

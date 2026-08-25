@@ -23,7 +23,7 @@ Codex consultation is last-mile acquisition for local-only facts, not a general 
 ## Flow
 
 1. **Discover requirements.** Resolve intended outcome, users, constraints, exclusions, acceptance criteria, and developer authority. Keep `requirement_ambiguity` evidence current.
-2. **Profile the task.** Complete all seven Task Profile dimensions. A level without concrete evidence is invalid.
+2. **Profile the task.** Complete all seven Task Profile dimensions. A level without concrete evidence is invalid. When new evidence revises a level, record the refreshed profile at a higher task revision and immediately evaluate the active route and approved execution strategy as a separate decision. Continue the current route without developer reapproval or Re-route Required only when both remain valid; follow R011 when the refreshed evidence invalidates either one.
 3. **Design.** Compare materially different approaches, make trade-offs visible, and obtain developer approval. Do not reopen an adequately approved design without new evidence.
 4. **Specify.** Persist stable terminology, interfaces, scope, failure behavior, and testable acceptance criteria.
 5. **Recommend execution strategy.** Apply the ordered rule catalog per phase. State surfaces, workflow resources, orchestration level, isolation, review, invalidation conditions, and required approvals.
