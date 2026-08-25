@@ -8,4 +8,4 @@ These examples show evidence-driven phase routing at three risk levels. Each fil
 
 The examples are JSON for dependency-free verification and are also valid YAML 1.2 documents.
 
-The nine cross-surface and lifecycle fixtures (`devswitchboard-approved-handoff.json` through `verification-report.json`, plus `local-delta.json` and the linked Micro Consultation pair) complement the routing cases so every canonical bridge contract has a valid instance. These fixtures keep human contract text, schemas, and lifecycle examples synchronized.
+The eleven cross-surface and lifecycle fixtures (`devswitchboard-approved-handoff.json` through `verification-report.json`, plus `local-delta.json` and the linked Micro Consultation pair) complement the routing cases so every canonical bridge contract has a valid instance. These fixtures keep human contract text, schemas, and lifecycle examples synchronized.

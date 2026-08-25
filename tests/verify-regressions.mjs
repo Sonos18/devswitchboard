@@ -557,6 +557,16 @@ for (const regression of [
 
 for (const regression of [
   {
+    name: "ready Approved Handoff requires affirmative routing approval",
+    expectedMessage: "Approved Handoff authority",
+    mutate(copyRoot) {
+      const handoff = readJson(path.join(copyRoot, "examples", "devswitchboard-approved-handoff.json"));
+      handoff.task_id = "regression-ready-routing-unapproved";
+      handoff.developer_decisions.routing_recommendation_approved = false;
+      writeJson(path.join(copyRoot, "dogfood", "regression-ready-routing-unapproved-handoff.json"), handoff);
+    }
+  },
+  {
     name: "MORE_CONTEXT_REQUIRED rejects context source NONE",
     expectedMessage: "expected exactly one oneOf branch",
     mutate(copyRoot) {

@@ -210,6 +210,8 @@ rationale:
 
 The recommendation is advisory. Check that its scope, exclusions, execution strategy, and invalidation conditions match what you intend.
 
+Here, `developer_approval_required: false` means the already-approved bounded route needs no additional strategy-approval gate. It does not permit Chat or Codex to skip developer intent approval or approval of the final Approved Handoff.
+
 ## 4. Approve before Chat emits the handoff
 
 If the profile and route are correct, reply explicitly:
@@ -267,13 +269,20 @@ Codex follows the [Codex workflow](workflows/codex.md). Before editing, it inspe
 Codex then produces a distinct [Codex Preflight](contracts/codex-preflight.md), for example:
 
 ```yaml
+$schema_file: ../schemas/codex-preflight.schema.json
 schema: codex_preflight
 schema_version: "0.1"
+task_id: invoice-status-filter
+revision: 1
 outcome: compatible
-inspected_baseline: synced main at the declared remote revision
+inspected_baseline: initialized
+local_repository_state: Clean checkout synchronized with main at the declared remote revision.
 material_delta: false
 adaptations: []
 conflicts: []
+reused_gates:
+  - Approved requirement discovery
+  - Approved bounded routing decision
 next_action: Execute the approved bounded implementation path.
 ```
 
