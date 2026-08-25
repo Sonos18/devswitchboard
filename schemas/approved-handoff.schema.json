@@ -99,7 +99,7 @@
       "type": "object",
       "required": ["routing_recommendation_approved", "implementation_subagents", "workspace_isolation"],
       "properties": {
-        "routing_recommendation_approved": { "type": "boolean" },
+        "routing_recommendation_approved": { "const": true },
         "implementation_subagents": { "type": "boolean" },
         "workspace_isolation": { "type": "boolean" }
       },

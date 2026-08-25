@@ -1,0 +1,131 @@
+{
+  "$schema_file": "../schemas/dogfood-record.schema.json",
+  "schema": "dogfood_record",
+  "schema_version": "0.1",
+  "record_type": "run",
+  "task_id": "devswitchboard-v0.1-release-exit-016",
+  "revision": 2,
+  "authority": [
+    "DevSwitchboard Dogfood #016 Approved Handoff Revision 1 remains the task intent and execution-strategy authority",
+    "Developer decision DEC-AH-016-001 classifies the ready Approved Handoff routing-approval constraint as an existing-semantics conformance bugfix at schema version 0.1 with no migration",
+    "Exact baseline 560f98a04da0807be664bd3c5c28fa282f88e9b8"
+  ],
+  "approved_route": [
+    "Reuse Approved Handoff Revision 1, compatible Codex Preflight, isolated worktree, and the Stage 1 release-exit plan and audit evidence",
+    "Apply DEC-AH-016-001 sequentially in the existing Codex context without implementation subagents",
+    "Remediate only the approved authority conformance, onboarding, R012 planning consistency, and canonical fixture-count defects",
+    "Run fresh clean-room first-run and recovery validation, fresh independent release review, and fresh final verification",
+    "Return release-exit evidence to the developer without publication"
+  ],
+  "execution_strategy": {
+    "implementation_subagents": false,
+    "review_subagent": true,
+    "workspace_isolation": true,
+    "methodology_adapter": "superpowers"
+  },
+  "gates": {
+    "reused": [
+      "Approved Handoff Revision 1 requirement discovery, design, specification, intent, and execution-strategy authority",
+      "Compatible Stage 1 Codex Preflight at the exact baseline",
+      "Isolated worktree and repository-grounded release-exit plan",
+      "Stage 1 product-boundary, routing, recovery, Dogfood, public-hygiene, and version-convention evidence"
+    ],
+    "repeated": [
+      "Parsed compatibility scan of every tracked Approved Handoff",
+      "Regression-first authority conformance verification",
+      "Complete repository verifier after remediation",
+      "Fresh clean-room first-run and representative recovery validation",
+      "Fresh independent release review",
+      "Fresh final verification after the Dogfood record and index"
+    ]
+  },
+  "measurements": {
+    "phase_timings": [],
+    "clarification_loops": 0,
+    "re_routes": [],
+    "verification_failures": [],
+    "developer_overrides": []
+  },
+  "preflight": {
+    "outcome": "compatible",
+    "adaptations": [],
+    "conflicts": []
+  },
+  "review": {
+    "status": "findings_remediated",
+    "findings": [
+      "Stage 1 independent release review found one Critical Approved Handoff authority/schema defect, one Important non-conforming onboarding Codex Preflight example, one Important unconditional implementation-planning inconsistency, and supporting Minor documentation and historical-addressability observations.",
+      "After DEC-AH-016-001 remediation, a fresh independent read-only reviewer found no Critical, Important, or boundary-relevant Minor finding and confirmed the conformance-only schema change, regression boundary, onboarding validity, R006/R012 consistency, developer authority, mandatory confidence work, recovery integrity, approved-design preservation, and absence of a v0.2 feature."
+    ]
+  },
+  "verification": {
+    "status": "pass",
+    "checks": [
+      "Compatibility scan parsed three tracked Approved Handoffs, found routing_recommendation_approved false count zero, and confirmed schema version 0.1 for all three",
+      "Observed RED: the baseline verifier accepted an arbitrary discovered ready Approved Handoff whose routing approval was false while workflow and readiness approval remained true",
+      "Observed GREEN: workflow-integrity regressions passed after schema and repository-wide verifier enforcement, including nonzero exit and authority-specific output for the negative case",
+      "Complete repository verifier including JSON syntax, schema conformance, semantic invariants, Markdown links, terminology, routing rules, unresolved markers, decision value, and verification",
+      "Fresh clean-room first-run and representative artifact-only recovery validation",
+      "Fresh independent release review",
+      "Independent parsing and schema validation of every repository JSON file",
+      "Exact ten-file inventory and Git whitespace validation after final evidence creation"
+    ]
+  },
+  "findings": [
+    {
+      "type": "APPROVED_HANDOFF_AUTHORITY",
+      "area": "ready_handoff_routing_approval",
+      "description": "Stage 1 found that the Approved Handoff schema admitted routing_recommendation_approved false in an otherwise ready handoff and the verifier did not enforce the ready authority invariant for every discovered handoff.",
+      "correction": "DEC-AH-016-001 classified the permissiveness as an existing-semantics conformance bugfix; schema version 0.1 now requires true, repository-wide semantic validation checks all discovered handoffs, and a regression proves the former acceptance and current rejection.",
+      "status": "remediated"
+    },
+    {
+      "type": "ONBOARDING_ARTIFACT_CONFORMANCE",
+      "area": "codex_preflight_example",
+      "description": "The first-run Codex Preflight YAML used a non-enum inspected_baseline value and omitted required fields.",
+      "correction": "The onboarding now supplies every existing Codex Preflight field, uses inspected_baseline initialized, and records synchronized-main detail in local_repository_state.",
+      "status": "remediated"
+    },
+    {
+      "type": "WORKFLOW_PHASE_CONSISTENCY",
+      "area": "r012_implementation_planning",
+      "description": "The Codex workflow unconditionally required an implementation plan even though the approved R012 route permits direct bounded implementation without a separate implementation-planning phase.",
+      "correction": "The Codex workflow now requires the plan when the selected route includes implementation_planning, preserves mandatory R006 planning and #015 resource evaluation, and explicitly permits compatible R012 direct bounded implementation without a fabricated plan artifact.",
+      "status": "remediated"
+    },
+    {
+      "type": "EXAMPLE_INDEX_COUNT",
+      "area": "canonical_example_inventory",
+      "description": "The canonical examples index reported nine cross-surface and lifecycle fixtures while eleven existed.",
+      "correction": "Corrected the documented count to eleven without adding or removing fixtures.",
+      "status": "remediated"
+    }
+  ],
+  "developer_controls": [
+    "DEC-AH-016-001 applied = true; change classification = EXISTING_SEMANTICS_CONFORMANCE_BUGFIX",
+    "Approved Handoff schema version remains 0.1; migration count = 0; migration artifacts = 0",
+    "Safety scan Approved Handoffs scanned = 3; routing approval false count = 0",
+    "Implementation subagents remained false; implementation subagent count = 0",
+    "Workspace isolation remained true; fresh independent review remained required",
+    "Re-route Required count = 0; Conflict Report count = 0",
+    "Approved v0.1 design, routing rules, Routing Recommendation, Task Profile, Work State, Re-route Required, and Conflict Report semantics were not modified",
+    "Historical Dogfood record edit count = 0",
+    "Publication authorized = false; commit, push, PR, tag, GitHub Release, package, and Pages counts = 0"
+  ],
+  "result": "pass",
+  "observations": [
+    "Stage 1 began at exact baseline 560f98a04da0807be664bd3c5c28fa282f88e9b8, passed the complete existing verification baseline, audited the frozen v0.1 boundary, and initially returned BLOCKED.",
+    "The initial release audit recorded one Critical Approved Handoff authority/schema defect, one Important invalid onboarding Codex Preflight example, one Important implementation-planning inconsistency, and supporting Minor findings; no publication occurred.",
+    "Developer decision DEC-AH-016-001 resolved the blocker by classifying the routing-approval permissiveness as conformance to already-approved authority semantics, retaining schema version 0.1, requiring no migration, and authorizing no new semantics.",
+    "The compatibility scan parsed every tracked Approved Handoff before normative change: three were found, all used schema version 0.1, all recorded routing approval true, and false count was zero.",
+    "Regression-first RED exited nonzero because the baseline verifier accepted the arbitrary contradictory ready handoff; GREEN passed after the minimum schema and repository-wide verifier correction.",
+    "The human contract clarification preserves the distinction between approved intent/strategy and Codex-owned local compatibility.",
+    "The onboarding example is schema-conforming, the R012 approval label preserves intent/handoff approval, and R012 direct execution no longer conflicts with mandatory R006 implementation planning or #015 resource-selection semantics.",
+    "Fresh clean-room validation passed first-run and representative recovery with no Critical, Important, or Minor finding and no hidden Chat-history dependency.",
+    "Fresh independent release review passed with no Critical, Important, or boundary-relevant Minor finding.",
+    "The historical #007 display-name addressability, completed_gates chronology, and Task Profile enclosing revision identity observations remain explicitly deferred and non-blocking.",
+    "Fresh final verification was rerun after this Revision 2 Dogfood record, index, and plan evidence were finalized.",
+    "Dogfood #016 PASS means the frozen v0.1 release-exit audit passed; it does not mean v0.1.0 was tagged, released, or otherwise published."
+  ],
+  "next_action": "developer_publication_review_and_approval"
+}

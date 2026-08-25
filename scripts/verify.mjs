@@ -365,6 +365,17 @@ function checkJsonAndSchemas() {
 }
 
 function checkSemanticInvariants() {
+  const records = collectRecords();
+  const approvedHandoffs = records.filter(({ record }) => record.schema === "approved_handoff");
+  for (const { path: handoffPath, record: handoffRecord } of approvedHandoffs) {
+    const readyAuthorityValid = handoffRecord.workflow_state?.developer_approval === true
+      && handoffRecord.readiness?.developer_approval === true
+      && handoffRecord.developer_decisions?.routing_recommendation_approved === true;
+    if (handoffRecord.status === "ready_for_codex_preflight" && !readyAuthorityValid) {
+      fail("Approved Handoff authority", `${handoffPath}: ready handoff requires affirmative workflow, readiness, and routing approval`);
+    }
+  }
+
   const handoff = loadJson(path.join(root, "examples/devswitchboard-approved-handoff.json"));
   if (handoff) {
     if (handoff.status === "ready_for_codex_preflight" && handoff.task_profile?.profile_status !== "final") {
@@ -463,11 +474,9 @@ function checkSemanticInvariants() {
     }
   }
 
-  const records = collectRecords();
   const reroutes = records.filter(({ record }) => record.schema === "re_route_required");
   const conflictReports = records.filter(({ record }) => record.schema === "conflict_report");
   const workStates = records.filter(({ record }) => record.schema === "work_state");
-  const approvedHandoffs = records.filter(({ record }) => record.schema === "approved_handoff");
 
   for (const rerouteEntry of reroutes) {
     const reroute = rerouteEntry.record;
