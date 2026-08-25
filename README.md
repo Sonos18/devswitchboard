@@ -42,6 +42,7 @@ Machine-readable definitions live in [`schemas/`](schemas/). Canonical scenarios
 
 ## How the methodology fits together
 
+- [Project North Star](docs/north-star.md) states the enduring project intent.
 - [Approved v0.1 design](docs/superpowers/specs/2026-08-20-devswitchboard-v0.1-design.md) is the normative product and workflow intent.
 - [Chat workflow](docs/workflows/chat.md) turns developer intent into an Approved Handoff.
 - [Codex workflow](docs/workflows/codex.md) performs local preflight, planning, implementation, review, and verification.

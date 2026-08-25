@@ -6,6 +6,8 @@
 **Positioning:** Developer-centric orchestration for AI coding workflows.
 **Tagline:** Route the work. Keep the developer in control.
 
+This version is governed by the project [North Star](../../north-star.md); this specification defines the v0.1-specific design.
+
 ## 1. Thesis
 
 DevSwitchboard is a developer-centric orchestration layer that routes AI development work to the appropriate surface, workflow, and resources while keeping the developer as final authority.
