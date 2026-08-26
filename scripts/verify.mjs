@@ -86,9 +86,19 @@ function validate(value, schema, schemaFile, rootSchema, location = "$") {
     delete schema.$ref;
   }
 
+  if (schema.allOf) {
+    for (const candidate of schema.allOf) {
+      errors.push(...validate(value, candidate, schemaFile, rootSchema, location));
+    }
+  }
+
   if (schema.oneOf) {
     const matches = schema.oneOf.filter((candidate) => validate(value, candidate, schemaFile, rootSchema, location).length === 0);
     if (matches.length !== 1) errors.push(`${location}: expected exactly one oneOf branch, matched ${matches.length}`);
+  }
+
+  if (schema.not && validate(value, schema.not, schemaFile, rootSchema, location).length === 0) {
+    errors.push(`${location}: matched a disallowed schema`);
   }
 
   if (Object.hasOwn(schema, "const") && !sameValue(value, schema.const)) {
@@ -183,6 +193,57 @@ function collectRecords() {
   return records;
 }
 
+function collectRoutingRecommendations(records) {
+  const recommendations = [];
+  for (const entry of records) {
+    if (entry.record.schema === "routing_recommendation") recommendations.push(entry);
+    if (entry.record.schema === "routing_case" && entry.record.routing_recommendation) {
+      recommendations.push({
+        path: `${entry.path}#routing_recommendation`,
+        record: entry.record.routing_recommendation
+      });
+    }
+  }
+  return recommendations;
+}
+
+function sourceArtifactResolves(value) {
+  if (typeof value !== "string" || value.length === 0) return false;
+  if (/^https:\/\//i.test(value)) {
+    try {
+      const url = new URL(value);
+      const commitPinnedGithubPath = /^\/[^/]+\/[^/]+\/blob\/[0-9a-f]{40}\/.+/i;
+      const commitPinnedRawGithubPath = /^\/[^/]+\/[^/]+\/[0-9a-f]{40}\/.+/i;
+      return (url.hostname === "github.com" && commitPinnedGithubPath.test(url.pathname))
+        || (url.hostname === "raw.githubusercontent.com" && commitPinnedRawGithubPath.test(url.pathname));
+    } catch {
+      return false;
+    }
+  }
+  if (/^[a-z][a-z0-9+.-]*:/i.test(value) || path.isAbsolute(value)) return false;
+  const normalized = artifactPath(value);
+  if (!normalized || normalized === ".." || normalized.startsWith("../")) return false;
+  const absolute = path.resolve(root, normalized);
+  const relative = path.relative(root, absolute);
+  return relative !== ".."
+    && !relative.startsWith(`..${path.sep}`)
+    && fs.existsSync(absolute)
+    && fs.statSync(absolute).isFile();
+}
+
+function predecessorCommitEvidenceResolves(value, commitSha) {
+  if (typeof value !== "string" || typeof commitSha !== "string") return false;
+  try {
+    const url = new URL(value);
+    const match = /^\/[^/]+\/[^/]+\/commit\/([0-9a-f]{40})\/?$/i.exec(url.pathname);
+    return url.protocol === "https:"
+      && url.hostname === "github.com"
+      && match?.[1].toLowerCase() === commitSha.toLowerCase();
+  } catch {
+    return false;
+  }
+}
+
 function referencesArtifact(record, expectedPath) {
   return (record.authoritative_artifacts ?? []).some((value) => artifactPath(value) === expectedPath);
 }
@@ -206,6 +267,63 @@ function containsPositiveStrategyWork(action, includeCompletionWork = false) {
     }
     return false;
   });
+}
+
+const preparationAuthoritySubjects = [
+  ["CLI", /\bcli\b/i],
+  ["plugin", /\bplugin\b/i],
+  ["web UI", /\bweb\s+(?:ui|application)\b/i],
+  ["product runtime", /\b(?:product|runtime)\s+(?:runtime|platform)\b/i],
+  ["multi-provider integration", /\bmulti-provider(?:\s+integration)?\b/i],
+  ["learned routing", /\b(?:learned|probabilistic)\s+routing\b/i],
+  ["autonomous approval", /\bautonomous\s+approval\b/i],
+  ["Task Profile dimension", /\btask\s+profile\s+dimensions?\b/i],
+  ["routing rule", /\brouting-rule\s+family\b|\brouting\s+rules?\b/i],
+  ["lifecycle phase", /\blifecycle\s+(?:phase|stage)s?\b/i],
+  ["bridge artifact", /\bbridge\s+artifacts?\b/i],
+  ["multi-agent orchestration", /\bmulti-agent\s+orchestration\b/i],
+  ["token accounting", /\btoken\s+accounting\b/i],
+  ["roadmap", /\broadmap\b/i],
+  ["historical migration", /\bhistorical\s+(?:migration|rewrite)\b|\brewrite\s+historical\b/i]
+];
+
+function preparationStatements(preparation) {
+  return [
+    preparation.approach_summary,
+    ...(preparation.logical_work_units ?? []),
+    ...(preparation.sequencing_assumptions ?? [])
+  ].filter((value) => typeof value === "string");
+}
+
+function excludedPreparationCapability(handoff, preparation) {
+  const exclusions = (handoff.scope?.excluded ?? []).join("\n");
+  const statements = preparationStatements(preparation);
+  for (const [label, pattern] of preparationAuthoritySubjects) {
+    if (!pattern.test(exclusions)) continue;
+    if (statements.some((statement) => pattern.test(statement) && containsPositiveStrategyWork(statement, true))) {
+      return label;
+    }
+  }
+  return null;
+}
+
+function preparationStrategyContradiction(handoff, preparation) {
+  const statements = preparationStatements(preparation);
+  if (handoff.approved_strategy?.implementation_subagents === false
+      && statements.some((statement) => {
+        const explicitlyImplementation = /\bimplementation\s+subagents?\b/i.test(statement);
+        const bareSubagentDoingImplementation = /\bsubagents?\b/i.test(statement)
+          && containsPositiveStrategyWork(statement, false);
+        return (explicitlyImplementation || bareSubagentDoingImplementation)
+          && containsPositiveStrategyWork(statement, true);
+      })) {
+    return "implementation_subagents";
+  }
+  if (handoff.approved_strategy?.review_subagent === false
+      && statements.some((statement) => /\b(?:review\s+subagent|independent\s+review)\b/i.test(statement) && containsPositiveStrategyWork(statement, true))) {
+    return "review_subagent";
+  }
+  return null;
 }
 
 function isExplicitStrategyProhibition(clause) {
@@ -366,6 +484,40 @@ function checkJsonAndSchemas() {
 
 function checkSemanticInvariants() {
   const records = collectRecords();
+  const surfaceValues = new Set([
+    "intent_resolution",
+    "shared_context_acquisition",
+    "developer_decision",
+    "local_repository_truth",
+    "repository_grounding",
+    "implementation_execution",
+    "debugging",
+    "independent_review",
+    "fresh_verification"
+  ]);
+  const compatibleSurfaceValues = new Map([
+    ["chat", new Set(["intent_resolution", "shared_context_acquisition"])],
+    ["developer", new Set(["developer_decision"])],
+    ["codex", new Set(["local_repository_truth", "repository_grounding", "implementation_execution", "debugging", "independent_review", "fresh_verification"])]
+  ]);
+  for (const { path: recommendationPath, record: recommendation } of collectRoutingRecommendations(records)) {
+    if (recommendation.schema_version === "0.1" && Object.hasOwn(recommendation, "surface_value")) {
+      fail("Routing Recommendation versioning", `${recommendationPath}: Routing Recommendation 0.1 cannot contain surface_value`);
+    }
+    if (recommendation.schema_version !== "0.2") continue;
+    if (!Array.isArray(recommendation.surface_value) || recommendation.surface_value.length === 0) {
+      fail("Routing Recommendation surface value", `${recommendationPath}: Routing Recommendation 0.2 requires non-empty surface_value`);
+      continue;
+    }
+    for (const value of recommendation.surface_value) {
+      if (!surfaceValues.has(value)) {
+        fail("Routing Recommendation surface value", `${recommendationPath}: unknown surface_value ${value}`);
+      } else if (!compatibleSurfaceValues.get(recommendation.surface)?.has(value)) {
+        fail("Routing Recommendation surface value", `${recommendationPath}: surface_value ${value} is incompatible with surface ${recommendation.surface}`);
+      }
+    }
+  }
+
   const approvedHandoffs = records.filter(({ record }) => record.schema === "approved_handoff");
   for (const { path: handoffPath, record: handoffRecord } of approvedHandoffs) {
     const readyAuthorityValid = handoffRecord.workflow_state?.developer_approval === true
@@ -373,6 +525,83 @@ function checkSemanticInvariants() {
       && handoffRecord.developer_decisions?.routing_recommendation_approved === true;
     if (handoffRecord.status === "ready_for_codex_preflight" && !readyAuthorityValid) {
       fail("Approved Handoff authority", `${handoffPath}: ready handoff requires affirmative workflow, readiness, and routing approval`);
+    }
+    if (handoffRecord.schema_version === "0.1" && Object.hasOwn(handoffRecord, "upstream_preparation")) {
+      fail("Approved Handoff versioning", `${handoffPath}: Approved Handoff 0.1 cannot contain upstream_preparation`);
+    }
+    const commitPolicy = handoffRecord.developer_decisions?.chat_verify_commit_before_next_task;
+    if (handoffRecord.schema_version === "0.1" && Object.hasOwn(handoffRecord.developer_decisions ?? {}, "chat_verify_commit_before_next_task")) {
+      fail("Approved Handoff versioning", `${handoffPath}: Approved Handoff 0.1 cannot contain chat_verify_commit_before_next_task`);
+    }
+    if (handoffRecord.schema_version === "0.2" && typeof commitPolicy !== "boolean") {
+      fail("Approved Handoff completion policy", `${handoffPath}: Approved Handoff 0.2 requires explicit boolean chat_verify_commit_before_next_task`);
+    }
+    for (const gate of handoffRecord.completed_gates ?? []) {
+      const hasPredecessorMetadata = Object.hasOwn(gate, "predecessor_task_id") || Object.hasOwn(gate, "commit_sha");
+      if (handoffRecord.schema_version === "0.1" && hasPredecessorMetadata) {
+        fail("Approved Handoff versioning", `${handoffPath}: Approved Handoff 0.1 cannot contain v0.2 predecessor gate fields`);
+      }
+      if (gate.gate !== "predecessor_commit_verification" && hasPredecessorMetadata) {
+        fail("Approved Handoff completion policy", `${handoffPath}: predecessor gate metadata belongs only to predecessor_commit_verification`);
+      }
+      if (gate.gate === "predecessor_commit_verification") {
+        const validGate = handoffRecord.schema_version === "0.2"
+          && ["passed", "reused"].includes(gate.status)
+          && typeof gate.predecessor_task_id === "string"
+          && gate.predecessor_task_id.length > 0
+          && typeof gate.commit_sha === "string"
+          && /^[0-9a-f]{40}$/.test(gate.commit_sha)
+          && predecessorCommitEvidenceResolves(gate.evidence_source, gate.commit_sha);
+        if (!validGate) {
+          fail("Approved Handoff completion policy", `${handoffPath}: predecessor_commit_verification requires predecessor_task_id, exact commit_sha, and resolvable evidence_source`);
+        }
+      }
+    }
+    if (handoffRecord.schema_version !== "0.2") continue;
+    const preparation = handoffRecord.upstream_preparation;
+    if (!preparation || typeof preparation !== "object" || Array.isArray(preparation)) {
+      fail("Approved Handoff preparation", `${handoffPath}: Approved Handoff 0.2 requires upstream_preparation`);
+      continue;
+    }
+    if (!Array.isArray(preparation.rationale) || preparation.rationale.length === 0) {
+      fail("Approved Handoff preparation", `${handoffPath}: upstream_preparation requires non-empty rationale`);
+    }
+    if (preparation.status === "prepared") {
+      if (!Array.isArray(preparation.source_artifacts) || preparation.source_artifacts.length === 0) {
+        fail("Approved Handoff preparation", `${handoffPath}: prepared upstream_preparation requires source_artifacts`);
+      }
+      if (typeof preparation.approach_summary !== "string" || preparation.approach_summary.length === 0) {
+        fail("Approved Handoff preparation", `${handoffPath}: prepared upstream_preparation requires approach_summary`);
+      }
+      if (!Array.isArray(preparation.logical_work_units) || preparation.logical_work_units.length === 0) {
+        fail("Approved Handoff preparation", `${handoffPath}: prepared upstream_preparation requires logical_work_units`);
+      }
+      if (!Array.isArray(preparation.local_grounding_needed) || preparation.local_grounding_needed.length === 0) {
+        fail("Approved Handoff preparation", `${handoffPath}: prepared upstream_preparation requires local_grounding_needed`);
+      }
+      for (const source of preparation.source_artifacts ?? []) {
+        if (!sourceArtifactResolves(source)) {
+          fail("Approved Handoff source resolution", `${handoffPath}: source artifact is not resolvable without conversation history: ${source}`);
+        }
+      }
+      const excludedCapability = excludedPreparationCapability(handoffRecord, preparation);
+      if (excludedCapability) {
+        fail("Approved Handoff authority", `${handoffPath}: upstream_preparation contradicts excluded scope: ${excludedCapability}`);
+      }
+      const strategyContradiction = preparationStrategyContradiction(handoffRecord, preparation);
+      if (strategyContradiction) {
+        fail("Approved Handoff authority", `${handoffPath}: upstream_preparation contradicts approved strategy: ${strategyContradiction}`);
+      }
+    }
+    if (preparation.status === "not_needed") {
+      const hasPreparationContent = preparation.approach_summary !== null
+        || (preparation.source_artifacts?.length ?? 0) > 0
+        || (preparation.logical_work_units?.length ?? 0) > 0
+        || (preparation.sequencing_assumptions?.length ?? 0) > 0
+        || (preparation.local_grounding_needed?.length ?? 0) > 0;
+      if (hasPreparationContent) {
+        fail("Approved Handoff preparation", `${handoffPath}: not_needed upstream_preparation cannot contain preparation content`);
+      }
     }
   }
 
@@ -709,6 +938,44 @@ function checkTerminologyAndRules() {
   }
 }
 
+function checkCompletionPolicySemantics() {
+  const approvedHandoff = fs.readFileSync(path.join(root, "docs/contracts/approved-handoff.md"), "utf8");
+  const chat = fs.readFileSync(path.join(root, "docs/workflows/chat.md"), "utf8");
+  const codex = fs.readFileSync(path.join(root, "docs/workflows/codex.md"), "utf8");
+  const adapter = fs.readFileSync(path.join(root, "docs/adapters/superpowers.md"), "utf8");
+  const specification = fs.readFileSync(path.join(root, "docs/superpowers/specs/2026-08-25-devswitchboard-v0.2-upstream-first-execution.md"), "utf8");
+
+  if (!codex.includes("READY_FOR_CHAT_ACCEPTANCE") || !codex.includes("next_owner: chat")) {
+    fail("completion policy", "Codex completion must return READY_FOR_CHAT_ACCEPTANCE to Chat");
+  }
+  for (const outcome of ["TASK_ACCEPTED_BY_CHAT", "REMEDIATION_REQUIRED", "WAITING_FOR_DEVELOPER_DECISION"]) {
+    if (!chat.includes(outcome)) fail("completion policy", `Chat workflow is missing ${outcome}`);
+  }
+  if (!chat.includes("predecessor_commit_verification")
+      || !chat.includes("approved_handoff_allowed: false")
+      || !chat.includes("exact commit SHA")
+      || !chat.includes("resolvable evidence_source")) {
+    fail("completion policy", "Chat workflow must block dependent handoffs until predecessor_commit_verification passes");
+  }
+  if (!chat.includes("chat_verify_commit_before_next_task: false")
+      || !chat.includes("no mandatory predecessor commit-audit gate")) {
+    fail("completion policy", "Chat workflow must preserve the explicit false path without a mandatory predecessor gate");
+  }
+  if (!chat.includes("chat_verify_commit_before_next_task: true")
+      || !approvedHandoff.includes("chat_verify_commit_before_next_task")
+      || !adapter.includes("chat_verify_commit_before_next_task")) {
+    fail("completion policy", "the explicit per-task commit-verification policy is missing from normative guidance");
+  }
+  if (!/^\*\*Revision:\*\* 2\s*$/m.test(specification)
+      || !specification.includes("Completion Ownership and Cross-Task Commit Verification")) {
+    fail("completion policy", "the v0.2 specification must persist approved Revision 2 completion semantics");
+  }
+  const policyDocs = [approvedHandoff, chat, codex, adapter].join("\n");
+  if (/Developer\s+(?:MUST|must|required to)\s+review[^.\n]*(?:implementation|diffs?|source code|tests?|verifier)/i.test(policyDocs)) {
+    fail("completion policy", "completion policy cannot require Developer technical review");
+  }
+}
+
 function checkUnresolvedMarkers() {
   const excluded = new Set([
     path.normalize("docs/superpowers/plans/2026-08-20-devswitchboard-bootstrap.md"),
@@ -753,10 +1020,11 @@ checkJsonAndSchemas();
 checkSemanticInvariants();
 checkMarkdownLinks();
 checkTerminologyAndRules();
+checkCompletionPolicySemantics();
 checkUnresolvedMarkers();
 checkDecisionValueGate();
 
-const expectedGroups = ["structure", "scope", "JSON syntax", "schema conformance", "semantic invariants", "Markdown links", "terminology", "routing rules", "unresolved markers", "decision value gate"];
+const expectedGroups = ["structure", "scope", "JSON syntax", "schema conformance", "semantic invariants", "Markdown links", "terminology", "routing rules", "completion policy", "unresolved markers", "decision value gate"];
 const failedGroups = groupsBefore();
 for (const group of expectedGroups) {
   if (!failedGroups.has(group)) console.log(`${group}: PASS`);

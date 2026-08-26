@@ -1,0 +1,16 @@
+{
+  "$schema_file": "../schemas/routing-recommendation.schema.json",
+  "schema": "routing_recommendation",
+  "schema_version": "0.2",
+  "task_id": "example-v0.2-chat-route",
+  "revision": 1,
+  "phase": "specification",
+  "surface": "chat",
+  "workflow": "approved_specification",
+  "resources": ["approved shared context"],
+  "matched_rule": "R002",
+  "surface_value": ["shared_context_acquisition"],
+  "rationale": ["The missing specification fact is available from an approved shared baseline and does not require local repository truth."],
+  "developer_approval_required": true,
+  "invalidation_conditions": ["The required fact exists only in the local workspace."]
+}

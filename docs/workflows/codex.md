@@ -25,9 +25,13 @@ Context Depth is the amount of information required; Context Source is where it 
 
 ## 2. Persist and prepare
 
-Persist the approved specification before implementation. When the selected route includes `implementation_planning`, create a repository-grounded implementation plan with exact files, interfaces, checks, and scope constraints; architectural or high-complexity R006 work always requires that phase. During implementation planning, decompose the actual work far enough to evaluate implementation parallelism, bounded implementation delegation, fresh independent review, and fresh final verification independently. For each optional resource, distinguish technical eligibility from selection and report concrete eligibility evidence, expected execution, decision, or confidence benefits, coordination, context-transfer, and integration costs, and any missing repository fact that could change the value judgment. Do not invent numeric savings or infer that `parallelizable` means parallel agents or that `bounded` means an implementation worker. When Chat owns the pending route/value evaluation, return the evidence without selecting resources and preserve the active strategy until Chat responds.
+Persist the approved specification before implementation. When the selected route includes `implementation_planning`, create a repository-grounded implementation plan with exact files, interfaces, checks, and scope constraints; architectural or high-complexity R006 work always requires that phase. When Approved Handoff `0.2` is `prepared`, map every logical work unit to local evidence and exact targets as `reused`, `adapted`, or `invalidated`. Adaptation may change repository decomposition or ordering while preserving intent and strategy. Invalidation MUST classify its impact as `repository_adaptation`, `route_or_strategy_invalidation`, or `intent_feasibility_conflict` and follow the existing lifecycle.
 
-A valid low-risk R012 route may proceed from compatible Codex Preflight directly to bounded implementation without fabricating a separate `implementation_planning` phase or plan artifact. The Approved Handoff and selected route still bound that execution, and Codex identifies the relevant files and checks needed for the bounded change. Apply Semantic Gate Deduplication in either path: an approved upstream design can satisfy design exploration, but it does not satisfy local preflight or fresh final verification.
+Reconsider approved preparation only when recorded local evidence can materially change feasibility, decomposition, route, strategy, scope, acceptance, or confidence. Repetition without such local value is duplicated reasoning. Upstream preparation never replaces local instruction discovery, workspace inspection, baseline comparison, material-delta evaluation, or conflict detection.
+
+During implementation planning, decompose the actual work far enough to evaluate implementation parallelism, bounded implementation delegation, fresh independent review, and fresh final verification independently. For each optional resource, distinguish technical eligibility from selection and report concrete eligibility evidence, expected execution, decision, or confidence benefits, coordination, context-transfer, and integration costs, and any missing repository fact that could change the value judgment. Do not invent numeric savings or infer that `parallelizable` means parallel agents or that `bounded` means an implementation worker. When Chat owns the pending route/value evaluation, return the evidence without selecting resources and preserve the active strategy until Chat responds.
+
+A valid low-risk R012 route with `upstream_preparation.status: not_needed` may proceed from compatible Codex Preflight directly to bounded implementation without fabricating a separate `implementation_planning` phase, plan artifact, or repeated approach analysis. The Approved Handoff and selected route still bound that execution, and Codex identifies the relevant files and checks needed for the bounded change. Apply Semantic Gate Deduplication in either path: an approved upstream design can satisfy design exploration, but it does not satisfy local preflight or fresh final verification.
 
 ## 3. Implement
 
@@ -41,7 +45,15 @@ Review against the approved specification, not only the implementation plan. Sel
 
 ## 5. Verify and hand off
 
-Run fresh verification after the last change. Final verification is mandatory, never reused, and never removed through optional-resource value or orchestration-cost reasoning. Emit Verification Report, update Work State to `complete` only when required checks pass, and set the next safe action to developer review. The developer performs final acceptance.
+Run fresh verification after the last change. Final verification is mandatory, never reused, and never removed through optional-resource value or orchestration-cost reasoning. Emit Verification Report and update Work State to `complete` only when required checks pass. Then return structured technical completion evidence to Chat:
+
+```yaml
+phase: completion
+state: READY_FOR_CHAT_ACCEPTANCE
+next_owner: chat
+```
+
+Chat owns technical acceptance and remediation routing. Technical defects return to Codex. Material intent, policy, authority, strategy, override, merge, or publication decisions return through Chat to the Developer. The Developer remains final authority but does not have to inspect implementation diffs, source code, tests, verifier output, technical review findings, or technical remediation. `developer_acceptance_required` in the existing Verification Report continues to preserve Developer final authority; it does not require personal technical inspection or change that contract's version.
 
 ## Recovery paths
 

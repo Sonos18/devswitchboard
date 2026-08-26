@@ -1,0 +1,75 @@
+{
+  "$schema_file": "../schemas/approved-handoff.schema.json",
+  "schema": "approved_handoff",
+  "schema_version": "0.2",
+  "project": "devswitchboard",
+  "task_id": "example-v0.2-not-needed-handoff",
+  "revision": 1,
+  "status": "ready_for_codex_preflight",
+  "task_class": "bounded",
+  "goal": "Correct one approved documentation link through R012 direct execution.",
+  "baseline": { "state": "initialized", "github_remote_available": true, "local_repository_available": true },
+  "context": { "depth": "low", "freshness": "fresh", "local_delta_required": false },
+  "workflow_state": { "requirement_discovery": "completed", "design": "completed", "specification": "completed", "developer_approval": true },
+  "superpowers": { "brainstorming": { "satisfied_upstream": true, "source": "Approved bounded documentation correction." } },
+  "routing": {
+    "codex_preflight": { "active": true },
+    "implementation_planning": { "active": false, "owner": "codex" },
+    "implementation": { "owner": "codex", "subagents": false },
+    "review": { "active": false, "subagent": false },
+    "verification": { "active": true }
+  },
+  "execution": {
+    "isolation": { "recommended": false },
+    "methodology": { "adapter": "superpowers", "path": "bounded" }
+  },
+  "developer_decisions": { "routing_recommendation_approved": true, "implementation_subagents": false, "workspace_isolation": false, "chat_verify_commit_before_next_task": false },
+  "confidence": "high",
+  "task_profile": {
+    "$schema_file": "../schemas/task-profile.schema.json",
+    "schema": "task_profile",
+    "schema_version": "0.1",
+    "profile_status": "final",
+    "dimensions": {
+      "requirement_ambiguity": { "level": "low", "evidence": ["The exact link correction is approved."] },
+      "scope_complexity": { "level": "low", "evidence": ["One documentation path changes."] },
+      "repository_dependency": { "level": "medium", "evidence": ["Codex must confirm the live target path and link check."] },
+      "regression_risk": { "level": "low", "evidence": ["The change is documentation-only and bounded."] },
+      "parallelizability": { "level": "low", "evidence": ["The task is one atomic edit."] },
+      "security_sensitivity": { "level": "low", "evidence": ["No security boundary changes."] },
+      "context_uncertainty": { "level": "low", "evidence": ["Scope and acceptance are explicit."] }
+    }
+  },
+  "completed_gates": [
+    { "gate": "requirement_discovery", "status": "passed", "evidence_source": "approved bounded task" },
+    { "gate": "routing", "status": "approved", "evidence_source": "R012 direct execution" }
+  ],
+  "approved_strategy": { "implementation_subagents": false, "workspace_isolation": false, "review_subagent": false, "methodology_adapter": "superpowers" },
+  "scope": {
+    "included": ["Correct the approved documentation link."],
+    "excluded": ["Implementation planning, product behavior, schemas, routing rules, and lifecycle changes."]
+  },
+  "acceptance_criteria": ["The canonical link resolves and fresh repository verification passes."],
+  "verification_expectations": ["Run the repository verifier and link checks after the edit."],
+  "upstream_preparation": {
+    "status": "not_needed",
+    "source_artifacts": [],
+    "approach_summary": null,
+    "logical_work_units": [],
+    "sequencing_assumptions": [],
+    "local_grounding_needed": [],
+    "rationale": [
+      "Scope, acceptance criteria, and verification already constrain the bounded R012 task.",
+      "A separate preparation layer would not materially reduce Codex reasoning."
+    ]
+  },
+  "readiness": {
+    "intent_clear": "pass",
+    "material_decisions_resolved": "pass",
+    "scope_bounded": "pass",
+    "acceptance_testable": "pass",
+    "critical_uncertainty": "none",
+    "unresolved_conflicts": "none",
+    "developer_approval": true
+  }
+}

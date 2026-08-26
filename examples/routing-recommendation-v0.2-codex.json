@@ -1,0 +1,16 @@
+{
+  "$schema_file": "../schemas/routing-recommendation.schema.json",
+  "schema": "routing_recommendation",
+  "schema_version": "0.2",
+  "task_id": "example-v0.2-codex-route",
+  "revision": 1,
+  "phase": "implementation_planning",
+  "surface": "codex",
+  "workflow": "repository_grounded_planning",
+  "resources": ["approved handoff", "approved v0.2 specification"],
+  "matched_rule": "R006",
+  "surface_value": ["repository_grounding"],
+  "rationale": ["Approved intent and preparation are complete, while exact files, interfaces, and checks require live repository truth."],
+  "developer_approval_required": true,
+  "invalidation_conditions": ["Local evidence invalidates the approved route or execution strategy."]
+}

@@ -1,11 +1,11 @@
 # DevSwitchboard v0.2 — Upstream-First Execution Design Specification
 
-**Revision:** 1
+**Revision:** 2
 **Status:** Approved
 **Product version:** `v0.2.0`
 **Working name:** Upstream-First Execution
 **Project authority:** [`docs/north-star.md`](../../north-star.md)
-**Baseline:** `688c9d51ab23909872119181248e8cf8dce5ae5c`
+**Baseline:** `dc8e727ef0c02f3fb7f2b150effa327c87192336`
 
 ## 1. Purpose
 
@@ -74,7 +74,9 @@ v0.2 MUST:
 7. preserve R012 direct execution;
 8. retain all historical v0.1 artifacts without rewriting them;
 9. measure avoidable Codex work through observable workflow evidence;
-10. preserve Developer authority and mandatory confidence work.
+10. preserve Developer authority and mandatory confidence work;
+11. return Codex technical completion to Chat for technical acceptance and remediation routing;
+12. make the per-task predecessor commit-verification choice explicit before a dependent task begins.
 
 ## 4. Non-goals
 
@@ -116,6 +118,8 @@ The following semantics remain unchanged:
 - technical eligibility does not select a resource;
 - lower orchestration is preferred on effective ties;
 - fresh final verification is mandatory;
+- Codex technical completion goes to Chat without requiring Developer technical inspection;
+- material intent, policy, authority, strategy, override, merge, and publication decisions remain Developer-owned;
 - Re-route Required and Conflict Report retain their existing lifecycle meanings.
 
 The ordered R001–R012 catalog remains in force. In particular, R006 still routes architectural or high-complexity implementation planning to Codex, while R012 still permits low-risk direct execution.
@@ -214,6 +218,7 @@ approved_handoff:
   new_schema_version: "0.2"
   required_delta:
     - upstream_preparation
+    - developer_decisions.chat_verify_commit_before_next_task
 
 dogfood_record:
   schema_version: "0.1"
@@ -508,6 +513,30 @@ Display-name-only references are invalid for new v0.2 preparation sources.
 
 This requirement is included because unresolved preparation provenance can force Codex to reconstruct context and consume avoidable usage. It does not generalize unrelated historical addressability cleanup into v0.2 scope.
 
+### 10.5 Explicit commit-verification policy
+
+Every Approved Handoff `0.2` requires:
+
+```yaml
+developer_decisions:
+  chat_verify_commit_before_next_task: true | false
+```
+
+Both Boolean values are valid Developer choices. Omission and non-Boolean values are invalid; no default may be inferred. Historical `0.1` handoffs omit and reject this v0.2-only field.
+
+When a dependent next-task handoff is permitted after a `true` decision, it records a completed or reused gate:
+
+```yaml
+completed_gates:
+  - gate: predecessor_commit_verification
+    status: passed
+    predecessor_task_id: predecessor-task-id
+    commit_sha: 0123456789abcdef0123456789abcdef01234567
+    evidence_source: https://github.com/example/project/commit/0123456789abcdef0123456789abcdef01234567
+```
+
+The gate does not authorize publication. It records an already completed Chat audit of the exact stable remote predecessor commit.
+
 ## 11. Authority model
 
 `upstream_preparation` introduces no new authority surface.
@@ -578,6 +607,8 @@ Conflict Report
 
 Approved Handoff remains intent truth. Codex Preflight remains the authority on live repository compatibility.
 
+Technical acceptance does not transfer Developer-owned authority to Chat or Codex. Chat may accept repository-facing evidence and route technical remediation, while material intent, policy, authority, strategy, override, merge, and publication decisions continue to require the Developer.
+
 ## 12. Chat workflow changes
 
 After specification and before final readiness, Chat performs:
@@ -642,8 +673,29 @@ A v0.2 Approved Handoff is ready only when:
 - upstream-preparation status is explicit;
 - preparation provenance is resolvable where required;
 - local-grounding questions are explicit;
+- `developer_decisions.chat_verify_commit_before_next_task` is an explicit Boolean;
 - Developer approval remains affirmative;
 - no unresolved conflict exists.
+
+### 12.6 Post-Codex acceptance and dependent-task gate
+
+Chat receives Codex completion evidence and chooses one of:
+
+```yaml
+TASK_ACCEPTED:
+  state: TASK_ACCEPTED_BY_CHAT
+  next_owner: chat
+
+TECHNICAL_FIX_REQUIRED:
+  state: REMEDIATION_REQUIRED
+  next_owner: codex
+
+MATERIAL_DECISION_REQUIRED:
+  state: WAITING_FOR_DEVELOPER_DECISION
+  next_owner: developer
+```
+
+For `chat_verify_commit_before_next_task: true`, Chat MUST withhold a dependent next-task Approved Handoff until the predecessor exists on a stable remote ref, fresh verification corresponds to that exact committed tree, and Chat has audited the exact commit against approved scope, acceptance, authority, compatibility, and protected historical surfaces. The new handoff then records `predecessor_commit_verification` with predecessor task ID, exact commit SHA, and resolvable evidence. For `false`, no mandatory predecessor commit-audit gate is created, though a material event may still justify inspection.
 
 ## 13. Codex workflow changes
 
@@ -749,6 +801,18 @@ It MUST record that evidence.
 
 Reconsideration without material local evidence is duplicated reasoning.
 
+### 13.7 Completion routing
+
+After implementation, selected repository-facing review, remediation, and fresh final verification, Codex returns:
+
+```yaml
+phase: completion
+state: READY_FOR_CHAT_ACCEPTANCE
+next_owner: chat
+```
+
+Codex does not require the Developer to inspect diffs, source code, tests, verifier output, technical findings, or technical remediation. Technical defects found during Chat acceptance return to Codex. Developer-owned material decisions return through Chat to the Developer. Mandatory fresh verification is unchanged.
+
 ## 14. Smallest sufficient Codex transfer bundle
 
 The default Chat-to-Codex transfer consists of:
@@ -778,6 +842,8 @@ The handoff MUST remain self-contained enough for Codex to identify:
 - unresolved local facts;
 - verification expectations.
 
+The corresponding Codex-to-Chat completion bundle contains the structured completion state, exact repository inventory, review/remediation evidence, and fresh verification evidence needed for technical acceptance. It excludes unnecessary authoring transcript and does not claim Chat acceptance or publication authority.
+
 ## 15. Superpowers adapter behavior
 
 The Superpowers adapter remains the only supported methodology adapter.
@@ -791,7 +857,9 @@ For v0.2:
 - R012 direct execution remains plan-free;
 - implementation methodology remains selected independently;
 - review remains value-gated;
-- verification-before-completion remains mandatory.
+- verification-before-completion remains mandatory;
+- completion returns to Chat as `READY_FOR_CHAT_ACCEPTANCE`;
+- the adapter preserves the explicit `chat_verify_commit_before_next_task` choice and never treats it as publication authorization.
 
 ## 16. Dogfood measurement extension
 
@@ -878,7 +946,11 @@ Reject an Approved Handoff `0.2` when:
 - a not-needed handoff contains preparation content;
 - source provenance is display-name-only or unresolvable;
 - preparation contradicts approved scope, acceptance, or strategy;
-- existing Developer-approval invariants fail.
+- existing Developer-approval invariants fail;
+- `developer_decisions.chat_verify_commit_before_next_task` is missing or non-Boolean;
+- a predecessor verification gate omits predecessor task ID, exact commit SHA, or resolvable evidence.
+
+Reject an Approved Handoff `0.1` when it contains `chat_verify_commit_before_next_task` or v0.2 predecessor-gate metadata.
 
 ### 17.3 Compatibility checks
 
@@ -918,7 +990,10 @@ Invalid:
 Valid:
 
 - prepared handoff;
-- not-needed R012 handoff.
+- not-needed R012 handoff;
+- explicit policy `true`;
+- explicit policy `false` without a mandatory predecessor gate;
+- a completed or reused predecessor gate with exact commit evidence.
 
 Invalid:
 
@@ -930,7 +1005,19 @@ Invalid:
 - not-needed with non-empty work units;
 - not-needed with non-null summary;
 - display-name-only source;
-- contradictory Developer authority.
+- contradictory Developer authority;
+- missing policy;
+- non-Boolean policy;
+- v0.2-only policy on `0.1`;
+- incomplete or unresolvable predecessor verification evidence.
+
+### Completion routing
+
+- Codex completion returns `READY_FOR_CHAT_ACCEPTANCE` to Chat.
+- Technical defects return to Codex without Developer technical review.
+- Developer-owned material decisions remain Developer-owned.
+- The true path blocks a dependent handoff until exact predecessor commit verification passes.
+- The false path creates no mandatory predecessor commit-audit gate.
 
 ### Compatibility
 
@@ -970,6 +1057,8 @@ Dogfood #017 uses one fresh Codex implementation context.
 It does not run an A/B pair by default because a second equivalent implementation run would consume additional Codex usage without proven decision value.
 
 Every material Codex activity is classified through `codex_value_checks`.
+
+Dogfood #017 may receive an approved mid-task Developer intent clarification without restarting when the active route and strategy remain valid. Such a continuation records the clarification, checkpoint reuse, focused RED/GREEN evidence, and any new material Codex activity without rewriting the earlier run history.
 
 ### 19.4 Material activity boundary
 
@@ -1054,6 +1143,9 @@ routing_recommendation_0_2:
 
 approved_handoff_0_2:
   upstream_preparation_required: true
+  chat_verify_commit_before_next_task_required: true
+  explicit_true_and_false_valid: true
+  implicit_default_absent: true
   prepared_shape_validated: true
   not_needed_shape_validated: true
   source_provenance_resolvable: true
@@ -1064,6 +1156,19 @@ codex_workflow:
   preparation_grounded_not_restarted: true
   material_re_evaluation_requires_evidence: true
   R012_fake_plan_absent: true
+  completion_returns_to_chat: true
+
+completion_routing:
+  chat_technical_acceptance: true
+  technical_fix_returns_to_codex: true
+  developer_technical_review_required: false
+  developer_owned_decisions_preserved: true
+
+cross_task_commit_verification:
+  true_path_blocks_dependent_handoff: true
+  exact_stable_commit_required: true
+  predecessor_gate_machine_readable: true
+  false_path_mandatory_gate_absent: true
 
 compatibility:
   routing_recommendation_0_1_valid: true
@@ -1092,6 +1197,7 @@ The design anticipates changes to the following classes of repository surface:
 
 - Routing Recommendation human contract and schema;
 - Approved Handoff human contract and schema;
+- completion ownership and predecessor commit-verification guidance;
 - Chat workflow;
 - Codex workflow;
 - Superpowers adapter;
@@ -1161,7 +1267,9 @@ routing_recommendation:
 
 approved_handoff:
   schema_version: "0.2"
-  required_field: upstream_preparation
+  required_fields:
+    - upstream_preparation
+    - developer_decisions.chat_verify_commit_before_next_task
 
 dogfood_record:
   schema_version: "0.1"
@@ -1174,6 +1282,17 @@ compatibility:
 dogfood:
   next_run: "#017 — Upstream Preparation Boundary"
   default_experiment: single fresh Codex context
+
+completion:
+  codex_state: READY_FOR_CHAT_ACCEPTANCE
+  next_owner: chat
+  developer_technical_review_required: false
+
+cross_task_policy:
+  explicit_boolean_required: true
+  dogfood_017_value: true
+  true_path_requires_stable_remote_commit_audit: true
+  false_path_requires_mandatory_audit: false
 ```
 
 Approval does not authorize semantic implementation until:
@@ -1182,3 +1301,11 @@ Approval does not authorize semantic implementation until:
 2. the persisted copy is reviewed against this approved content;
 3. a separate implementation Approved Handoff is issued;
 4. Codex completes live preflight against the implementation baseline.
+
+## 25. Completion Ownership and Cross-Task Commit Verification
+
+Revision 2 clarifies completion routing without adding a bridge, lifecycle phase, routing rule, Task Profile dimension, or autonomous approval surface.
+
+Codex owns implementation, repository-facing review, and fresh verification. Its structured completion evidence returns to Chat as `READY_FOR_CHAT_ACCEPTANCE`. Chat owns technical acceptance and remediation routing. The Developer is not required to perform technical code or test review, but remains final authority for intent, policy, authority, material strategy, overrides, merge, and publication.
+
+The required per-task `chat_verify_commit_before_next_task` Boolean records whether Chat must audit the predecessor's stable remote commit before emitting a dependent next-task handoff. `true` blocks that handoff until exact-commit verification passes and a resolvable `predecessor_commit_verification` gate can be recorded. `false` creates no mandatory predecessor audit. Neither value commits, pushes, merges, publishes, or starts another task.

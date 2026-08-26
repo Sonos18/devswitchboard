@@ -1,0 +1,80 @@
+{
+  "$schema_file": "../schemas/approved-handoff.schema.json",
+  "schema": "approved_handoff",
+  "schema_version": "0.2",
+  "project": "devswitchboard",
+  "task_id": "example-v0.2-prepared-handoff",
+  "revision": 1,
+  "status": "ready_for_codex_preflight",
+  "task_class": "architectural",
+  "goal": "Implement the approved v0.2 contract delta while preserving historical v0.1 records.",
+  "baseline": { "state": "initialized", "github_remote_available": true, "local_repository_available": true },
+  "context": { "depth": "high", "freshness": "fresh", "local_delta_required": false },
+  "workflow_state": { "requirement_discovery": "completed", "design": "completed", "specification": "completed", "developer_approval": true },
+  "superpowers": { "brainstorming": { "satisfied_upstream": true, "source": "docs/superpowers/specs/2026-08-25-devswitchboard-v0.2-upstream-first-execution.md" } },
+  "routing": {
+    "codex_preflight": { "active": true },
+    "implementation_planning": { "active": true, "owner": "codex" },
+    "implementation": { "owner": "codex", "subagents": false },
+    "review": { "active": true, "subagent": true },
+    "verification": { "active": true }
+  },
+  "execution": {
+    "isolation": { "recommended": true },
+    "methodology": { "adapter": "superpowers", "path": "architectural" }
+  },
+  "developer_decisions": { "routing_recommendation_approved": true, "implementation_subagents": false, "workspace_isolation": true, "chat_verify_commit_before_next_task": true },
+  "confidence": "high",
+  "task_profile": {
+    "$schema_file": "../schemas/task-profile.schema.json",
+    "schema": "task_profile",
+    "schema_version": "0.1",
+    "profile_status": "final",
+    "dimensions": {
+      "requirement_ambiguity": { "level": "low", "evidence": ["The v0.2 specification is approved."] },
+      "scope_complexity": { "level": "high", "evidence": ["Versioned contracts, workflows, examples, and verification must agree."] },
+      "repository_dependency": { "level": "high", "evidence": ["Exact schema and verifier integration requires live repository truth."] },
+      "regression_risk": { "level": "high", "evidence": ["Historical version 0.1 compatibility must remain intact."] },
+      "parallelizability": { "level": "low", "evidence": ["The versioned contract boundary is tightly coupled."] },
+      "security_sensitivity": { "level": "low", "evidence": ["No credentials, privileges, or runtime trust boundaries change."] },
+      "context_uncertainty": { "level": "low", "evidence": ["Only repository-local grounding remains unresolved."] }
+    }
+  },
+  "completed_gates": [
+    { "gate": "project_north_star", "status": "reused", "evidence_source": "docs/north-star.md" },
+    { "gate": "design", "status": "approved", "evidence_source": "docs/superpowers/specs/2026-08-25-devswitchboard-v0.2-upstream-first-execution.md" },
+    { "gate": "developer_approval", "status": "approved", "evidence_source": "approved handoff revision 1" }
+  ],
+  "approved_strategy": { "implementation_subagents": false, "workspace_isolation": true, "review_subagent": true, "methodology_adapter": "superpowers" },
+  "scope": {
+    "included": ["Version-conditioned Routing Recommendation and Approved Handoff validation."],
+    "excluded": ["Historical migration, new lifecycle phases, new routing rules, and product runtime capability."]
+  },
+  "acceptance_criteria": ["New version 0.2 records validate and all historical version 0.1 records remain valid."],
+  "verification_expectations": ["Run fresh regressions, repository verification, compatibility checks, and final whitespace checks."],
+  "upstream_preparation": {
+    "status": "prepared",
+    "source_artifacts": [
+      "docs/north-star.md",
+      "docs/superpowers/specs/2026-08-25-devswitchboard-v0.2-upstream-first-execution.md"
+    ],
+    "approach_summary": "Extend the two existing canonical contract families through version-conditioned validation while preserving historical records.",
+    "logical_work_units": [
+      "Add Routing Recommendation version 0.2 surface-value validation.",
+      "Add Approved Handoff version 0.2 upstream-preparation validation.",
+      "Preserve historical version 0.1 compatibility."
+    ],
+    "sequencing_assumptions": ["Establish failing regression evidence before changing production schemas."],
+    "local_grounding_needed": ["Identify exact schema branches, verifier hooks, fixture paths, and verification commands."],
+    "rationale": ["The approved specification fixes the approach while live repository truth determines exact integration targets."]
+  },
+  "readiness": {
+    "intent_clear": "pass",
+    "material_decisions_resolved": "pass",
+    "scope_bounded": "pass",
+    "acceptance_testable": "pass",
+    "critical_uncertainty": "none",
+    "unresolved_conflicts": "none",
+    "developer_approval": true
+  }
+}

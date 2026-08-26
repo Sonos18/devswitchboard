@@ -1,0 +1,340 @@
+{
+  "$schema_file": "../schemas/dogfood-record.schema.json",
+  "schema": "dogfood_record",
+  "schema_version": "0.1",
+  "record_type": "run",
+  "task_id": "devswitchboard-upstream-preparation-boundary-017",
+  "revision": 2,
+  "authority": [
+    "docs/north-star.md",
+    "docs/superpowers/specs/2026-08-25-devswitchboard-v0.2-upstream-first-execution.md",
+    "Developer-approved Approved Handoff Revision 1",
+    "Developer-approved continuation handoff Revision 2 completion and cross-task policy",
+    "Exact shared baseline dc8e727ef0c02f3fb7f2b150effa327c87192336"
+  ],
+  "approved_route": [
+    "Reuse the approved North Star, requirements, design, specification, contract versions, compatibility policy, Dogfood protocol, and execution strategy",
+    "Run live Codex Preflight and repository-grounded implementation planning in an isolated worktree",
+    "Implement sequentially in one Codex context with no implementation subagents",
+    "Run one fresh independent non-authoring review and mandatory fresh final verification",
+    "Return Codex technical completion to Chat for acceptance and remediation routing",
+    "Require Chat verification of the stable predecessor commit before a dependent next-task handoff",
+    "Do not perform publication"
+  ],
+  "execution_strategy": {
+    "implementation_subagents": false,
+    "review_subagent": true,
+    "workspace_isolation": true,
+    "methodology_adapter": "superpowers"
+  },
+  "gates": {
+    "reused": [
+      "Project North Star",
+      "Requirement discovery",
+      "Developer-approved v0.2 design and specification Revision 1",
+      "Specification persistence",
+      "Developer-approved implementation route and upstream preparation",
+      "Existing 20-file local checkpoint, repository grounding, Revision 1 implementation, and remediated review evidence",
+      "Developer-approved Revision 2 completion ownership and chat_verify_commit_before_next_task true"
+    ],
+    "repeated": [
+      "Live Codex Preflight",
+      "Regression-first contract validation",
+      "Preliminary repository verification",
+      "Fresh independent non-authoring review",
+      "Focused remediation regressions",
+      "Focused Revision 2 completion-policy regressions",
+      "Fresh Revision 2 independent non-authoring review",
+      "Fresh final repository verification"
+    ]
+  },
+  "measurements": {
+    "phase_timings": [],
+    "clarification_loops": 0,
+    "re_routes": [],
+    "verification_failures": [
+      "The first GREEN regression run reached all new invariants but one test expected an inner string-length message instead of the validator's field-level oneOf diagnostic; the assertion was narrowed and the complete suite passed on rerun."
+    ],
+    "developer_overrides": [],
+    "codex_value_checks": [
+      {
+        "checkpoint_id": "CV-017-001",
+        "phase": "codex_preflight",
+        "activity": "Inspect the exact baseline, isolated workspace, local instructions, verifier architecture, regression harness, schemas, examples, and Dogfood records.",
+        "upstream_item": null,
+        "classification": "LOCAL_GROUNDING_REQUIRED",
+        "evidence": [
+          "Refreshed origin/main and isolated HEAD both resolved to dc8e727ef0c02f3fb7f2b150effa327c87192336; baseline regressions and repository verification passed."
+        ]
+      },
+      {
+        "checkpoint_id": "CV-017-002",
+        "phase": "implementation_planning",
+        "activity": "Map all nine approved logical work units to live repository evidence without reopening approach selection.",
+        "upstream_item": "Approved logical work units 1 through 9",
+        "classification": "UPSTREAM_PREPARATION_REUSED",
+        "evidence": [
+          "The repository-grounded plan classifies seven units reused, two adapted for repository detail, and zero invalidated."
+        ]
+      },
+      {
+        "checkpoint_id": "CV-017-003",
+        "phase": "implementation_planning",
+        "activity": "Resolve exact schema branching, verifier integration, fixture paths, compatibility inventory, and verification commands.",
+        "upstream_item": "Ground exact files, interfaces, repository conventions, and checks.",
+        "classification": "LOCAL_GROUNDING_REQUIRED",
+        "evidence": [
+          "Live inspection found one dependency-free validator, canonical schema selection by record schema, three historical routing cases, three historical Approved Handoffs, 34 historical Dogfood JSON files, and the exact regression/verifier commands."
+        ]
+      },
+      {
+        "checkpoint_id": "CV-017-004",
+        "phase": "implementation_planning",
+        "activity": "Place source-addressability enforcement at the smallest repository-supported boundary.",
+        "upstream_item": "Enforce resolvable v0.2 preparation provenance.",
+        "classification": "REQUIRED_ADAPTATION",
+        "evidence": [
+          "JSON Schema validates the closed source field shape, while scripts/verify.mjs resolves repository-relative paths and validates HTTPS locations because schema alone cannot inspect the live filesystem."
+        ]
+      },
+      {
+        "checkpoint_id": "CV-017-005",
+        "phase": "implementation_planning",
+        "activity": "Preserve historical routing-case wrappers and select standalone paths for current v0.2 fixtures.",
+        "upstream_item": "Add the minimum canonical v0.2 examples.",
+        "classification": "REQUIRED_ADAPTATION",
+        "evidence": [
+          "The existing routing examples are historical routing_case 0.1 records, so five new standalone v0.2 fixtures were added instead of migrating them."
+        ]
+      },
+      {
+        "checkpoint_id": "CV-017-006",
+        "phase": "implementation",
+        "activity": "Add regression-first coverage, version-conditioned schemas, semantic verification, human guidance, adapter behavior, and canonical fixtures.",
+        "upstream_item": "Implement approved logical work units 1 through 7.",
+        "classification": "IMPLEMENTATION_EXECUTION",
+        "evidence": [
+          "RED rejected all valid v0.2 and Codex-value records at the pre-feature 0.1 boundary; GREEN passes after the coherent schema, verifier, documentation, workflow, adapter, and example implementation."
+        ]
+      },
+      {
+        "checkpoint_id": "CV-017-007",
+        "phase": "verification",
+        "activity": "Run preliminary workflow-integrity regressions and complete repository verification before independent review.",
+        "upstream_item": null,
+        "classification": "MANDATORY_CONFIDENCE",
+        "evidence": [
+          "The complete regression suite and repository verifier passed after the implementation and canonical examples were present."
+        ]
+      },
+      {
+        "checkpoint_id": "CV-017-008",
+        "phase": "review",
+        "activity": "Run a fresh independent non-authoring review of authority, provenance, compatibility, value classifications, diagnostics, regressions, and inventory.",
+        "upstream_item": null,
+        "classification": "MANDATORY_CONFIDENCE",
+        "evidence": [
+          "The reviewer reproduced two Important boundary defects: excluded preparation work and arbitrary unpinned HTTPS provenance were accepted; no Critical or Minor finding and no duplicated material reasoning was found."
+        ]
+      },
+      {
+        "checkpoint_id": "CV-017-009",
+        "phase": "implementation",
+        "activity": "Remediate the two confirmed independent-review findings with regression-first deterministic authority and provenance validation.",
+        "upstream_item": null,
+        "classification": "IMPLEMENTATION_EXECUTION",
+        "evidence": [
+          "RED reproduced all three invalid acceptances; commit-pinned remote provenance was fixed first and isolated to the two authority failures, then explicit excluded-capability and no-subagent strategy checks made the complete suite GREEN."
+        ]
+      },
+      {
+        "checkpoint_id": "CV-017-010",
+        "phase": "review",
+        "activity": "Re-review the authority and provenance remediation and challenge it for false positives.",
+        "upstream_item": null,
+        "classification": "MANDATORY_CONFIDENCE",
+        "evidence": [
+          "The reviewer verified both original fixes and negated-exclusion behavior, then reproduced one Important false positive where a selected review subagent was treated as forbidden implementation delegation."
+        ]
+      },
+      {
+        "checkpoint_id": "CV-017-011",
+        "phase": "implementation",
+        "activity": "Separate independent review selection from implementation-subagent prohibition.",
+        "upstream_item": null,
+        "classification": "IMPLEMENTATION_EXECUTION",
+        "evidence": [
+          "A valid selected-review RED case reproduced the false positive; implementation detection was narrowed to explicit implementation-subagent wording or a subagent coupled to positive implementation work, and the complete suite returned GREEN."
+        ]
+      },
+      {
+        "checkpoint_id": "CV-017-012",
+        "phase": "review",
+        "activity": "Run final independent re-review after all authority and provenance remediations.",
+        "upstream_item": null,
+        "classification": "MANDATORY_CONFIDENCE",
+        "evidence": [
+          "The same independent reviewer returned pass with no unresolved Critical, Important, or Minor finding and reconfirmed exact inventory, historical compatibility, authority, provenance, and zero duplicated reasoning."
+        ]
+      },
+      {
+        "checkpoint_id": "CV-017-013",
+        "phase": "verification",
+        "activity": "Run fresh final verification after review evidence and all remediation were finalized.",
+        "upstream_item": null,
+        "classification": "MANDATORY_CONFIDENCE",
+        "evidence": [
+          "Workflow-integrity regressions and the repository verifier passed; 67 JSON files parsed independently; all schema-backed records, links, terminology, routing, authority, decision-value, Codex-value, source-resolution, unresolved-marker, inventory, history, and whitespace checks passed."
+        ]
+      },
+      {
+        "checkpoint_id": "CV-017-014",
+        "phase": "codex_preflight",
+        "activity": "Restore and compare the exact local Revision 1 checkpoint before applying the approved Revision 2 continuation.",
+        "upstream_item": null,
+        "classification": "LOCAL_GROUNDING_REQUIRED",
+        "evidence": [
+          "origin/main, local HEAD, and merge base all remained dc8e727ef0c02f3fb7f2b150effa327c87192336; the branch was exact; git diff --check was clean; and the changed/untracked inventory matched the reported 20 files with no missing or unexpected path."
+        ]
+      },
+      {
+        "checkpoint_id": "CV-017-015",
+        "phase": "implementation_planning",
+        "activity": "Ground the approved Revision 2 intent clarification as a continuation without reconstructing completed work.",
+        "upstream_item": "Apply the approved completion-routing and cross-task commit-verification policy.",
+        "classification": "UPSTREAM_PREPARATION_REUSED",
+        "evidence": [
+          "The existing plan was appended with a continuation section; the route and strategy remained valid, no restart occurred, and the existing checkpoint and review/remediation history were preserved."
+        ]
+      },
+      {
+        "checkpoint_id": "CV-017-016",
+        "phase": "implementation",
+        "activity": "Add focused Revision 2 RED coverage and implement the explicit policy, completion routing, predecessor gate, examples, and normative guidance.",
+        "upstream_item": null,
+        "classification": "IMPLEMENTATION_EXECUTION",
+        "evidence": [
+          "RED observed the closed schema reject both explicit Boolean choices, omission remain accepted, version-specific diagnostics remain absent, predecessor metadata remain unsupported, and all four completion-policy mutations remain accepted before implementation.",
+          "GREEN passed the complete suite after version-conditioned policy validation, completion guidance, exact-SHA predecessor evidence, examples, specification Revision 2, plan continuation, and Dogfood continuation were implemented."
+        ]
+      },
+      {
+        "checkpoint_id": "CV-017-017",
+        "phase": "review",
+        "activity": "Run a fresh independent non-authoring review of the complete Revision 2 continuation.",
+        "upstream_item": null,
+        "classification": "MANDATORY_CONFIDENCE",
+        "evidence": [
+          "The reviewer found no Critical, Important, Minor, or boundary-relevant issue; reran both verifiers and git diff --check successfully; confirmed exact 21-file inventory and historical immutability; and found no duplicated material reasoning."
+        ]
+      },
+      {
+        "checkpoint_id": "CV-017-018",
+        "phase": "verification",
+        "activity": "Run fresh Revision 2 final verification after review evidence and all continuation content were finalized.",
+        "upstream_item": null,
+        "classification": "MANDATORY_CONFIDENCE",
+        "evidence": [
+          "The complete regression suite and repository verifier passed; all 67 JSON files parsed independently; 54 example and Dogfood artifacts validated through canonical schema selection; Markdown, terminology, routing, authority, decision-value, Codex-value, completion-policy, source-resolution, unresolved-marker, inventory, history, diff, and direct whitespace checks passed.",
+          "The exact inventory was 21 files; all 37 protected historical Dogfood files and 14 historical example files matched origin/main; origin/main and local HEAD remained dc8e727ef0c02f3fb7f2b150effa327c87192336."
+        ]
+      }
+    ]
+  },
+  "preflight": {
+    "outcome": "compatible_with_adaptation",
+    "adaptations": [
+      "Apply the approved Revision 2 completion-routing policy.",
+      "Add the explicit cross-task commit-verification decision."
+    ],
+    "conflicts": []
+  },
+  "review": {
+    "status": "findings_remediated",
+    "findings": [
+      "Important: prepared upstream_preparation could add an explicitly excluded capability or contradict implementation_subagents false while still validating; deterministic scope/strategy checks and regressions were added.",
+      "Important: any syntactically valid HTTPS URL was accepted as approved/resolvable provenance; validation now accepts only repository files or commit-pinned GitHub blob/raw artifact URLs, with valid and invalid regressions.",
+      "Important: the first strategy remediation treated a valid selected independent review subagent as forbidden implementation delegation; the two resource checks were separated with a valid regression.",
+      "Final independent re-review of Revision 1: pass with no unresolved Critical, Important, Minor, or boundary-relevant finding.",
+      "Fresh focused Revision 2 independent review: pass with no Critical, Important, Minor, or boundary-relevant finding; no prior remediation regressed."
+    ]
+  },
+  "verification": {
+    "status": "pass",
+    "checks": [
+      "Complete workflow-integrity regression suite",
+      "Complete repository verifier including JSON syntax, schema conformance, semantic invariants, Markdown links, terminology, routing rules, unresolved markers, decision-value gates, and completion invariants",
+      "Independent parsing of all 67 repository JSON files",
+      "Canonical schema selection for all 54 example and Dogfood JSON artifacts",
+      "Three historical Routing Recommendations 0.1 and three historical Approved Handoffs 0.1 remain valid and reject v0.2-only fields",
+      "Three Routing Recommendation 0.2 and two Approved Handoff 0.2 canonical fixtures validate",
+      "Prepared and not-needed shape, authority, provenance, R006/R012, surface-value, decision-value, and Codex-value regressions",
+      "Markdown links, canonical terminology, routing semantics, authority semantics, source resolution, and unresolved-marker checks",
+      "Exact Revision 1 20-file checkpoint preserved and exact Revision 2 21-file changed and untracked inventory",
+      "SHA-256 comparison of 37 protected historical Dogfood files and protected v0.1 surfaces",
+      "Git diff check and direct trailing-whitespace/final-newline validation for every changed or untracked file",
+      "Explicit true/false, omission, non-Boolean, v0.1 rejection, completion-routing, true/false predecessor-gate, exact-SHA evidence, and no-Developer-technical-review regressions",
+      "Independent parsing of all 67 JSON files and canonical validation of all 54 example and Dogfood artifacts",
+      "SHA-1 blob comparison of 37 historical Dogfood files and 14 historical example files against origin/main",
+      "Refreshed origin/main and local HEAD remain dc8e727ef0c02f3fb7f2b150effa327c87192336"
+    ]
+  },
+  "findings": [
+    {
+      "type": "AUTHORITY_BOUNDARY",
+      "area": "upstream_preparation_scope_and_strategy",
+      "description": "Prepared logical work could positively add an explicitly excluded capability or override implementation_subagents false while still validating.",
+      "correction": "Added regression-first deterministic checks for positive work naming explicitly excluded capability subjects and for implementation/review subagent work forbidden by approved strategy.",
+      "status": "remediated"
+    },
+    {
+      "type": "PROVENANCE_ADDRESSABILITY",
+      "area": "upstream_preparation_source_artifacts",
+      "description": "Any syntactically valid HTTPS URL with a hostname was treated as approved, resolvable preparation provenance.",
+      "correction": "Restricted remote provenance to commit-pinned GitHub blob/raw artifact URLs and required repository-relative sources to resolve to files; added pinned, unpinned, arbitrary-host, and missing-file coverage.",
+      "status": "remediated"
+    },
+    {
+      "type": "AUTHORITY_FALSE_POSITIVE",
+      "area": "implementation_and_review_subagent_separation",
+      "description": "The first no-implementation-subagents remediation rejected a valid selected independent review subagent because a bare subagent reference was treated as implementation delegation.",
+      "correction": "Added a valid selected-review regression and restricted implementation delegation detection to explicit implementation-subagent language or subagents coupled to positive implementation work.",
+      "status": "remediated"
+    }
+  ],
+  "developer_controls": [
+    "Developer remains final authority and recommendations remain advisory",
+    "Implementation subagents selected false and implementation subagent count 0",
+    "Workspace isolation selected true and used",
+    "Fresh independent review selected true; three Important Revision 1 findings were remediated, and the fresh Revision 2 review passed with no unresolved finding",
+    "Fresh final verification remained mandatory and passed after the last Revision 2 implementation, review-evidence, plan, and Dogfood change",
+    "Re-route Required count 0",
+    "Conflict Report count 0",
+    "Developer override count 0",
+    "A/B implementation run count 0",
+    "Historical migration count 0",
+    "chat_verify_commit_before_next_task selected true with no implicit default",
+    "Codex completion next owner is Chat and Developer technical review is not required",
+    "No stable remote #017 commit exists, Chat acceptance and predecessor audit remain unclaimed, and the next dependent task remains blocked",
+    "Publication action count 0"
+  ],
+  "result": "pass",
+  "observations": [
+    "Codex Preflight was compatible at the exact approved shared baseline with no material local delta.",
+    "Approved upstream preparation was grounded rather than re-derived; no requirement, design, contract-version, or Dogfood-protocol decision was reopened.",
+    "The two repository adaptations were evidence-based placement and fixture decisions that preserved approved intent and strategy.",
+    "No duplicated material reasoning was found by the independent reviewer.",
+    "Both initial Important review findings were reproduced as RED regressions and remediated without scope expansion.",
+    "Re-review verified those fixes and found one Important implementation-versus-review subagent false positive; a valid RED case was added and the complete suite returned GREEN after the narrow correction.",
+    "Final independent re-review passed and found no duplicated material reasoning.",
+    "Dogfood #017 supports the approved hypothesis: upstream preparation was reused, all material Codex activity produced local, execution, adaptation, review, or verification value, and duplicated material reasoning count remained zero.",
+    "Fresh final verification passed after all Revision 1 implementation, remediation, review, Dogfood, and plan evidence changes were finalized.",
+    "A mid-task Developer intent clarification added completion routing to Chat and selected chat_verify_commit_before_next_task true without invalidating the route or strategy.",
+    "The existing local checkpoint was reused; no restart, Re-route Required, Conflict Report, A/B run, commit, push, Chat acceptance, or predecessor commit audit occurred.",
+    "Focused Revision 2 RED evidence was observed before schema, verifier, workflow, specification, example, and Dogfood production changes.",
+    "Fresh Revision 2 independent review confirmed completion routing, both Boolean choices, exact-SHA predecessor evidence, historical compatibility, exact inventory, prior remediations, and zero duplicated reasoning with no finding.",
+    "Fresh Revision 2 final verification passed after review and evidence finalization, including 67 JSON parses, 54 canonical artifact validations, 21-file inventory, 37 protected historical Dogfoods, 14 historical examples, and direct whitespace checks.",
+    "Duplicated material reasoning remains zero through the completed Revision 2 local checkpoint."
+  ],
+  "next_action": "return_READY_FOR_CHAT_ACCEPTANCE_evidence_without_claiming_Chat_acceptance_or_predecessor_commit_audit"
+}

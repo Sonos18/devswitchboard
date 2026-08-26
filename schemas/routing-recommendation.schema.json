@@ -3,11 +3,56 @@
   "$id": "https://devswitchboard.dev/schemas/routing-recommendation.schema.json",
   "title": "Routing Recommendation",
   "type": "object",
+  "oneOf": [
+    {
+      "properties": { "schema_version": { "const": "0.1" } },
+      "not": { "required": ["surface_value"] }
+    },
+    {
+      "required": ["surface_value"],
+      "properties": { "schema_version": { "const": "0.2" } },
+      "oneOf": [
+        {
+          "properties": {
+            "surface": { "const": "chat" },
+            "surface_value": {
+              "items": { "enum": ["intent_resolution", "shared_context_acquisition"] }
+            }
+          }
+        },
+        {
+          "properties": {
+            "surface": { "const": "developer" },
+            "surface_value": {
+              "items": { "const": "developer_decision" }
+            }
+          }
+        },
+        {
+          "properties": {
+            "surface": { "const": "codex" },
+            "surface_value": {
+              "items": {
+                "enum": [
+                  "local_repository_truth",
+                  "repository_grounding",
+                  "implementation_execution",
+                  "debugging",
+                  "independent_review",
+                  "fresh_verification"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
   "required": ["$schema_file", "schema", "schema_version", "task_id", "revision", "phase", "surface", "workflow", "resources", "matched_rule", "rationale", "developer_approval_required", "invalidation_conditions"],
   "properties": {
     "$schema_file": { "const": "../schemas/routing-recommendation.schema.json" },
     "schema": { "const": "routing_recommendation" },
-    "schema_version": { "const": "0.1" },
+    "schema_version": { "enum": ["0.1", "0.2"] },
     "task_id": { "type": "string", "minLength": 1 },
     "revision": { "type": "integer", "minimum": 1 },
     "phase": { "enum": ["requirement_discovery", "design", "specification", "codex_preflight", "implementation_planning", "implementation", "review", "verification", "handoff"] },
@@ -15,6 +60,23 @@
     "workflow": { "type": "string", "minLength": 1 },
     "resources": { "type": "array", "items": { "type": "string", "minLength": 1 } },
     "matched_rule": { "type": "string", "pattern": "^R0(0[1-9]|1[0-2])$" },
+    "surface_value": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "enum": [
+          "intent_resolution",
+          "shared_context_acquisition",
+          "developer_decision",
+          "local_repository_truth",
+          "repository_grounding",
+          "implementation_execution",
+          "debugging",
+          "independent_review",
+          "fresh_verification"
+        ]
+      }
+    },
     "rationale": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
     "developer_approval_required": { "type": "boolean" },
     "invalidation_conditions": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }

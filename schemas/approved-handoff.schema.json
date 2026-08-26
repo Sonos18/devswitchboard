@@ -3,11 +3,33 @@
   "$id": "https://devswitchboard.dev/schemas/approved-handoff.schema.json",
   "title": "Approved Handoff",
   "type": "object",
+  "oneOf": [
+    {
+      "properties": { "schema_version": { "const": "0.1" } },
+      "allOf": [
+        { "not": { "required": ["upstream_preparation"] } },
+        {
+          "not": {
+            "properties": {
+              "developer_decisions": { "required": ["chat_verify_commit_before_next_task"] }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "required": ["upstream_preparation"],
+      "properties": {
+        "schema_version": { "const": "0.2" },
+        "developer_decisions": { "required": ["chat_verify_commit_before_next_task"] }
+      }
+    }
+  ],
   "required": ["$schema_file", "schema", "schema_version", "project", "task_id", "revision", "status", "task_class", "goal", "baseline", "context", "workflow_state", "superpowers", "routing", "execution", "developer_decisions", "confidence", "task_profile", "completed_gates", "approved_strategy", "scope", "acceptance_criteria", "verification_expectations", "readiness"],
   "properties": {
     "$schema_file": { "const": "../schemas/approved-handoff.schema.json" },
     "schema": { "const": "approved_handoff" },
-    "schema_version": { "const": "0.1" },
+    "schema_version": { "enum": ["0.1", "0.2"] },
     "project": { "type": "string", "minLength": 1 },
     "task_id": { "type": "string", "minLength": 1 },
     "revision": { "type": "integer", "minimum": 1 },
@@ -101,7 +123,8 @@
       "properties": {
         "routing_recommendation_approved": { "const": true },
         "implementation_subagents": { "type": "boolean" },
-        "workspace_isolation": { "type": "boolean" }
+        "workspace_isolation": { "type": "boolean" },
+        "chat_verify_commit_before_next_task": { "type": "boolean" }
       },
       "additionalProperties": false
     },
@@ -120,7 +143,9 @@
         "properties": {
           "gate": { "type": "string", "minLength": 1 },
           "status": { "enum": ["passed", "approved", "reused"] },
-          "evidence_source": { "type": "string", "minLength": 1 }
+          "evidence_source": { "type": "string", "minLength": 1 },
+          "predecessor_task_id": { "type": "string", "minLength": 1 },
+          "commit_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
         },
         "additionalProperties": false
       }
@@ -147,6 +172,7 @@
     },
     "acceptance_criteria": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
     "verification_expectations": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "upstream_preparation": { "$ref": "#/$defs/upstream_preparation" },
     "readiness": {
       "type": "object",
       "required": ["intent_clear", "material_decisions_resolved", "scope_bounded", "acceptance_testable", "critical_uncertainty", "unresolved_conflicts", "developer_approval"],
@@ -163,6 +189,46 @@
     }
   },
   "$defs": {
+    "upstream_preparation": {
+      "type": "object",
+      "required": ["status", "source_artifacts", "approach_summary", "logical_work_units", "sequencing_assumptions", "local_grounding_needed", "rationale"],
+      "properties": {
+        "status": { "enum": ["prepared", "not_needed"] },
+        "source_artifacts": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "approach_summary": {
+          "oneOf": [
+            { "type": "string", "minLength": 1 },
+            { "type": "null" }
+          ]
+        },
+        "logical_work_units": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "sequencing_assumptions": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "local_grounding_needed": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "rationale": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "status": { "const": "prepared" },
+            "source_artifacts": { "minItems": 1 },
+            "approach_summary": { "type": "string", "minLength": 1 },
+            "logical_work_units": { "minItems": 1 },
+            "local_grounding_needed": { "minItems": 1 }
+          }
+        },
+        {
+          "properties": {
+            "status": { "const": "not_needed" },
+            "source_artifacts": { "maxItems": 0 },
+            "approach_summary": { "type": "null" },
+            "logical_work_units": { "maxItems": 0 },
+            "sequencing_assumptions": { "maxItems": 0 },
+            "local_grounding_needed": { "maxItems": 0 }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
     "active_phase": {
       "type": "object",
       "required": ["active"],

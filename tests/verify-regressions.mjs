@@ -118,6 +118,129 @@ function validMicroConsultationResponse() {
   };
 }
 
+function validRoutingRecommendation(surface = "codex", surfaceValue = ["repository_grounding"]) {
+  const routes = {
+    chat: {
+      phase: "specification",
+      workflow: "approved_specification",
+      resources: ["approved shared context"],
+      matched_rule: "R002"
+    },
+    developer: {
+      phase: "requirement_discovery",
+      workflow: "developer_intent_decision",
+      resources: ["intent question"],
+      matched_rule: "R001"
+    },
+    codex: {
+      phase: "implementation_planning",
+      workflow: "repository_grounded_planning",
+      resources: ["approved handoff", "approved v0.2 specification"],
+      matched_rule: "R006"
+    }
+  };
+  return {
+    $schema_file: "../schemas/routing-recommendation.schema.json",
+    schema: "routing_recommendation",
+    schema_version: "0.2",
+    task_id: `regression-routing-${surface}`,
+    revision: 1,
+    phase: routes[surface].phase,
+    surface,
+    workflow: routes[surface].workflow,
+    resources: routes[surface].resources,
+    matched_rule: routes[surface].matched_rule,
+    surface_value: surfaceValue,
+    rationale: [`The selected ${surface} surface produces material value for this phase.`],
+    developer_approval_required: true,
+    invalidation_conditions: ["Material evidence invalidates the approved route or strategy."]
+  };
+}
+
+function validApprovedHandoff(copyRoot, status = "prepared", chatVerifyCommit = status === "prepared") {
+  const record = readJson(path.join(copyRoot, "examples", "devswitchboard-approved-handoff.json"));
+  record.schema_version = "0.2";
+  record.task_id = `regression-upstream-preparation-${status}`;
+  record.revision = 2;
+  record.developer_decisions.chat_verify_commit_before_next_task = chatVerifyCommit;
+  if (status === "prepared") {
+    record.upstream_preparation = {
+      status: "prepared",
+      source_artifacts: [
+        "docs/north-star.md",
+        "docs/superpowers/specs/2026-08-25-devswitchboard-v0.2-upstream-first-execution.md"
+      ],
+      approach_summary: "Extend the existing contract families while retaining historical version 0.1 support.",
+      logical_work_units: [
+        "Add version-conditioned contract validation.",
+        "Preserve historical version 0.1 artifacts."
+      ],
+      sequencing_assumptions: ["Establish regression evidence before production changes."],
+      local_grounding_needed: ["Identify the canonical validator integration point."],
+      rationale: ["Approved intent determines the approach while exact repository targets require Codex."]
+    };
+  } else {
+    record.task_class = "bounded";
+    record.routing.implementation_planning.active = false;
+    record.execution.methodology.path = "bounded";
+    record.upstream_preparation = {
+      status: "not_needed",
+      source_artifacts: [],
+      approach_summary: null,
+      logical_work_units: [],
+      sequencing_assumptions: [],
+      local_grounding_needed: [],
+      rationale: ["Scope and acceptance already constrain direct bounded execution, so preparation adds no material value."]
+    };
+  }
+  return record;
+}
+
+function addPredecessorCommitVerification(record) {
+  record.completed_gates.push({
+    gate: "predecessor_commit_verification",
+    status: "passed",
+    evidence_source: "https://github.com/Sonos18/devswitchboard/commit/dc8e727ef0c02f3fb7f2b150effa327c87192336",
+    predecessor_task_id: "devswitchboard-upstream-preparation-boundary-017",
+    commit_sha: "dc8e727ef0c02f3fb7f2b150effa327c87192336"
+  });
+  return record;
+}
+
+function validCodexValueChecks() {
+  const classifications = [
+    "UPSTREAM_PREPARATION_REUSED",
+    "LOCAL_GROUNDING_REQUIRED",
+    "REQUIRED_ADAPTATION",
+    "IMPLEMENTATION_EXECUTION",
+    "MANDATORY_CONFIDENCE",
+    "DUPLICATED_REASONING"
+  ];
+  return classifications.map((classification, index) => ({
+    checkpoint_id: `CV-regression-${String(index + 1).padStart(3, "0")}`,
+    phase: index < 3 ? "implementation_planning" : index === 3 ? "implementation" : "verification",
+    activity: `Exercise ${classification} validation.`,
+    upstream_item: index < 3 ? "Ground the approved logical work unit." : null,
+    classification,
+    evidence: [`Observed evidence for ${classification}.`]
+  }));
+}
+
+function writeRoutingRecommendation(copyRoot, label, record) {
+  writeJson(path.join(copyRoot, "examples", `regression-routing-${label}.json`), record);
+}
+
+function writeApprovedHandoff(copyRoot, label, record) {
+  writeJson(path.join(copyRoot, "examples", `regression-handoff-${label}.json`), record);
+}
+
+function writeCodexValueRecord(copyRoot, label, checks = validCodexValueChecks()) {
+  const record = readJson(path.join(copyRoot, "dogfood", "devswitchboard-adaptive-readiness-012.json"));
+  record.task_id = `regression-codex-value-${label}`;
+  record.measurements.codex_value_checks = checks;
+  writeJson(path.join(copyRoot, "dogfood", `regression-codex-value-${label}.json`), record);
+}
+
 function moreContextRequiredCheck() {
   return {
     checkpoint_id: "DV-regression-001",
@@ -401,6 +524,85 @@ if (baseline.status !== 0) {
 const failures = [];
 for (const regression of [
   {
+    name: "Routing Recommendation 0.2 accepts a Chat-specific surface value",
+    mutate(copyRoot) {
+      writeRoutingRecommendation(copyRoot, "chat-valid", validRoutingRecommendation("chat", ["shared_context_acquisition"]));
+    }
+  },
+  {
+    name: "Routing Recommendation 0.2 accepts developer_decision on the Developer surface",
+    mutate(copyRoot) {
+      writeRoutingRecommendation(copyRoot, "developer-valid", validRoutingRecommendation("developer", ["developer_decision"]));
+    }
+  },
+  {
+    name: "Routing Recommendation 0.2 accepts one Codex-specific surface value",
+    mutate(copyRoot) {
+      writeRoutingRecommendation(copyRoot, "codex-valid", validRoutingRecommendation("codex", ["repository_grounding"]));
+    }
+  },
+  {
+    name: "Routing Recommendation 0.2 accepts multiple compatible Codex surface values",
+    mutate(copyRoot) {
+      writeRoutingRecommendation(copyRoot, "codex-multiple-valid", validRoutingRecommendation("codex", ["local_repository_truth", "fresh_verification"]));
+    }
+  },
+  {
+    name: "Approved Handoff 0.2 accepts prepared upstream execution preparation",
+    mutate(copyRoot) {
+      writeApprovedHandoff(copyRoot, "prepared-valid", validApprovedHandoff(copyRoot, "prepared"));
+    }
+  },
+  {
+    name: "Approved Handoff 0.2 accepts explicit commit verification policy true",
+    mutate(copyRoot) {
+      writeApprovedHandoff(copyRoot, "policy-true-valid", validApprovedHandoff(copyRoot, "prepared", true));
+    }
+  },
+  {
+    name: "prepared upstream preparation accepts a selected independent review subagent",
+    mutate(copyRoot) {
+      const record = validApprovedHandoff(copyRoot, "prepared");
+      record.upstream_preparation.logical_work_units.push("Run a fresh independent review subagent.");
+      writeApprovedHandoff(copyRoot, "prepared-review-subagent-valid", record);
+    }
+  },
+  {
+    name: "Approved Handoff 0.2 accepts commit-pinned GitHub preparation provenance",
+    mutate(copyRoot) {
+      const record = validApprovedHandoff(copyRoot, "prepared");
+      record.upstream_preparation.source_artifacts = [
+        "https://github.com/Sonos18/devswitchboard/blob/dc8e727ef0c02f3fb7f2b150effa327c87192336/docs/north-star.md"
+      ];
+      writeApprovedHandoff(copyRoot, "prepared-pinned-url-valid", record);
+    }
+  },
+  {
+    name: "Approved Handoff 0.2 accepts not-needed preparation for bounded direct execution",
+    mutate(copyRoot) {
+      writeApprovedHandoff(copyRoot, "not-needed-valid", validApprovedHandoff(copyRoot, "not_needed"));
+    }
+  },
+  {
+    name: "Approved Handoff 0.2 accepts explicit commit verification policy false without a predecessor gate",
+    mutate(copyRoot) {
+      writeApprovedHandoff(copyRoot, "policy-false-valid", validApprovedHandoff(copyRoot, "not_needed", false));
+    }
+  },
+  {
+    name: "Approved Handoff 0.2 accepts a completed predecessor commit verification gate",
+    mutate(copyRoot) {
+      const record = addPredecessorCommitVerification(validApprovedHandoff(copyRoot, "prepared", true));
+      writeApprovedHandoff(copyRoot, "predecessor-gate-valid", record);
+    }
+  },
+  {
+    name: "Dogfood Record 0.1 accepts every Codex-value classification",
+    mutate(copyRoot) {
+      writeCodexValueRecord(copyRoot, "all-classifications-valid");
+    }
+  },
+  {
     name: "historical Dogfood record remains valid without decision-value checkpoints",
     mutate(copyRoot) {
       writeDecisionValueRecord(copyRoot, "historical-omission");
@@ -556,6 +758,317 @@ for (const regression of [
 }
 
 for (const regression of [
+  {
+    name: "Routing Recommendation 0.2 requires surface_value",
+    expectedMessage: "Routing Recommendation 0.2 requires non-empty surface_value",
+    mutate(copyRoot) {
+      const record = validRoutingRecommendation();
+      delete record.surface_value;
+      writeRoutingRecommendation(copyRoot, "missing-surface-value", record);
+    }
+  },
+  {
+    name: "Routing Recommendation 0.2 rejects an empty surface_value",
+    expectedMessage: "Routing Recommendation 0.2 requires non-empty surface_value",
+    mutate(copyRoot) {
+      writeRoutingRecommendation(copyRoot, "empty-surface-value", validRoutingRecommendation("codex", []));
+    }
+  },
+  {
+    name: "Routing Recommendation 0.2 rejects an unknown surface value",
+    expectedMessage: "unknown surface_value unmeasured_value",
+    mutate(copyRoot) {
+      writeRoutingRecommendation(copyRoot, "unknown-surface-value", validRoutingRecommendation("codex", ["unmeasured_value"]));
+    }
+  },
+  {
+    name: "Routing Recommendation 0.2 rejects a Chat value on Codex",
+    expectedMessage: "surface_value shared_context_acquisition is incompatible with surface codex",
+    mutate(copyRoot) {
+      writeRoutingRecommendation(copyRoot, "chat-value-on-codex", validRoutingRecommendation("codex", ["shared_context_acquisition"]));
+    }
+  },
+  {
+    name: "Routing Recommendation 0.2 rejects a Codex value on Chat",
+    expectedMessage: "surface_value repository_grounding is incompatible with surface chat",
+    mutate(copyRoot) {
+      writeRoutingRecommendation(copyRoot, "codex-value-on-chat", validRoutingRecommendation("chat", ["repository_grounding"]));
+    }
+  },
+  {
+    name: "Routing Recommendation 0.1 rejects the v0.2-only surface_value",
+    expectedMessage: "Routing Recommendation 0.1 cannot contain surface_value",
+    mutate(copyRoot) {
+      const record = validRoutingRecommendation();
+      record.schema_version = "0.1";
+      writeRoutingRecommendation(copyRoot, "surface-value-on-0.1", record);
+    }
+  },
+  {
+    name: "Approved Handoff 0.2 requires upstream_preparation",
+    expectedMessage: "Approved Handoff 0.2 requires upstream_preparation",
+    mutate(copyRoot) {
+      const record = validApprovedHandoff(copyRoot, "prepared");
+      delete record.upstream_preparation;
+      writeApprovedHandoff(copyRoot, "missing-preparation", record);
+    }
+  },
+  {
+    name: "Approved Handoff 0.2 requires an explicit commit verification policy",
+    expectedMessage: "Approved Handoff 0.2 requires explicit boolean chat_verify_commit_before_next_task",
+    mutate(copyRoot) {
+      const record = validApprovedHandoff(copyRoot, "prepared", true);
+      delete record.developer_decisions.chat_verify_commit_before_next_task;
+      writeApprovedHandoff(copyRoot, "missing-commit-verification-policy", record);
+    }
+  },
+  {
+    name: "Approved Handoff 0.2 rejects a non-boolean commit verification policy",
+    expectedMessage: "Approved Handoff 0.2 requires explicit boolean chat_verify_commit_before_next_task",
+    mutate(copyRoot) {
+      const record = validApprovedHandoff(copyRoot, "prepared", true);
+      record.developer_decisions.chat_verify_commit_before_next_task = "true";
+      writeApprovedHandoff(copyRoot, "non-boolean-commit-verification-policy", record);
+    }
+  },
+  {
+    name: "Approved Handoff 0.1 rejects the v0.2-only commit verification policy",
+    expectedMessage: "Approved Handoff 0.1 cannot contain chat_verify_commit_before_next_task",
+    mutate(copyRoot) {
+      const record = readJson(path.join(copyRoot, "examples", "devswitchboard-approved-handoff.json"));
+      record.task_id = "regression-policy-on-0.1";
+      record.developer_decisions.chat_verify_commit_before_next_task = true;
+      writeApprovedHandoff(copyRoot, "policy-on-0.1", record);
+    }
+  },
+  {
+    name: "predecessor commit verification requires task, exact SHA, and resolvable evidence",
+    expectedMessage: "predecessor_commit_verification requires predecessor_task_id, exact commit_sha, and resolvable evidence_source",
+    mutate(copyRoot) {
+      const record = validApprovedHandoff(copyRoot, "prepared", true);
+      record.completed_gates.push({
+        gate: "predecessor_commit_verification",
+        status: "passed",
+        evidence_source: "unresolvable commit audit"
+      });
+      writeApprovedHandoff(copyRoot, "incomplete-predecessor-gate", record);
+    }
+  },
+  {
+    name: "predecessor commit verification evidence must identify the exact recorded SHA",
+    expectedMessage: "predecessor_commit_verification requires predecessor_task_id, exact commit_sha, and resolvable evidence_source",
+    mutate(copyRoot) {
+      const record = addPredecessorCommitVerification(validApprovedHandoff(copyRoot, "prepared", true));
+      record.completed_gates.at(-1).evidence_source = "https://github.com/Sonos18/devswitchboard/commit/688c9d51ab23909872119181248e8cf8dce5ae5c";
+      writeApprovedHandoff(copyRoot, "mismatched-predecessor-evidence", record);
+    }
+  },
+  {
+    name: "Codex technical completion cannot route directly to Developer review",
+    expectedMessage: "Codex completion must return READY_FOR_CHAT_ACCEPTANCE to Chat",
+    mutate(copyRoot) {
+      const file = path.join(copyRoot, "docs", "workflows", "codex.md");
+      const content = fs.readFileSync(file, "utf8").replaceAll("READY_FOR_CHAT_ACCEPTANCE", "READY_FOR_DEVELOPER_REVIEW");
+      fs.writeFileSync(file, content);
+    }
+  },
+  {
+    name: "true commit verification policy blocks a dependent handoff until the predecessor gate passes",
+    expectedMessage: "Chat workflow must block dependent handoffs until predecessor_commit_verification passes",
+    mutate(copyRoot) {
+      const file = path.join(copyRoot, "docs", "workflows", "chat.md");
+      const content = fs.readFileSync(file, "utf8").replaceAll("predecessor_commit_verification", "predecessor_commit_audit");
+      fs.writeFileSync(file, content);
+    }
+  },
+  {
+    name: "false commit verification policy does not fabricate a mandatory predecessor gate",
+    expectedMessage: "Chat workflow must preserve the explicit false path without a mandatory predecessor gate",
+    mutate(copyRoot) {
+      const file = path.join(copyRoot, "docs", "workflows", "chat.md");
+      const content = fs.readFileSync(file, "utf8").replaceAll("chat_verify_commit_before_next_task: false", "chat_verify_commit_before_next_task: true");
+      fs.writeFileSync(file, content);
+    }
+  },
+  {
+    name: "Developer technical code and test review is not required",
+    expectedMessage: "completion policy cannot require Developer technical review",
+    mutate(copyRoot) {
+      const file = path.join(copyRoot, "docs", "workflows", "codex.md");
+      fs.appendFileSync(file, "\nThe Developer MUST review implementation diffs and tests before technical acceptance.\n");
+    }
+  },
+  {
+    name: "prepared upstream preparation requires source provenance",
+    expectedMessage: "prepared upstream_preparation requires source_artifacts",
+    mutate(copyRoot) {
+      const record = validApprovedHandoff(copyRoot, "prepared");
+      record.upstream_preparation.source_artifacts = [];
+      writeApprovedHandoff(copyRoot, "prepared-empty-provenance", record);
+    }
+  },
+  {
+    name: "prepared upstream preparation requires an approach summary",
+    expectedMessage: "prepared upstream_preparation requires approach_summary",
+    mutate(copyRoot) {
+      const record = validApprovedHandoff(copyRoot, "prepared");
+      record.upstream_preparation.approach_summary = null;
+      writeApprovedHandoff(copyRoot, "prepared-null-summary", record);
+    }
+  },
+  {
+    name: "prepared upstream preparation requires a logical work unit",
+    expectedMessage: "prepared upstream_preparation requires logical_work_units",
+    mutate(copyRoot) {
+      const record = validApprovedHandoff(copyRoot, "prepared");
+      record.upstream_preparation.logical_work_units = [];
+      writeApprovedHandoff(copyRoot, "prepared-empty-work", record);
+    }
+  },
+  {
+    name: "prepared upstream preparation requires a local-grounding question",
+    expectedMessage: "prepared upstream_preparation requires local_grounding_needed",
+    mutate(copyRoot) {
+      const record = validApprovedHandoff(copyRoot, "prepared");
+      record.upstream_preparation.local_grounding_needed = [];
+      writeApprovedHandoff(copyRoot, "prepared-empty-grounding", record);
+    }
+  },
+  {
+    name: "prepared upstream preparation requires rationale",
+    expectedMessage: "upstream_preparation requires non-empty rationale",
+    mutate(copyRoot) {
+      const record = validApprovedHandoff(copyRoot, "prepared");
+      record.upstream_preparation.rationale = [];
+      writeApprovedHandoff(copyRoot, "prepared-empty-rationale", record);
+    }
+  },
+  {
+    name: "prepared upstream preparation rejects display-name-only provenance",
+    expectedMessage: "source artifact is not resolvable without conversation history",
+    mutate(copyRoot) {
+      const record = validApprovedHandoff(copyRoot, "prepared");
+      record.upstream_preparation.source_artifacts = ["Approved v0.2 specification"];
+      writeApprovedHandoff(copyRoot, "prepared-display-name-source", record);
+    }
+  },
+  {
+    name: "prepared upstream preparation rejects an unpinned remote URL",
+    expectedMessage: "source artifact is not resolvable without conversation history",
+    mutate(copyRoot) {
+      const record = validApprovedHandoff(copyRoot, "prepared");
+      record.upstream_preparation.source_artifacts = ["https://example.invalid/not-an-approved-shared-baseline"];
+      writeApprovedHandoff(copyRoot, "prepared-unpinned-url", record);
+    }
+  },
+  {
+    name: "prepared upstream preparation rejects a missing repository-relative path",
+    expectedMessage: "source artifact is not resolvable without conversation history",
+    mutate(copyRoot) {
+      const record = validApprovedHandoff(copyRoot, "prepared");
+      record.upstream_preparation.source_artifacts = ["docs/missing-approved-source.md"];
+      writeApprovedHandoff(copyRoot, "prepared-missing-local-source", record);
+    }
+  },
+  {
+    name: "prepared upstream preparation cannot add an explicitly excluded product capability",
+    expectedMessage: "upstream_preparation contradicts excluded scope: CLI",
+    mutate(copyRoot) {
+      const record = validApprovedHandoff(copyRoot, "prepared");
+      record.upstream_preparation.logical_work_units.push("Add a CLI product runtime despite the binding excluded scope.");
+      writeApprovedHandoff(copyRoot, "prepared-excluded-capability", record);
+    }
+  },
+  {
+    name: "prepared upstream preparation cannot override the no-subagents strategy",
+    expectedMessage: "upstream_preparation contradicts approved strategy: implementation_subagents",
+    mutate(copyRoot) {
+      const record = validApprovedHandoff(copyRoot, "prepared");
+      record.upstream_preparation.logical_work_units.push("Implement the change with implementation subagents.");
+      writeApprovedHandoff(copyRoot, "prepared-strategy-override", record);
+    }
+  },
+  {
+    name: "not-needed upstream preparation rejects logical work content",
+    expectedMessage: "not_needed upstream_preparation cannot contain preparation content",
+    mutate(copyRoot) {
+      const record = validApprovedHandoff(copyRoot, "not_needed");
+      record.upstream_preparation.logical_work_units = ["Fabricated plan work."];
+      writeApprovedHandoff(copyRoot, "not-needed-work", record);
+    }
+  },
+  {
+    name: "not-needed upstream preparation rejects a non-null approach summary",
+    expectedMessage: "not_needed upstream_preparation cannot contain preparation content",
+    mutate(copyRoot) {
+      const record = validApprovedHandoff(copyRoot, "not_needed");
+      record.upstream_preparation.approach_summary = "No separate preparation is needed.";
+      writeApprovedHandoff(copyRoot, "not-needed-summary", record);
+    }
+  },
+  {
+    name: "Approved Handoff 0.1 rejects the v0.2-only upstream_preparation",
+    expectedMessage: "Approved Handoff 0.1 cannot contain upstream_preparation",
+    mutate(copyRoot) {
+      const record = validApprovedHandoff(copyRoot, "prepared");
+      record.schema_version = "0.1";
+      writeApprovedHandoff(copyRoot, "preparation-on-0.1", record);
+    }
+  },
+  {
+    name: "upstream preparation cannot override Developer approval",
+    expectedMessage: "ready handoff requires affirmative workflow, readiness, and routing approval",
+    mutate(copyRoot) {
+      const record = validApprovedHandoff(copyRoot, "prepared");
+      record.developer_decisions.routing_recommendation_approved = false;
+      writeApprovedHandoff(copyRoot, "authority-contradiction", record);
+    }
+  },
+  {
+    name: "Codex-value checkpoint rejects an unknown classification",
+    expectedMessage: "expected one of \"UPSTREAM_PREPARATION_REUSED\"",
+    mutate(copyRoot) {
+      const checks = validCodexValueChecks();
+      checks[0].classification = "UNMEASURED_VALUE";
+      writeCodexValueRecord(copyRoot, "unknown-classification", checks);
+    }
+  },
+  {
+    name: "Codex-value checkpoint requires evidence",
+    expectedMessage: "expected at least 1 items",
+    mutate(copyRoot) {
+      const checks = validCodexValueChecks();
+      checks[0].evidence = [];
+      writeCodexValueRecord(copyRoot, "empty-evidence", checks);
+    }
+  },
+  {
+    name: "Codex-value checkpoint requires every canonical field",
+    expectedMessage: "missing required property activity",
+    mutate(copyRoot) {
+      const checks = validCodexValueChecks();
+      delete checks[0].activity;
+      writeCodexValueRecord(copyRoot, "missing-activity", checks);
+    }
+  },
+  {
+    name: "Codex-value checkpoint rejects an empty non-null upstream item",
+    expectedMessage: "codex_value_checks[0].upstream_item: expected exactly one oneOf branch, matched 0",
+    mutate(copyRoot) {
+      const checks = validCodexValueChecks();
+      checks[0].upstream_item = "";
+      writeCodexValueRecord(copyRoot, "empty-upstream-item", checks);
+    }
+  },
+  {
+    name: "Codex-value checkpoint rejects unexpected properties",
+    expectedMessage: "unexpected property token_savings",
+    mutate(copyRoot) {
+      const checks = validCodexValueChecks();
+      checks[0].token_savings = 50;
+      writeCodexValueRecord(copyRoot, "unexpected-property", checks);
+    }
+  },
   {
     name: "ready Approved Handoff requires affirmative routing approval",
     expectedMessage: "Approved Handoff authority",

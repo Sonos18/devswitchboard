@@ -1,0 +1,16 @@
+{
+  "$schema_file": "../schemas/routing-recommendation.schema.json",
+  "schema": "routing_recommendation",
+  "schema_version": "0.2",
+  "task_id": "example-v0.2-developer-route",
+  "revision": 1,
+  "phase": "requirement_discovery",
+  "surface": "developer",
+  "workflow": "developer_intent_decision",
+  "resources": ["explicit developer choice"],
+  "matched_rule": "R001",
+  "surface_value": ["developer_decision"],
+  "rationale": ["The unresolved product preference is intent and cannot be inferred from repository evidence."],
+  "developer_approval_required": true,
+  "invalidation_conditions": ["The Developer supplies the required intent decision."]
+}

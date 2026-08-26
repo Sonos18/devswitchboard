@@ -4,7 +4,7 @@ DevSwitchboard contracts make decisions portable across surfaces. Human semantic
 
 ## Common rules
 
-- `schema` and `schema_version` identify the contract. v0.1 uses schema version `0.1`.
+- `schema` and `schema_version` identify the contract. Product and contract versions are independent; consumers select behavior from the contract's own version.
 - Task-scoped records carry `task_id` and `revision`.
 - Required evidence is explicit and non-empty; conversational memory is not evidence.
 - Objects are closed. Producers MUST NOT add fields that the selected schema does not define.
@@ -24,8 +24,10 @@ DevSwitchboard contracts make decisions portable across surfaces. Human semantic
 | [Conflict Report](conflict-report.md) | any → developer | Intent-versus-feasibility stop. |
 | [Re-route Required](re-route-required.md) | any → developer | Approval request after route invalidation. |
 | [Work State](work-state.md) | any → any | Resumable execution state. |
-| [Verification Report](verification-report.md) | Codex → developer | Fresh acceptance evidence. |
+| [Verification Report](verification-report.md) | Codex → Chat; Developer authority preserved | Fresh technical acceptance evidence; `developer_acceptance_required` preserves final authority without requiring personal code/test inspection. |
 
 ## Evolution
 
-Compatible clarifications MAY retain `0.1`. Removing a field, adding a required field, changing an enum, or changing authority semantics requires a new schema version and migrated canonical examples. The human contract, machine schema, examples, and adapter MUST change together.
+Compatible clarifications MAY retain a contract version. Removing a field, adding a required field, changing an enum, or changing authority semantics requires a new schema version and current-version canonical examples. Existing historical records remain readable under their original version unless an explicitly approved migration says otherwise. The human contract, machine schema, current examples, workflows, and adapter MUST change together.
+
+DevSwitchboard v0.2 introduces Routing Recommendation `0.2` and Approved Handoff `0.2`; their canonical schema files continue to validate historical `0.1` records. All other contract versions remain `0.1`.
