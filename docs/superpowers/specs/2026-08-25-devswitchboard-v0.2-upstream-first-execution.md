@@ -537,6 +537,8 @@ completed_gates:
 
 The gate does not authorize publication. It records an already completed Chat audit of the exact stable remote predecessor commit.
 
+`predecessor_task_id` MUST differ from the current Approved Handoff `task_id`. A task cannot satisfy its own predecessor gate.
+
 ## 11. Authority model
 
 `upstream_preparation` introduces no new authority surface.
@@ -608,6 +610,13 @@ Conflict Report
 Approved Handoff remains intent truth. Codex Preflight remains the authority on live repository compatibility.
 
 Technical acceptance does not transfer Developer-owned authority to Chat or Codex. Chat may accept repository-facing evidence and route technical remediation, while material intent, policy, authority, strategy, override, merge, and publication decisions continue to require the Developer.
+
+Machine and semantic enforcement divide as follows without weakening binding authority:
+
+- the machine verifier enforces closed contract shape, version-specific fields, canonical excluded-capability vocabulary, explicit implementation/review strategy flags, deterministic provenance, and predecessor commit metadata;
+- Chat semantic acceptance evaluates arbitrary goal contradictions, arbitrary included/excluded scope contradictions, acceptance-criteria contradictions, and semantic meaning that is not deterministically representable.
+
+Arbitrary natural-language contradictions therefore remain invalid even when they cannot be proven by deterministic verification alone. Chat must reject or route them; the verifier MUST NOT claim generic natural-language understanding.
 
 ## 12. Chat workflow changes
 
@@ -945,10 +954,13 @@ Reject an Approved Handoff `0.2` when:
 - a prepared handoff has no local-grounding question;
 - a not-needed handoff contains preparation content;
 - source provenance is display-name-only or unresolvable;
-- preparation contradicts approved scope, acceptance, or strategy;
+- preparation deterministically contradicts the canonical excluded-capability vocabulary or explicit implementation/review strategy flags;
 - existing Developer-approval invariants fail;
 - `developer_decisions.chat_verify_commit_before_next_task` is missing or non-Boolean;
-- a predecessor verification gate omits predecessor task ID, exact commit SHA, or resolvable evidence.
+- a predecessor verification gate omits predecessor task ID, exact commit SHA, or resolvable evidence;
+- a predecessor verification gate names the current handoff task as its predecessor.
+
+The verifier's deterministic checks do not decide arbitrary natural-language contradiction. Chat semantic acceptance MUST reject preparation that contradicts the approved goal, included/excluded scope, acceptance criteria, strategy, or source authority when that meaning is not represented by the deterministic fields above.
 
 Reject an Approved Handoff `0.1` when it contains `chat_verify_commit_before_next_task` or v0.2 predecessor-gate metadata.
 
@@ -993,6 +1005,8 @@ Valid:
 - not-needed R012 handoff;
 - explicit policy `true`;
 - explicit policy `false` without a mandatory predecessor gate;
+- prepared preparation with policy `false`;
+- not-needed preparation with policy `true`;
 - a completed or reused predecessor gate with exact commit evidence.
 
 Invalid:
@@ -1009,7 +1023,8 @@ Invalid:
 - missing policy;
 - non-Boolean policy;
 - v0.2-only policy on `0.1`;
-- incomplete or unresolvable predecessor verification evidence.
+- incomplete or unresolvable predecessor verification evidence;
+- a self-predecessor verification gate.
 
 ### Completion routing
 

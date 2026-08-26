@@ -196,12 +196,12 @@ function validApprovedHandoff(copyRoot, status = "prepared", chatVerifyCommit = 
   return record;
 }
 
-function addPredecessorCommitVerification(record) {
+function addPredecessorCommitVerification(record, predecessorTaskId = "completed-predecessor-task") {
   record.completed_gates.push({
     gate: "predecessor_commit_verification",
     status: "passed",
     evidence_source: "https://github.com/Sonos18/devswitchboard/commit/dc8e727ef0c02f3fb7f2b150effa327c87192336",
-    predecessor_task_id: "devswitchboard-upstream-preparation-boundary-017",
+    predecessor_task_id: predecessorTaskId,
     commit_sha: "dc8e727ef0c02f3fb7f2b150effa327c87192336"
   });
   return record;
@@ -560,6 +560,12 @@ for (const regression of [
     }
   },
   {
+    name: "Approved Handoff 0.2 accepts prepared preparation with commit verification policy false",
+    mutate(copyRoot) {
+      writeApprovedHandoff(copyRoot, "prepared-policy-false-valid", validApprovedHandoff(copyRoot, "prepared", false));
+    }
+  },
+  {
     name: "prepared upstream preparation accepts a selected independent review subagent",
     mutate(copyRoot) {
       const record = validApprovedHandoff(copyRoot, "prepared");
@@ -587,6 +593,12 @@ for (const regression of [
     name: "Approved Handoff 0.2 accepts explicit commit verification policy false without a predecessor gate",
     mutate(copyRoot) {
       writeApprovedHandoff(copyRoot, "policy-false-valid", validApprovedHandoff(copyRoot, "not_needed", false));
+    }
+  },
+  {
+    name: "Approved Handoff 0.2 accepts not-needed preparation with commit verification policy true",
+    mutate(copyRoot) {
+      writeApprovedHandoff(copyRoot, "not-needed-policy-true-valid", validApprovedHandoff(copyRoot, "not_needed", true));
     }
   },
   {
@@ -861,6 +873,60 @@ for (const regression of [
       const record = addPredecessorCommitVerification(validApprovedHandoff(copyRoot, "prepared", true));
       record.completed_gates.at(-1).evidence_source = "https://github.com/Sonos18/devswitchboard/commit/688c9d51ab23909872119181248e8cf8dce5ae5c";
       writeApprovedHandoff(copyRoot, "mismatched-predecessor-evidence", record);
+    }
+  },
+  {
+    name: "predecessor commit verification cannot name the current handoff as its predecessor",
+    expectedMessage: "predecessor_commit_verification predecessor_task_id must differ from current task_id",
+    mutate(copyRoot) {
+      const record = validApprovedHandoff(copyRoot, "prepared", true);
+      addPredecessorCommitVerification(record, record.task_id);
+      writeApprovedHandoff(copyRoot, "self-predecessor-gate", record);
+    }
+  },
+  {
+    name: "current first-run guidance cannot regress to v0.1-only onboarding",
+    expectedMessage: "first-run guidance must demonstrate current v0.2 onboarding",
+    mutate(copyRoot) {
+      const file = path.join(copyRoot, "docs", "getting-started.md");
+      const content = fs.readFileSync(file, "utf8").replaceAll('schema_version: "0.2"', 'schema_version: "0.1"');
+      fs.writeFileSync(file, content);
+    }
+  },
+  {
+    name: "complete recovery state cannot route technical acceptance directly to Developer review",
+    expectedMessage: "complete recovery state must route technical acceptance to Chat",
+    mutate(copyRoot) {
+      const file = path.join(copyRoot, "docs", "state-and-recovery.md");
+      const content = fs.readFileSync(file, "utf8").replaceAll("ready for Chat technical acceptance", "ready for developer review");
+      fs.writeFileSync(file, content);
+    }
+  },
+  {
+    name: "Verification Report guidance cannot route technical acceptance directly to Developer review",
+    expectedMessage: "Verification Report must support Chat technical acceptance",
+    mutate(copyRoot) {
+      const file = path.join(copyRoot, "docs", "contracts", "verification-report.md");
+      const content = fs.readFileSync(file, "utf8").replaceAll("supports Chat technical acceptance", "supports developer review");
+      fs.writeFileSync(file, content);
+    }
+  },
+  {
+    name: "Approved Handoff guidance cannot substitute Developer technical review for Chat semantic acceptance",
+    expectedMessage: "Approved Handoff guidance must assign semantic acceptance to Chat",
+    mutate(copyRoot) {
+      const file = path.join(copyRoot, "docs", "contracts", "approved-handoff.md");
+      const content = fs.readFileSync(file, "utf8").replaceAll("Chat performs semantic acceptance", "Developer performs technical review");
+      fs.writeFileSync(file, content);
+    }
+  },
+  {
+    name: "normative guidance cannot claim machine-complete arbitrary natural-language authority enforcement",
+    expectedMessage: "guidance must distinguish deterministic verification from Chat semantic acceptance",
+    mutate(copyRoot) {
+      const file = path.join(copyRoot, "docs", "superpowers", "specs", "2026-08-25-devswitchboard-v0.2-upstream-first-execution.md");
+      const content = fs.readFileSync(file, "utf8").replaceAll("Arbitrary natural-language contradictions", "All natural-language contradictions");
+      fs.writeFileSync(file, content);
     }
   },
   {

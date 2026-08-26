@@ -238,6 +238,50 @@
           "The complete regression suite and repository verifier passed; all 67 JSON files parsed independently; 54 example and Dogfood artifacts validated through canonical schema selection; Markdown, terminology, routing, authority, decision-value, Codex-value, completion-policy, source-resolution, unresolved-marker, inventory, history, diff, and direct whitespace checks passed.",
           "The exact inventory was 21 files; all 37 protected historical Dogfood files and 14 historical example files matched origin/main; origin/main and local HEAD remained dc8e727ef0c02f3fb7f2b150effa327c87192336."
         ]
+      },
+      {
+        "checkpoint_id": "CV-017-019",
+        "phase": "review",
+        "activity": "Receive Chat's first audit of stable remote commit 19ad041d229b153e2d66cc6cfb6d62e9a54e45c5 and route technical conformance findings to Codex remediation.",
+        "upstream_item": null,
+        "classification": "MANDATORY_CONFIDENCE",
+        "evidence": [
+          "Chat found four Important conformance gaps and one Minor regression gap; Chat acceptance and predecessor commit verification failed pending remediation.",
+          "The route and strategy remained valid, no Developer technical review was required, and the next dependent task remained blocked."
+        ]
+      },
+      {
+        "checkpoint_id": "CV-017-020",
+        "phase": "implementation",
+        "activity": "Reproduce and remediate the five Chat audit findings through focused RED/GREEN changes without rewriting the audited commit.",
+        "upstream_item": null,
+        "classification": "IMPLEMENTATION_EXECUTION",
+        "evidence": [
+          "RED produced exactly six intended failures: self-predecessor acceptance and five missing onboarding, recovery, Verification Report, Approved Handoff, and verifier-boundary guidance checks; both policy/preparation orthogonality controls passed.",
+          "GREEN passed the complete regression suite and repository verifier after the ten-file remediation; git diff --check passed and the branch inventory became the expected 24 paths."
+        ]
+      },
+      {
+        "checkpoint_id": "CV-017-021",
+        "phase": "review",
+        "activity": "Run a fresh non-authoring review of the complete Chat commit-audit remediation.",
+        "upstream_item": null,
+        "classification": "MANDATORY_CONFIDENCE",
+        "evidence": [
+          "The reviewer returned Ready: yes with no Critical, Important, Minor, or boundary-relevant finding and no duplicated material reasoning.",
+          "The reviewer independently passed regressions, repository verification, and diff checks; confirmed the exact ten-file remediation delta and 24-path branch inventory; and found no schema, lifecycle, route, authority, compatibility, or prior-remediation regression."
+        ]
+      },
+      {
+        "checkpoint_id": "CV-017-022",
+        "phase": "verification",
+        "activity": "Run fresh final verification after all Chat-audit remediation and independent-review evidence was present.",
+        "upstream_item": null,
+        "classification": "MANDATORY_CONFIDENCE",
+        "evidence": [
+          "The complete regression suite and repository verifier passed; all 67 JSON files parsed independently and all 54 schema-backed example and Dogfood artifacts validated canonically.",
+          "All 37 historical Dogfood files and 14 protected historical examples matched origin/main; the exact branch inventory was 24 paths, the remediation delta was ten paths, and diff plus direct whitespace checks passed."
+        ]
       }
     ]
   },
@@ -256,7 +300,9 @@
       "Important: any syntactically valid HTTPS URL was accepted as approved/resolvable provenance; validation now accepts only repository files or commit-pinned GitHub blob/raw artifact URLs, with valid and invalid regressions.",
       "Important: the first strategy remediation treated a valid selected independent review subagent as forbidden implementation delegation; the two resource checks were separated with a valid regression.",
       "Final independent re-review of Revision 1: pass with no unresolved Critical, Important, Minor, or boundary-relevant finding.",
-      "Fresh focused Revision 2 independent review: pass with no Critical, Important, Minor, or boundary-relevant finding; no prior remediation regressed."
+      "Fresh focused Revision 2 independent review: pass with no Critical, Important, Minor, or boundary-relevant finding; no prior remediation regressed.",
+      "Chat remote commit audit of 19ad041d229b153e2d66cc6cfb6d62e9a54e45c5: four Important findings and one Minor finding were reproduced and remediated through focused RED/GREEN changes.",
+      "Fresh Chat-audit remediation review: pass with no unresolved Critical, Important, Minor, or boundary-relevant finding; no prior remediation regressed and duplicated material reasoning remained zero."
     ]
   },
   "verification": {
@@ -276,7 +322,8 @@
       "Explicit true/false, omission, non-Boolean, v0.1 rejection, completion-routing, true/false predecessor-gate, exact-SHA evidence, and no-Developer-technical-review regressions",
       "Independent parsing of all 67 JSON files and canonical validation of all 54 example and Dogfood artifacts",
       "SHA-1 blob comparison of 37 historical Dogfood files and 14 historical example files against origin/main",
-      "Refreshed origin/main and local HEAD remain dc8e727ef0c02f3fb7f2b150effa327c87192336"
+      "Refreshed origin/main and local HEAD remain dc8e727ef0c02f3fb7f2b150effa327c87192336",
+      "Fresh Chat-audit remediation regressions, repository verification, JSON parsing, canonical validation, links, semantics, source resolution, historical protection, exact 24-path branch inventory, ten-file remediation delta, diff, and direct whitespace checks"
     ]
   },
   "findings": [
@@ -300,6 +347,41 @@
       "description": "The first no-implementation-subagents remediation rejected a valid selected independent review subagent because a bare subagent reference was treated as implementation delegation.",
       "correction": "Added a valid selected-review regression and restricted implementation delegation detection to explicit implementation-subagent language or subagents coupled to positive implementation work.",
       "status": "remediated"
+    },
+    {
+      "type": "ONBOARDING_VERSION_DRIFT",
+      "area": "first_run_guidance",
+      "description": "The non-versioned first-run guide still demonstrated only historical Routing Recommendation and Approved Handoff 0.1 semantics.",
+      "correction": "Updated the non-versioned first-run guide to demonstrate Routing Recommendation 0.2, surface_value, Approved Handoff 0.2, bounded not_needed preparation, explicit policy, Codex-to-Chat completion, Developer authority, and both cross-task policy paths while preserving historical 0.1 validity.",
+      "status": "remediated"
+    },
+    {
+      "type": "COMPLETION_ROUTING_INCONSISTENCY",
+      "area": "state_recovery_and_verification_guidance",
+      "description": "Recovery and Verification Report guidance still implied direct Developer technical review instead of Chat technical acceptance.",
+      "correction": "Aligned complete-state and Verification Report guidance with Chat technical acceptance, Codex remediation, and Developer-owned material decisions without changing lifecycle or report schema versions.",
+      "status": "remediated"
+    },
+    {
+      "type": "SELF_PREDECESSOR_GATE",
+      "area": "approved_handoff_completion_policy",
+      "description": "A predecessor_commit_verification gate could name the current handoff task as its own predecessor.",
+      "correction": "Added deterministic rejection and RED/GREEN coverage requiring predecessor_task_id to differ from the current handoff task_id; retained exact-SHA and matching-URL checks with a distinct valid predecessor helper.",
+      "status": "remediated"
+    },
+    {
+      "type": "VERIFIER_SCOPE_CLAIM",
+      "area": "deterministic_and_semantic_authority_checks",
+      "description": "Normative wording overstated machine enforcement of arbitrary natural-language goal, scope, and acceptance contradictions.",
+      "correction": "Documented the exact deterministic verifier boundary and assigned arbitrary natural-language goal, scope, acceptance, and meaning contradictions to Chat semantic acceptance without weakening binding authority.",
+      "status": "remediated"
+    },
+    {
+      "type": "POLICY_PREPARATION_ORTHOGONALITY",
+      "area": "approved_handoff_regressions",
+      "description": "Valid prepared plus policy false and not_needed plus policy true combinations were not explicitly covered.",
+      "correction": "Added passing regressions for prepared plus policy false and not_needed plus policy true while retaining prepared plus true and not_needed plus false.",
+      "status": "remediated"
     }
   ],
   "developer_controls": [
@@ -315,7 +397,9 @@
     "Historical migration count 0",
     "chat_verify_commit_before_next_task selected true with no implicit default",
     "Codex completion next owner is Chat and Developer technical review is not required",
-    "No stable remote #017 commit exists, Chat acceptance and predecessor audit remain unclaimed, and the next dependent task remains blocked",
+    "Stable remote #017 commit 19ad041d229b153e2d66cc6cfb6d62e9a54e45c5 exists; Chat's first audit failed pending technical remediation, acceptance and predecessor verification remain unclaimed, and the next dependent task remains blocked",
+    "Chat audit remediation used focused RED/GREEN and passed fresh independent non-authoring review before the follow-up commit",
+    "Fresh final remediation verification passed after all review and evidence changes; it is rerun on the exact follow-up commit before push",
     "Publication action count 0"
   ],
   "result": "pass",
@@ -334,7 +418,12 @@
     "Focused Revision 2 RED evidence was observed before schema, verifier, workflow, specification, example, and Dogfood production changes.",
     "Fresh Revision 2 independent review confirmed completion routing, both Boolean choices, exact-SHA predecessor evidence, historical compatibility, exact inventory, prior remediations, and zero duplicated reasoning with no finding.",
     "Fresh Revision 2 final verification passed after review and evidence finalization, including 67 JSON parses, 54 canonical artifact validations, 21-file inventory, 37 protected historical Dogfoods, 14 historical examples, and direct whitespace checks.",
-    "Duplicated material reasoning remains zero through the completed Revision 2 local checkpoint."
+    "Duplicated material reasoning remains zero through the completed Revision 2 local checkpoint.",
+    "Chat audited stable remote commit 19ad041d229b153e2d66cc6cfb6d62e9a54e45c5 and returned four Important findings and one Minor finding for direct Codex remediation without route or strategy invalidation.",
+    "No prior history was rewritten; the prior commit remains preserved, Chat acceptance and predecessor verification remain unclaimed, and the dependent next task remains blocked.",
+    "Focused audit RED reproduced all six missing deterministic checks while both policy/preparation orthogonality controls passed; the complete suite and repository verifier returned GREEN after the narrow remediation.",
+    "Fresh non-authoring remediation review found no unresolved Critical, Important, Minor, or boundary-relevant issue, no prior remediation regression, and no duplicated material reasoning.",
+    "Fresh final remediation verification passed with 67 JSON parses, 54 canonical artifact validations, 37 unchanged historical Dogfoods, 14 unchanged protected examples, the exact 24-path branch inventory, and clean diff and whitespace checks."
   ],
-  "next_action": "return_READY_FOR_CHAT_ACCEPTANCE_evidence_without_claiming_Chat_acceptance_or_predecessor_commit_audit"
+  "next_action": "create_and_push_a_normal_follow_up_remediation_commit_then_return_exact_evidence_for_Chat_reaudit"
 }

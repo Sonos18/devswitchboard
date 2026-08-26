@@ -51,7 +51,7 @@ state: READY_FOR_CHAT_ACCEPTANCE
 next_owner: chat
 ```
 
-Chat inspects that evidence against the approved goal, scope, acceptance criteria, authority, and required confidence work. It then chooses exactly one outcome:
+Chat inspects that evidence against the approved goal, scope, acceptance criteria, authority, and required confidence work. This is semantic acceptance: Chat evaluates arbitrary goal, included/excluded scope, acceptance-criteria, and other meaning contradictions that deterministic verification cannot represent. Machine checks remain responsible for closed contract shape, version-specific fields, canonical excluded-capability vocabulary, explicit strategy flags, deterministic provenance, and predecessor metadata. Neither layer weakens the rule that preparation cannot override approved authority. Chat then chooses exactly one outcome:
 
 ```yaml
 TASK_ACCEPTED:
@@ -85,7 +85,7 @@ next_dependent_task:
   approved_handoff_allowed: false
 ```
 
-The next dependent-task handoff records a completed or reused `predecessor_commit_verification` gate with the predecessor task ID, exact commit SHA, and resolvable evidence_source. A failed technical audit routes remediation to Codex; a material decision routes to the Developer.
+The next dependent-task handoff records a completed or reused `predecessor_commit_verification` gate with a predecessor task ID distinct from the current handoff task ID, exact commit SHA, and resolvable evidence_source. A task cannot satisfy its own predecessor gate. A failed technical audit routes remediation to Codex; a material decision routes to the Developer.
 
 For:
 

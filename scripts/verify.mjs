@@ -545,6 +545,9 @@ function checkSemanticInvariants() {
         fail("Approved Handoff completion policy", `${handoffPath}: predecessor gate metadata belongs only to predecessor_commit_verification`);
       }
       if (gate.gate === "predecessor_commit_verification") {
+        if (gate.predecessor_task_id === handoffRecord.task_id) {
+          fail("Approved Handoff completion policy", `${handoffPath}: predecessor_commit_verification predecessor_task_id must differ from current task_id`);
+        }
         const validGate = handoffRecord.schema_version === "0.2"
           && ["passed", "reused"].includes(gate.status)
           && typeof gate.predecessor_task_id === "string"
@@ -940,6 +943,9 @@ function checkTerminologyAndRules() {
 
 function checkCompletionPolicySemantics() {
   const approvedHandoff = fs.readFileSync(path.join(root, "docs/contracts/approved-handoff.md"), "utf8");
+  const verificationReport = fs.readFileSync(path.join(root, "docs/contracts/verification-report.md"), "utf8");
+  const gettingStarted = fs.readFileSync(path.join(root, "docs/getting-started.md"), "utf8");
+  const stateAndRecovery = fs.readFileSync(path.join(root, "docs/state-and-recovery.md"), "utf8");
   const chat = fs.readFileSync(path.join(root, "docs/workflows/chat.md"), "utf8");
   const codex = fs.readFileSync(path.join(root, "docs/workflows/codex.md"), "utf8");
   const adapter = fs.readFileSync(path.join(root, "docs/adapters/superpowers.md"), "utf8");
@@ -969,6 +975,26 @@ function checkCompletionPolicySemantics() {
   if (!/^\*\*Revision:\*\* 2\s*$/m.test(specification)
       || !specification.includes("Completion Ownership and Cross-Task Commit Verification")) {
     fail("completion policy", "the v0.2 specification must persist approved Revision 2 completion semantics");
+  }
+  const currentVersionExamples = gettingStarted.match(/schema_version: "0\.2"/g) ?? [];
+  if (currentVersionExamples.length < 2
+      || !gettingStarted.includes("surface_value:")
+      || !gettingStarted.includes("upstream_preparation:")
+      || !gettingStarted.includes("status: not_needed")
+      || !gettingStarted.includes("chat_verify_commit_before_next_task:")) {
+    fail("completion policy", "first-run guidance must demonstrate current v0.2 onboarding");
+  }
+  if (!stateAndRecovery.includes("ready for Chat technical acceptance")) {
+    fail("completion policy", "complete recovery state must route technical acceptance to Chat");
+  }
+  if (!verificationReport.includes("supports Chat technical acceptance")) {
+    fail("completion policy", "Verification Report must support Chat technical acceptance");
+  }
+  if (!approvedHandoff.includes("Chat performs semantic acceptance")) {
+    fail("completion policy", "Approved Handoff guidance must assign semantic acceptance to Chat");
+  }
+  if (!specification.includes("Arbitrary natural-language contradictions")) {
+    fail("completion policy", "guidance must distinguish deterministic verification from Chat semantic acceptance");
   }
   const policyDocs = [approvedHandoff, chat, codex, adapter].join("\n");
   if (/Developer\s+(?:MUST|must|required to)\s+review[^.\n]*(?:implementation|diffs?|source code|tests?|verifier)/i.test(policyDocs)) {

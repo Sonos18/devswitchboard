@@ -11,7 +11,9 @@ DevSwitchboard treats interruption as normal. Work State carries everything a fr
 | `waiting_for_developer` | A decision or approval is required. | Read-only evidence gathering or developer response. |
 | `blocked_by_conflict` | Intent and feasibility materially conflict. | Resolve Conflict Report; no strategy-dependent mutation. |
 | `verification_failed` | A required check failed. | Diagnose, correct, and rerun all affected fresh checks. |
-| `complete` | Required checks pass and the package is ready for developer review. | Developer acceptance or a new revision. |
+| `complete` | Required technical checks pass and the package is ready for Chat technical acceptance. | Chat accepts the technical result, routes a technical defect to Codex, or routes a material Developer-owned decision through Chat to the Developer. |
+
+`complete` does not create a new lifecycle phase or transfer final authority. Codex owns implementation, repository-facing review, remediation, and fresh verification; Chat owns technical acceptance and remediation routing. The Developer remains final authority for intent, policy, authority, strategy, overrides, merge, and publication, but is not required to personally inspect code, diffs, tests, verifier output, technical findings, or technical remediation.
 
 ## Minimum resumable state
 

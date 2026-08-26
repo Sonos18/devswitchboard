@@ -19,9 +19,13 @@ you state the requirement in ChatGPT Chat
   -> you copy that artifact into Codex
   -> Codex inspects the local repository and returns CODEX_PREFLIGHT
   -> compatible preflight enters the selected Superpowers path
+  -> Codex returns fresh completion evidence to Chat
+  -> Chat performs technical acceptance or routes remediation
 ```
 
 Chat owns intent. Codex owns local repository compatibility. You remain the final authority at both surfaces.
+
+Current v0.2 runs use Routing Recommendation `0.2` and Approved Handoff `0.2`. Historical and released v0.1 records remain valid and readable; do not rewrite them merely to adopt the current representation.
 
 ## Which bridge artifact should I use?
 
@@ -196,6 +200,9 @@ Chat completes all seven dimensions in the [Task Profile](contracts/task-profile
 Chat then applies the [routing rules](routing/rules.md) and returns a [Routing Recommendation](contracts/routing-recommendation.md). For example:
 
 ```yaml
+$schema_file: ../schemas/routing-recommendation.schema.json
+schema: routing_recommendation
+schema_version: "0.2"
 phase: implementation
 surface: codex
 workflow: bounded_direct_execution
@@ -203,6 +210,8 @@ resources:
   - approved_handoff
   - repository-local tests
 matched_rule: R012
+surface_value:
+  - implementation_execution
 developer_approval_required: false
 rationale:
   - Intent is clear and the change is small and low-risk.
@@ -225,8 +234,9 @@ If they are not correct, revise the material decision in Chat first. Do not edit
 Chat now returns one complete, schema-conforming [Approved Handoff](contracts/approved-handoff.md). Its shape will include the approved goal, shared baseline, final Task Profile, routing, execution strategy, scope, exclusions, acceptance criteria, and readiness evidence:
 
 ```yaml
+$schema_file: ../schemas/approved-handoff.schema.json
 schema: approved_handoff
-schema_version: "0.1"
+schema_version: "0.2"
 status: ready_for_codex_preflight
 goal: Add a status filter to the existing invoice list.
 baseline:
@@ -236,8 +246,25 @@ baseline:
 routing:
   codex_preflight:
     active: true
+  implementation_planning:
+    active: false
   implementation:
     owner: codex
+developer_decisions:
+  routing_recommendation_approved: true
+  implementation_subagents: false
+  workspace_isolation: true
+  chat_verify_commit_before_next_task: false
+upstream_preparation:
+  status: not_needed
+  source_artifacts: []
+  approach_summary: null
+  logical_work_units: []
+  sequencing_assumptions: []
+  local_grounding_needed: []
+  rationale:
+    - Scope, acceptance criteria, and verification expectations already constrain this bounded R012 task.
+    - A separate preparation layer would not materially reduce Codex reasoning.
 scope:
   included:
     - Existing invoice-list status filter and nearby tests
@@ -249,6 +276,8 @@ readiness:
 ```
 
 This excerpt illustrates the contents; use the complete artifact Chat produces. `APPROVED_HANDOFF` means the intent is approved and ready for local comparison. It does **not** mean the repository is compatible.
+
+The bounded R012 example uses `upstream_preparation.status: not_needed` because another preparation layer adds no decision value. The explicit `chat_verify_commit_before_next_task: false` choice is independent of that preparation state; the Developer could select `true` for the same task without creating an implementation-planning phase.
 
 ## 5. Copy only the Approved Handoff into Codex
 
@@ -302,6 +331,27 @@ An unexpected filename is usually an adaptation. Discovering that the approved f
 
 For either compatible outcome, Codex uses the [Superpowers adapter](adapters/superpowers.md) selected by the handoff. It reuses adequate approved intent work, performs only the execution steps appropriate to the route, and always runs fresh verification before claiming completion.
 
+## 8. Return technical completion to Chat
+
+After implementation, repository-facing review, remediation, and fresh verification, Codex returns structured evidence with:
+
+```yaml
+phase: completion
+state: READY_FOR_CHAT_ACCEPTANCE
+next_owner: chat
+```
+
+Chat checks that evidence against the approved goal, scope, acceptance criteria, authority, and required confidence work. A technical defect returns directly to Codex. A material intent, policy, authority, strategy, override, merge, or publication decision goes through Chat to the Developer.
+
+Developer final authority does not require the Developer to personally inspect implementation code, diffs, tests, verifier output, technical findings, or technical remediation. Chat owns technical acceptance; Codex owns technical correction and fresh verification.
+
+The Approved Handoff's explicit policy controls only the dependent-task commit gate:
+
+- `chat_verify_commit_before_next_task: true` blocks a dependent next-task handoff until the predecessor exists as a stable remote commit, fresh verification matches that exact tree, and Chat records a completed or reused `predecessor_commit_verification` gate with a distinct predecessor task ID, exact commit SHA, and resolvable evidence;
+- `chat_verify_commit_before_next_task: false` creates no mandatory predecessor commit-audit gate, although Chat may still inspect a material predecessor risk.
+
+Neither value authorizes commit, push, merge, publication, or starting another task.
+
 ## First-run boundary check
 
 Before Codex implements, confirm:
@@ -313,5 +363,6 @@ Before Codex implements, confirm:
 - You copied that artifact, not conversation history, into Codex.
 - Codex inspected the live checkout and produced a separate Codex Preflight.
 - Implementation starts only after `compatible` or `compatible_with_adaptation`.
+- Codex returns technical completion to Chat rather than requiring Developer technical QA.
 
 For full semantics and field definitions, follow the linked canonical documents; they remain authoritative over this walkthrough.
